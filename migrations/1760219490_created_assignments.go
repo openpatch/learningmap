@@ -9,13 +9,24 @@ func init() {
 	m.Register(func(app core.App) error {
 		collection := core.NewBaseCollection("assignments")
 
+		// Get collection IDs
+		groupsCollection, err := app.FindCollectionByNameOrId("groups")
+		if err != nil {
+			return err
+		}
+
+		learningmapsCollection, err := app.FindCollectionByNameOrId("learningmaps")
+		if err != nil {
+			return err
+		}
+
 		// add fields
 		collection.Fields.Add(
 			&core.RelationField{
 				Name:         "group",
 				Required:     true,
 				MaxSelect:    1,
-				CollectionId: "groups",
+				CollectionId: groupsCollection.Id,
 			},
 		)
 
@@ -24,7 +35,7 @@ func init() {
 				Name:         "learningmap",
 				Required:     true,
 				MaxSelect:    1,
-				CollectionId: "learningmaps",
+				CollectionId: learningmapsCollection.Id,
 			},
 		)
 

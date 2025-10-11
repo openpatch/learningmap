@@ -9,6 +9,12 @@ func init() {
 	m.Register(func(app core.App) error {
 		collection := core.NewBaseCollection("progress")
 
+		// Get collection ID
+		assignmentsCollection, err := app.FindCollectionByNameOrId("assignments")
+		if err != nil {
+			return err
+		}
+
 		// add fields
 		collection.Fields.Add(
 			&core.RelationField{
@@ -24,7 +30,7 @@ func init() {
 				Name:         "assignment",
 				Required:     true,
 				MaxSelect:    1,
-				CollectionId: "assignments",
+				CollectionId: assignmentsCollection.Id,
 			},
 		)
 
