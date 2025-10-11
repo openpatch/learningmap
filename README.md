@@ -1,4 +1,4 @@
-# LearningMaps
+# Learningmap
 
 ## Development
 
