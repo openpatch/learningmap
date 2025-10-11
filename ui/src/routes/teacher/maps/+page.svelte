@@ -17,7 +17,7 @@
 			const userId = pb.authStore.record?.id;
 			const result = await pb.collection('learningmaps').getList(1, 50, {
 				filter: `teacher = "${userId}"`,
-				sort: '-created'
+				sort: '-id'
 			});
 			maps = result.items as unknown as LearningMap[];
 		} catch (err) {

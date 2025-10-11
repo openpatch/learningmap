@@ -18,7 +18,7 @@
 			const result = await pb.collection('groups').getList(1, 50, {
 				filter: `teacher = "${userId}"`,
 				expand: 'students',
-				sort: '-created'
+				sort: '-id'
 			});
 			groups = result.items as any;
 		} catch (err) {

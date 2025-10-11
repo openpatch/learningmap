@@ -22,7 +22,7 @@
 				const assignmentsResult = await pb.collection('assignments').getList(1, 50, {
 					filter: `group.id ?~ [${groupIds}]`,
 					expand: 'learningmap',
-					sort: '-created'
+					sort: '-id'
 				});
 
 				// Load progress for each assignment

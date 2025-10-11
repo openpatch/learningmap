@@ -15,21 +15,21 @@
 			// Load teacher's learning maps
 			const mapsResult = await pb.collection('learningmaps').getList(1, 50, {
 				filter: `teacher = "${userId}"`,
-				sort: '-created'
+				sort: '-id'
 			});
 			learningMaps = mapsResult.items as unknown as LearningMap[];
 
 			// Load teacher's groups
 			const groupsResult = await pb.collection('groups').getList(1, 50, {
 				filter: `teacher = "${userId}"`,
-				sort: '-created'
+				sort: '-id'
 			});
 			groups = groupsResult.items as unknown as Group[];
 
 			// Load assignments
 			const assignmentsResult = await pb.collection('assignments').getList(1, 50, {
 				filter: `teacher = "${userId}"`,
-				sort: '-created'
+				sort: '-id'
 			});
 			assignments = assignmentsResult.items as unknown as Assignment[];
 		} catch (err) {
