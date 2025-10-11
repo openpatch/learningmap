@@ -14,7 +14,7 @@
 		if (codeParam) {
 			code = codeParam.toUpperCase();
 			// Auto-submit if code is valid
-			if (code.length === 6) {
+			if (code.length === 8) {
 				handleStudentLogin();
 			}
 		}
@@ -45,7 +45,7 @@
 		<div class="text-center lg:text-left">
 			<h1 class="text-5xl font-bold">Student Login</h1>
 			<p class="py-6">
-				Enter the 6-character code provided by your teacher to access your learning maps.
+				Enter the 8-character code provided by your teacher to access your learning maps.
 			</p>
 			<div class="divider">OR</div>
 			<p class="text-sm">
@@ -60,10 +60,10 @@
 						type="text"
 						id="code"
 						class="input input-lg text-center font-mono text-2xl uppercase"
-						placeholder="ABC123"
+						placeholder="ABC12345"
 						bind:value={code}
-						maxlength="6"
-						pattern="[A-Za-z0-9]{6}"
+						maxlength="8"
+						pattern="[A-Za-z0-9]{8}"
 						required
 						oninput={(e) => { e.currentTarget.value = e.currentTarget.value.toUpperCase(); }}
 					/>

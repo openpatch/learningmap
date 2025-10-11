@@ -21,7 +21,7 @@ export async function loginTeacher(email: string, password: string): Promise<Use
 
 export async function loginStudent(code: string): Promise<User> {
 	try {
-		// Find user by code
+		// Find user by code to get the email
 		const records = await pb.collection('users').getList(1, 1, {
 			filter: `code = "${code}" && role = "student"`
 		});
@@ -32,11 +32,16 @@ export async function loginStudent(code: string): Promise<User> {
 		
 		const user = records.items[0] as unknown as User;
 		
-		// Create a mock auth token for students
-		// Note: In production, you'd want to implement proper token-based auth
-		pb.authStore.save('student-' + user.id, user);
+		// Login with email and password (code is the password)
+		const authData = await pb.collection('users').authWithPassword(user.email!, code);
+		const authenticatedUser = authData.record as unknown as User;
 		
-		return user;
+		if (authenticatedUser.role !== 'student') {
+			await pb.authStore.clear();
+			throw new Error('Invalid student account');
+		}
+		
+		return authenticatedUser;
 	} catch (error) {
 		console.error('Student login failed:', error);
 		throw error;
@@ -46,12 +51,21 @@ export async function loginStudent(code: string): Promise<User> {
 export async function createStudent(teacherId: string): Promise<User> {
 	try {
 		const displayName = generateRandomName();
-		const code = generateRandomCode(6);
+		const code = generateRandomCode(8);
+		
+		// Generate unique ID for email
+		const uniqueId = crypto.randomUUID().split('-')[0];
+		const email = `${uniqueId}+student@learningmap.app`;
 		
 		const user = await pb.collection('users').create({
 			role: 'student',
 			displayName,
 			code,
+			email,
+			emailVisibility: true,
+			password: code,
+			passwordConfirm: code,
+			verified: true,
 			managedBy: teacherId
 		});
 		

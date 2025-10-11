@@ -92,7 +92,7 @@ The application will be available at:
 
 1. Open the group you just created
 2. Click "Add Student" multiple times to add students
-3. Each student gets a unique display name (e.g., "LuckyTiger") and a 6-character code
+3. Each student gets a unique display name (e.g., "LuckyTiger") and a 8-character code
 
 ### 4. Assign a Learning Map
 
@@ -112,7 +112,7 @@ Students can login in two ways:
 
 ### Option 1: Enter Code
 1. Go to http://localhost:5173/student/login
-2. Enter the 6-character code
+2. Enter the 8-character code
 3. Click "Login"
 
 ### Option 2: Scan QR Code

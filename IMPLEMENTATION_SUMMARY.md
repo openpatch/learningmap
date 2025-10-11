@@ -105,7 +105,7 @@ All collections include proper field validation, relationships, and constraints.
 5. Assigns map to group → Creates assignment record
 
 ### Student Accesses and Completes Map
-1. Student logs in with 6-character code (or scans QR)
+1. Student logs in with 8-character code (or scans QR)
 2. Views assigned maps on dashboard
 3. Opens map → Loads `roadmapData` from PocketBase
 4. Interacts with map → Emits `roadmapState` changes

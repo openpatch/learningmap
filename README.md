@@ -16,7 +16,7 @@ A **PocketBase + SvelteKit web application** that enables teachers to create, as
   - Create groups for organizing students
   - Add/remove students to/from groups
   - Auto-generated student display names (e.g., "LuckyTiger")
-  - Auto-generated 6-character login codes
+  - Auto-generated 8-character login codes
 - **Assignments**:
   - Assign learning maps to groups
   - Track which maps are assigned to which groups
@@ -51,7 +51,7 @@ A **PocketBase + SvelteKit web application** that enables teachers to create, as
 1. **users** (PocketBase auth collection)
    - `role`: "teacher" or "student"
    - `displayName`: Display name (auto-generated for students)
-   - `code`: 6-character login code (students only)
+   - `code`: 8-character login code (students only)
    - `email`: Email address (teachers only)
    - `managedBy`: Reference to managing teacher (students only)
 
@@ -191,7 +191,7 @@ PUBLIC_POCKETBASE_URL=https://your-domain.com
 
 1. **Login**:
    - Visit `/student/login`
-   - Enter your 6-character code
+   - Enter your 8-character code
    - Or scan the QR code provided by your teacher
 
 2. **Complete Learning Maps**:
