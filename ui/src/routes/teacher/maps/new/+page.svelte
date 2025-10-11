@@ -57,7 +57,8 @@
 </script>
 
 <svelte:head>
-	<script src="https://unpkg.com/@hyperbook/learningmap@latest/dist/index.js"></script>
+	<script src="https://unpkg.com/@hyperbook/web-component-learningmap@latest/dist/index.umd.js"></script>
+	<link rel="stylesheet" href="https://unpkg.com/@hyperbook/web-component-learningmap@latest/dist/web-component-learningmap.css" />
 </svelte:head>
 
 <div class="container mx-auto p-6">
