@@ -1,10 +1,24 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import { loginStudent } from '$lib/auth';
 
 	let code = $state('');
 	let error = $state('');
 	let loading = $state(false);
+
+	onMount(() => {
+		// Check if code is provided in query parameter
+		const codeParam = $page.url.searchParams.get('code');
+		if (codeParam) {
+			code = codeParam.toUpperCase();
+			// Auto-submit if code is valid
+			if (code.length === 6) {
+				handleStudentLogin();
+			}
+		}
+	});
 
 	async function handleStudentLogin() {
 		if (!code) {

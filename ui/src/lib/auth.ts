@@ -32,8 +32,9 @@ export async function loginStudent(code: string): Promise<User> {
 		
 		const user = records.items[0] as unknown as User;
 		
-		// Set auth manually for student (no password)
-		pb.authStore.save(pb.authStore.token, user);
+		// Create a mock auth token for students
+		// Note: In production, you'd want to implement proper token-based auth
+		pb.authStore.save('student-' + user.id, user);
 		
 		return user;
 	} catch (error) {
