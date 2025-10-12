@@ -6,6 +6,8 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  font-family: sans-serif;
 }
 
 /* Toolbar */
@@ -555,8 +557,7 @@ dialog.help[open] {
   background: white;
   position: fixed;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
   gap: 16px;
   display: flex;
   flex-direction: column;
@@ -707,7 +708,6 @@ dialog.help[open] {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
   z-index: 1;
   pointer-events: none;
   overflow-y: auto;
@@ -767,13 +767,8 @@ dialog.help[open] {
     display: none;
   }
 
-  .welcome-message {
-    align-items: flex-start;
-    padding-top: 20px;
-  }
-
   .welcome-title {
-    font-size: 32px;
+    font-size: 36px;
   }
 
   .welcome-content {
@@ -781,7 +776,7 @@ dialog.help[open] {
   }
 
   .welcome-subtitle {
-    font-size: 14px;
+    font-size: 24px;
     margin: 0 0 24px 0;
   }
 
