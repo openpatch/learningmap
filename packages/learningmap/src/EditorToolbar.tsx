@@ -2,7 +2,7 @@ import React from "react";
 import { Menu, MenuButton, MenuDivider, MenuItem, SubMenu } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
 import '@szhsin/react-menu/dist/transitions/zoom.css';
-import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink } from "lucide-react";
+import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2 } from "lucide-react";
 import { getTranslations } from "./translations";
 
 interface EditorToolbarProps {
@@ -20,6 +20,7 @@ interface EditorToolbarProps {
   onOpenSettingsDrawer: () => void;
   onDownlad: () => void;
   onOpen: () => void;
+  onShare: () => void;
   language?: string;
 }
 
@@ -38,6 +39,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   onOpenSettingsDrawer,
   onDownlad,
   onOpen,
+  onShare,
   language = "en",
 }) => {
   const t = getTranslations(language);
@@ -62,6 +64,9 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           </MenuItem>
           <MenuItem onClick={onDownlad}>
             <Download size={16} /> <span>{t.download}</span>
+          </MenuItem>
+          <MenuItem onClick={onShare}>
+            <Share2 size={16} /> <span>{t.share}</span>
           </MenuItem>
           <MenuDivider />
           <SubMenu className={`${debugMode ? "active" : ""}`} label={<><Bug size={16} /> <span>{t.debug}</span></>}>
