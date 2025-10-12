@@ -1,0 +1,48 @@
+{
+  "name": "@learningmap/web-component",
+  "version": "0.0.0",
+  "author": "Mike Barkmin",
+  "homepage": "https://github.com/openpatch/learningmap#readme",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.umd.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.umd.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openpatch/learningmap.git",
+    "directory": "packages/web-component"
+  },
+  "bugs": {
+    "url": "https://github.com/openpatch/learningmap/issues"
+  },
+  "scripts": {
+    "version": "pnpm build",
+    "lint": "tsc --noEmit",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@learningmap/learningmap": "workspace:*",
+    "@r2wc/react-to-web-component": "^2.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^12.1.4",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite": "^7.1.9"
+  }
+}

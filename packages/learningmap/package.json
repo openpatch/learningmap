@@ -1,0 +1,50 @@
+{
+  "name": "@learningmap/learningmap",
+  "version": "0.0.0",
+  "author": "Mike Barkmin",
+  "homepage": "https://github.com/openpatch/learningmap#readme",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./index.css": "./dist/index.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openpatch/learningmap.git",
+    "directory": "packages/learningmap"
+  },
+  "bugs": {
+    "url": "https://github.com/openpatch/learningmap/issues"
+  },
+  "scripts": {
+    "version": "pnpm build",
+    "lint": "tsc --noEmit",
+    "build": "rimraf dist && pnpm build:pkg && pnpm build:types",
+    "build:pkg": "node ../../scripts/build.mjs",
+    "build:types": "tsc --project tsconfig.build.json --declaration --emitDeclarationOnly"
+  },
+  "dependencies": {
+    "@szhsin/react-menu": "^4.5.0",
+    "@xyflow/react": "^12.8.6",
+    "elkjs": "^0.11.0",
+    "html-to-image": "1.11.13",
+    "lucide-react": "^0.545.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
+    "vitest": "^3.0.5"
+  }
+}

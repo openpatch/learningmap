@@ -1,0 +1,38 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  javadocs:
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write      # needed to publish to GitHub Pages
+      id-token: write   # required for GitHub Pages deployment
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate docs
+        run: cd docs && npx hyperbook build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload docs artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/.hyperbook/out
+
+      - name: Deploy docs to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
