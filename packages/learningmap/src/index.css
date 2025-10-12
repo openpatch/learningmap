@@ -693,3 +693,53 @@ dialog.help[open] {
     margin-top: 4px;
   }
 }
+
+/* Welcome Message */
+.welcome-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.welcome-content {
+  text-align: center;
+  max-width: 500px;
+  padding: 40px;
+  pointer-events: auto;
+}
+
+.welcome-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.welcome-subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0 0 32px 0;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.welcome-actions button {
+  width: 100%;
+  max-width: 280px;
+  justify-content: center;
+  font-size: 16px;
+  padding: 12px 24px;
+}

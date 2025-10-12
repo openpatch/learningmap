@@ -158,6 +158,13 @@ export interface Translations {
   languageLabel: string;
   languageEnglish: string;
   languageGerman: string;
+
+  // Welcome message
+  welcomeTitle: string;
+  welcomeSubtitle: string;
+  welcomeOpenFile: string;
+  welcomeAddTopic: string;
+  welcomeHelp: string;
 }
 
 const en: Translations = {
@@ -321,6 +328,13 @@ const en: Translations = {
   languageLabel: "Language",
   languageEnglish: "English",
   languageGerman: "German",
+
+  // Welcome message
+  welcomeTitle: "Learningmap",
+  welcomeSubtitle: "All data is stored locally in your browser",
+  welcomeOpenFile: "Open File",
+  welcomeAddTopic: "Add Topic",
+  welcomeHelp: "Help",
 };
 
 const de: Translations = {
@@ -486,6 +500,13 @@ const de: Translations = {
   languageLabel: "Sprache",
   languageEnglish: "Englisch",
   languageGerman: "Deutsch",
+
+  // Welcome message
+  welcomeTitle: "Learningmap",
+  welcomeSubtitle: "Alle Daten werden lokal in Ihrem Browser gespeichert",
+  welcomeOpenFile: "Datei öffnen",
+  welcomeAddTopic: "Thema hinzufügen",
+  welcomeHelp: "Hilfe",
 };
 
 export const translations: Record<string, Translations> = {
