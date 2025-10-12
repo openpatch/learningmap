@@ -114,6 +114,19 @@ export interface Translations {
   resetMapWarning: string;
   failedToLoadFile: string;
   failedToExportSVG: string;
+  loadExternalWarning: string;
+  loadExternalBackupPrompt: string;
+  emptyMapCannotBeShared: string;
+  uploadFailed: string;
+  loadFailed: string;
+
+  // Share dialog
+  share: string;
+  shareLink: string;
+  copyLink: string;
+  linkCopied: string;
+  downloadCurrentMap: string;
+  replaceWithExternal: string;
 
   // Color options
   blue: string;
@@ -294,6 +307,19 @@ const en: Translations = {
   failedToLoadFile:
     "Failed to load the file. Please make sure it is a valid roadmap JSON file.",
   failedToExportSVG: "Failed to export SVG: ",
+  loadExternalWarning: "Loading an external learningmap will replace your existing content. You can back up your current learningmap first by using one of the options below.",
+  loadExternalBackupPrompt: "Would you like to back up your current learningmap before loading the external one?",
+  emptyMapCannotBeShared: "An empty learningmap cannot be shared.",
+  uploadFailed: "Upload failed. Please try again!",
+  loadFailed: "Failed to load. Please check the URL.",
+
+  // Share dialog
+  share: "Share",
+  shareLink: "Share Link",
+  copyLink: "Copy Link",
+  linkCopied: "Link copied to clipboard!",
+  downloadCurrentMap: "Download Current Map",
+  replaceWithExternal: "Replace with External Map",
 
   // Color options
   blue: "Blue",
@@ -478,6 +504,19 @@ const de: Translations = {
   failedToLoadFile:
     "Datei konnte nicht geladen werden. Bitte stellen Sie sicher, dass es sich um eine gültige Roadmap-JSON-Datei handelt.",
   failedToExportSVG: "SVG-Export fehlgeschlagen: ",
+  loadExternalWarning: "Das Laden einer externen Learningmap ersetzt Ihren aktuellen Inhalt. Sie können Ihre aktuelle Learningmap zuerst sichern, indem Sie eine der folgenden Optionen verwenden.",
+  loadExternalBackupPrompt: "Möchten Sie Ihre aktuelle Learningmap sichern, bevor Sie die externe laden?",
+  emptyMapCannotBeShared: "Eine leere Learningmap kann nicht geteilt werden.",
+  uploadFailed: "Beim Upload ist was schief gelaufen. Bitte versuche es erneut!",
+  loadFailed: "Beim Laden ist etwas schief gegangen. Bitte überprüfe die URL.",
+
+  // Share dialog
+  share: "Teilen",
+  shareLink: "Link teilen",
+  copyLink: "Link kopieren",
+  linkCopied: "Link in die Zwischenablage kopiert!",
+  downloadCurrentMap: "Aktuelle Karte herunterladen",
+  replaceWithExternal: "Mit externer Karte ersetzen",
 
   // Color options
   blue: "Blau",

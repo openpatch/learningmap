@@ -35,6 +35,8 @@ import useUndoable from "./useUndoable";
 import { MultiNodePanel } from "./MultiNodePanel";
 import { getTranslations } from "./translations";
 import { WelcomeMessage } from "./WelcomeMessage";
+import { ShareDialog } from "./ShareDialog";
+import { LoadExternalDialog } from "./LoadExternalDialog";
 
 const nodeTypes = {
   topic: TopicNode,
@@ -51,6 +53,8 @@ export interface LearningMapEditorProps {
   roadmapData?: string | RoadmapData;
   language?: string;
   onChange?: (data: RoadmapData) => void;
+  jsonStore?: string;
+  onLoadExternal?: (id: string) => void;
 }
 
 const getDefaultFilename = () => {
@@ -63,6 +67,8 @@ export function LearningMapEditor({
   roadmapData,
   language = "en",
   onChange,
+  jsonStore = "https://json.openpatch.org",
+  onLoadExternal,
 }: LearningMapEditorProps) {
   const { screenToFlowPosition, zoomIn, zoomOut, setCenter, fitView, getNodes, getEdges } = useReactFlow();
   const [roadmapState, setRoadmapState, { undo, redo, canUndo, canRedo, reset, resetInitialState }] = useUndoable<RoadmapData>({
@@ -121,6 +127,12 @@ export function LearningMapEditor({
   const [showCompletionNeeds, setShowCompletionNeeds] = useState(true);
   const [showCompletionOptional, setShowCompletionOptional] = useState(true);
   const [showUnlockAfter, setShowUnlockAfter] = useState(true);
+
+  // Share dialog state
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [shareLink, setShareLink] = useState("");
+  const [loadExternalDialogOpen, setLoadExternalDialogOpen] = useState(false);
+  const [pendingExternalId, setPendingExternalId] = useState<string | null>(null);
 
   // Edge drawer state
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
@@ -431,6 +443,66 @@ export function LearningMapEditor({
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
   }, [roadmapState]);
+
+  const handleShare = useCallback(() => {
+    // Check if map is empty (no nodes)
+    if (!roadmapState.nodes || roadmapState.nodes.length === 0) {
+      alert(t.emptyMapCannotBeShared);
+      return;
+    }
+
+    // Upload to JSON store
+    fetch(`${jsonStore}/api/v2/post`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(roadmapState),
+    })
+      .then((r) => r.json())
+      .then((json) => {
+        const link = window.location.origin + window.location.pathname + "#json=" + json.id;
+        setShareLink(link);
+        setShareDialogOpen(true);
+      })
+      .catch(() => {
+        alert(t.uploadFailed);
+      });
+  }, [roadmapState, jsonStore, t]);
+
+  const loadFromJsonStore = useCallback((id: string) => {
+    fetch(`${jsonStore}/api/v2/${id}`, {
+      method: "GET",
+      mode: "cors",
+    })
+      .then((r) => r.text())
+      .then((text) => {
+        const json = JSON.parse(text);
+        setRoadmapState(json);
+        loadRoadmapStateIntoReactFlowState(json);
+        setLoadExternalDialogOpen(false);
+        setPendingExternalId(null);
+      })
+      .catch(() => {
+        alert(t.loadFailed);
+      });
+  }, [jsonStore, t, setRoadmapState]);
+
+  const handleLoadExternal = useCallback((id: string) => {
+    setPendingExternalId(id);
+    setLoadExternalDialogOpen(true);
+  }, []);
+
+  // Check for external JSON in URL hash on mount
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith("#json=")) {
+      const id = hash.substring(6);
+      handleLoadExternal(id);
+    }
+  }, []);
+
 
   const defaultEdgeOptions = {
     animated: false,
@@ -757,6 +829,7 @@ export function LearningMapEditor({
         onOpenSettingsDrawer={handleOpenSettingsDrawer}
         onDownlad={handleDownload}
         onOpen={handleOpen}
+        onShare={handleShare}
         language={effectiveLanguage}
       />
       {previewMode && <LearningMap roadmapData={roadmapState} language={effectiveLanguage} />}
@@ -863,6 +936,26 @@ export function LearningMapEditor({
           </table>
           <button className="primary-button" onClick={() => setHelpOpen(false)}>{t.close}</button>
         </dialog>
+        <ShareDialog
+          open={shareDialogOpen}
+          onClose={() => setShareDialogOpen(false)}
+          shareLink={shareLink}
+          language={effectiveLanguage}
+        />
+        <LoadExternalDialog
+          open={loadExternalDialogOpen}
+          onClose={() => {
+            setLoadExternalDialogOpen(false);
+            setPendingExternalId(null);
+          }}
+          onDownloadCurrent={handleDownload}
+          onReplace={() => {
+            if (pendingExternalId) {
+              loadFromJsonStore(pendingExternalId);
+            }
+          }}
+          language={effectiveLanguage}
+        />
       </>
       }
     </>

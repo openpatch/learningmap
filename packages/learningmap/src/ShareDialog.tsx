@@ -1,0 +1,83 @@
+import React, { useState } from "react";
+import { X, Link2, Check } from "lucide-react";
+import { getTranslations } from "./translations";
+
+interface ShareDialogProps {
+  open: boolean;
+  onClose: () => void;
+  shareLink: string;
+  language?: string;
+}
+
+export function ShareDialog({ open, onClose, shareLink, language = "en" }: ShareDialogProps) {
+  const t = getTranslations(language);
+  const [copied, setCopied] = useState(false);
+
+  if (!open) return null;
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy link:", err);
+    }
+  };
+
+  return (
+    <>
+      <div className="drawer-overlay" onClick={onClose} />
+      <div className="share-dialog">
+        <header className="drawer-header">
+          <h2 className="drawer-title">{t.share}</h2>
+          <button className="close-button" onClick={onClose} aria-label={t.close}>
+            <X size={20} />
+          </button>
+        </header>
+        <div className="drawer-content">
+          <p style={{ marginBottom: 16 }}>{t.shareLink}</p>
+          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+            <input
+              type="text"
+              value={shareLink}
+              readOnly
+              style={{
+                flex: 1,
+                padding: "8px 12px",
+                border: "1px solid #d1d5db",
+                borderRadius: 4,
+                fontSize: 14,
+                fontFamily: "monospace",
+              }}
+              onClick={(e) => e.currentTarget.select()}
+            />
+          </div>
+          <button
+            onClick={handleCopyLink}
+            className="drawer-button"
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            {copied ? (
+              <>
+                <Check size={16} />
+                {t.linkCopied}
+              </>
+            ) : (
+              <>
+                <Link2 size={16} />
+                {t.copyLink}
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
