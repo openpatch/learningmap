@@ -64,7 +64,7 @@ export function LearningMapEditor({
   language = "en",
   onChange,
 }: LearningMapEditorProps) {
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition, zoomIn, zoomOut, setCenter, fitView, getNodes, getEdges } = useReactFlow();
   const [roadmapState, setRoadmapState, { undo, redo, canUndo, canRedo, reset, resetInitialState }] = useUndoable<RoadmapData>({
     settings: {},
     version: 1,
@@ -77,6 +77,8 @@ export function LearningMapEditor({
   const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [settings, setSettings] = useState<Settings>({ background: { color: "#ffffff" } });
+  const [showGrid, setShowGrid] = useState(true);
+  const [clipboard, setClipboard] = useState<{ nodes: Node<NodeData>[]; edges: Edge[] } | null>(null);
 
   // Use language from settings if available, otherwise use prop
   const effectiveLanguage = settings?.language || language;
@@ -89,12 +91,22 @@ export function LearningMapEditor({
     { action: t.shortcuts.addTaskNode, shortcut: "Ctrl+A" },
     { action: t.shortcuts.addTopicNode, shortcut: "Ctrl+O" },
     { action: t.shortcuts.addImageNode, shortcut: "Ctrl+I" },
-    { action: t.shortcuts.addTextNode, shortcut: "Ctrl+X" },
+    { action: t.shortcuts.addTextNode, shortcut: "Ctrl+B" },
     { action: t.shortcuts.deleteNodeEdge, shortcut: "Delete" },
     { action: t.shortcuts.togglePreviewMode, shortcut: "Ctrl+P" },
     { action: t.shortcuts.toggleDebugMode, shortcut: "Ctrl+D" },
     { action: t.shortcuts.selectMultipleNodes, shortcut: "Ctrl+Click or Shift+Drag" },
     { action: t.shortcuts.showHelp, shortcut: "Ctrl+? or Help Button" },
+    { action: t.shortcuts.zoomIn, shortcut: "Ctrl++" },
+    { action: t.shortcuts.zoomOut, shortcut: "Ctrl+-" },
+    { action: t.shortcuts.resetZoom, shortcut: "Ctrl+0" },
+    { action: t.shortcuts.fitView, shortcut: "Shift+1" },
+    { action: t.shortcuts.zoomToSelection, shortcut: "Shift+2" },
+    { action: t.shortcuts.toggleGrid, shortcut: "Ctrl+'" },
+    { action: t.shortcuts.resetMap, shortcut: "Ctrl+Delete" },
+    { action: t.shortcuts.cut, shortcut: "Ctrl+X" },
+    { action: t.shortcuts.copy, shortcut: "Ctrl+C" },
+    { action: t.shortcuts.paste, shortcut: "Ctrl+V" },
   ];
 
   const [helpOpen, setHelpOpen] = useState(false);
@@ -500,13 +512,111 @@ export function LearningMapEditor({
     setDidUndoRedo(true);
   }, [reset]);
 
+  const handleCut = useCallback(() => {
+    const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
+    if (selectedNodes.length > 0) {
+      const selectedNodeIdSet = new Set(selectedNodeIds);
+      const relatedEdges = edges.filter(e =>
+        selectedNodeIdSet.has(e.source) && selectedNodeIdSet.has(e.target)
+      );
+      setClipboard({ nodes: selectedNodes, edges: relatedEdges });
+      // Delete the selected nodes
+      setNodes(nds => nds.filter(n => !selectedNodeIdSet.has(n.id)));
+      setEdges(eds => eds.filter(e =>
+        !selectedNodeIdSet.has(e.source) && !selectedNodeIdSet.has(e.target)
+      ));
+      setSelectedNodeIds([]);
+      setSaved(false);
+    }
+  }, [nodes, edges, selectedNodeIds, setNodes, setEdges, setSelectedNodeIds, setSaved]);
+
+  const handleCopy = useCallback(() => {
+    const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
+    if (selectedNodes.length > 0) {
+      const selectedNodeIdSet = new Set(selectedNodeIds);
+      const relatedEdges = edges.filter(e =>
+        selectedNodeIdSet.has(e.source) && selectedNodeIdSet.has(e.target)
+      );
+      setClipboard({ nodes: selectedNodes, edges: relatedEdges });
+    }
+  }, [nodes, edges, selectedNodeIds]);
+
+  const handlePaste = useCallback(() => {
+    if (!clipboard) return;
+
+    // Create a mapping from old node IDs to new node IDs
+    const idMapping: Record<string, string> = {};
+    let newNextNodeId = nextNodeId;
+
+    const newNodes = clipboard.nodes.map(node => {
+      const newId = node.id.startsWith('background-node')
+        ? `background-node${newNextNodeId}`
+        : `node${newNextNodeId}`;
+      idMapping[node.id] = newId;
+      newNextNodeId++;
+
+      return {
+        ...node,
+        id: newId,
+        position: {
+          x: node.position.x + 50,
+          y: node.position.y + 50,
+        },
+      };
+    });
+
+    const newEdges = clipboard.edges.map((edge, idx) => ({
+      ...edge,
+      id: `e${Date.now()}-${idx}`,
+      source: idMapping[edge.source] || edge.source,
+      target: idMapping[edge.target] || edge.target,
+    }));
+
+    setNodes(nds => [...nds, ...newNodes]);
+    setEdges(eds => [...eds, ...newEdges]);
+    setNextNodeId(newNextNodeId);
+    setSelectedNodeIds(newNodes.map(n => n.id));
+    setSaved(false);
+  }, [clipboard, nextNodeId, setNodes, setEdges, setNextNodeId, setSelectedNodeIds, setSaved]);
+
+  const handleZoomIn = useCallback(() => {
+    zoomIn();
+  }, [zoomIn]);
+
+  const handleZoomOut = useCallback(() => {
+    zoomOut();
+  }, [zoomOut]);
+
+  const handleResetZoom = useCallback(() => {
+    setCenter(0, 0, { zoom: 1, duration: 300 });
+  }, [setCenter]);
+
+  const handleFitView = useCallback(() => {
+    fitView({ duration: 300 });
+  }, [fitView]);
+
+  const handleZoomToSelection = useCallback(() => {
+    if (selectedNodeIds.length > 0) {
+      fitView({ nodes: selectedNodeIds.map(s => ({ id: s })), duration: 300, padding: 0.2 });
+    }
+  }, [selectedNodeIds, fitView]);
+
+  const handleToggleGrid = useCallback(() => {
+    setShowGrid(prev => !prev);
+  }, []);
+
+  const handleResetMap = useCallback(() => {
+    if (confirm(t.resetMapWarning)) {
+      setNodes([]);
+      setEdges([]);
+      setNextNodeId(1);
+      setSaved(false);
+    }
+  }, [setNodes, setEdges, setNextNodeId, setSaved, t]);
+
   const handleSelectionChange: OnSelectionChangeFunc = useCallback(
     ({ nodes: selectedNodes }) => {
-      if (selectedNodes.length > 1) {
-        setSelectedNodeIds(selectedNodes.map(n => n.id));
-      } else {
-        setSelectedNodeIds([]);
-      }
+      setSelectedNodeIds(selectedNodes.map(n => n.id));
     },
     [setSelectedNodeIds]
   );
@@ -543,8 +653,8 @@ export function LearningMapEditor({
         e.preventDefault();
         addNewNode("image");
       }
-      // add text node shortcut
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'x' && !e.shiftKey) {
+      // add text node shortcut - changed to Ctrl+T
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b' && !e.shiftKey) {
         e.preventDefault();
         addNewNode("text");
       }
@@ -563,6 +673,60 @@ export function LearningMapEditor({
         e.preventDefault();
         toggleDebugMode();
       }
+
+      // Zoom in shortcut
+      if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '=') && !e.shiftKey) {
+        e.preventDefault();
+        handleZoomIn();
+      }
+      // Zoom out shortcut
+      if ((e.ctrlKey || e.metaKey) && (e.key === '-' || e.key === '_') && !e.shiftKey) {
+        e.preventDefault();
+        handleZoomOut();
+      }
+      // Reset zoom shortcut
+      if ((e.ctrlKey || e.metaKey) && e.key === '0' && !e.shiftKey) {
+        e.preventDefault();
+        handleResetZoom();
+      }
+      // Fit view shortcut
+      if (e.shiftKey && e.code === 'Digit1' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        handleFitView();
+      }
+      // Zoom to selection shortcut
+      if (e.shiftKey && e.code === 'Digit2' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        handleZoomToSelection();
+      }
+
+      console.log(e);
+      // Toggle grid shortcut
+      if ((e.ctrlKey || e.metaKey) && e.code === "Backslash") {
+        e.preventDefault();
+        handleToggleGrid();
+      }
+      // Reset map shortcut
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Delete') {
+        e.preventDefault();
+        handleResetMap();
+      }
+      // Cut shortcut
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'x' && !e.shiftKey) {
+        e.preventDefault();
+        handleCut();
+      }
+      // Copy shortcut
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !e.shiftKey) {
+        e.preventDefault();
+        handleCopy();
+      }
+      // Paste shortcut
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v' && !e.shiftKey) {
+        e.preventDefault();
+        handlePaste();
+      }
+
       // Dismiss with Escape
       if (helpOpen && e.key === 'Escape') {
         setHelpOpen(false);
@@ -572,7 +736,9 @@ export function LearningMapEditor({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleSave, handleUndo, handleRedo, addNewNode, helpOpen, setHelpOpen, togglePreviewMode, toggleDebugMode]);
+  }, [handleSave, handleUndo, handleRedo, addNewNode, helpOpen, setHelpOpen, togglePreviewMode, toggleDebugMode,
+    handleZoomIn, handleZoomOut, handleResetZoom, handleFitView, handleZoomToSelection, handleToggleGrid,
+    handleResetMap, handleCut, handleCopy, handlePaste]);
 
   return (
     <>
@@ -629,7 +795,7 @@ export function LearningMapEditor({
             nodesConnectable={true}
             colorMode={colorMode}
           >
-            <Background />
+            {showGrid && <Background />}
             <Controls>
               <ControlButton title={t.undo} disabled={!canUndo} onClick={handleUndo}>
                 <Undo />

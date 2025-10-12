@@ -44,6 +44,16 @@ export interface Translations {
     toggleDebugMode: string;
     selectMultipleNodes: string;
     showHelp: string;
+    zoomIn: string;
+    zoomOut: string;
+    resetZoom: string;
+    fitView: string;
+    zoomToSelection: string;
+    toggleGrid: string;
+    resetMap: string;
+    cut: string;
+    copy: string;
+    paste: string;
   };
 
   // Drawer titles
@@ -101,6 +111,7 @@ export interface Translations {
 
   // Messages
   openFileWarning: string;
+  resetMapWarning: string;
   failedToLoadFile: string;
   failedToExportSVG: string;
 
@@ -211,6 +222,16 @@ const en: Translations = {
     toggleDebugMode: "Toggle Debug Mode",
     selectMultipleNodes: "Select Multiple Nodes",
     showHelp: "Show Help",
+    zoomIn: "Zoom In",
+    zoomOut: "Zoom Out",
+    resetZoom: "Reset Zoom",
+    fitView: "Fit View",
+    zoomToSelection: "Zoom to Selection",
+    toggleGrid: "Toggle Grid",
+    resetMap: "Reset Map",
+    cut: "Cut",
+    copy: "Copy",
+    paste: "Paste",
   },
 
   // Drawer titles
@@ -268,6 +289,8 @@ const en: Translations = {
 
   // Messages
   openFileWarning: "Opening a file will replace your current map. Continue?",
+  resetMapWarning:
+    "Are you sure you want to reset the map? This action cannot be undone.",
   failedToLoadFile:
     "Failed to load the file. Please make sure it is a valid roadmap JSON file.",
   failedToExportSVG: "Failed to export SVG: ",
@@ -382,6 +405,16 @@ const de: Translations = {
     toggleDebugMode: "Debug-Modus umschalten",
     selectMultipleNodes: "Mehrere Knoten auswählen",
     showHelp: "Hilfe anzeigen",
+    zoomIn: "Vergrößern",
+    zoomOut: "Verkleinern",
+    resetZoom: "Zoom zurücksetzen",
+    fitView: "Alles anzeigen",
+    zoomToSelection: "Auswahl anzeigen",
+    toggleGrid: "Raster umschalten",
+    resetMap: "Karte zurücksetzen",
+    cut: "Ausschneiden",
+    copy: "Kopieren",
+    paste: "Einfügen",
   },
 
   // Drawer titles
@@ -440,6 +473,8 @@ const de: Translations = {
   // Messages
   openFileWarning:
     "Das Öffnen einer Datei ersetzt Ihre aktuelle Karte. Fortfahren?",
+  resetMapWarning:
+    "Sind Sie sicher, dass Sie die Karte zurücksetzen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
   failedToLoadFile:
     "Datei konnte nicht geladen werden. Bitte stellen Sie sicher, dass es sich um eine gültige Roadmap-JSON-Datei handelt.",
   failedToExportSVG: "SVG-Export fehlgeschlagen: ",
