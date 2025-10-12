@@ -1,6 +1,7 @@
 {
   "name": "docs",
   "version": "0.0.0",
+  "logo": "logo.png",
   "description": "Learningmap Documentation",
   "license": "cc-by-sa",
   "author": {

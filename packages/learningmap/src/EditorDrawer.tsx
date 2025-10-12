@@ -115,6 +115,7 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
     setLocalNode((prev: Node<NodeData> | null) => ({
       ...prev!,
       data: { ...prev!.data, [field]: value },
+      className: field === "color" ? value : prev!.className
     }));
   };
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { FolderOpen, Plus, Info } from "lucide-react";
 import { getTranslations } from "./translations";
+import logo from "./logo.svg";
 
 interface WelcomeMessageProps {
   onOpenFile: () => void;
@@ -20,7 +21,9 @@ export const WelcomeMessage: React.FC<WelcomeMessageProps> = ({
   return (
     <div className="welcome-message">
       <div className="welcome-content">
-        <h1 className="welcome-title">{t.welcomeTitle}</h1>
+        <h1 className="welcome-title">
+          <img src={logo} alt="Logo" className="welcome-logo" />
+          {t.welcomeTitle}</h1>
         <p className="welcome-subtitle">{t.welcomeSubtitle}</p>
         <div className="welcome-actions">
           <button onClick={onOpenFile} className="primary-button">

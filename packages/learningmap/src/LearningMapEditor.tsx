@@ -14,13 +14,10 @@ import {
   ControlButton,
   OnNodesChange,
   OnEdgesChange,
-  getNodesBounds,
-  getViewportForBounds,
   Panel,
   OnSelectionChangeFunc,
   ReactFlowProvider,
 } from "@xyflow/react";
-import { toSvg } from "html-to-image";
 import { EditorDrawer } from "./EditorDrawer";
 import { EdgeDrawer } from "./EdgeDrawer";
 import { TaskNode } from "./nodes/TaskNode";
@@ -55,6 +52,12 @@ export interface LearningMapEditorProps {
   language?: string;
   onChange?: (data: RoadmapData) => void;
 }
+
+const getDefaultFilename = () => {
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+};
 
 export function LearningMapEditor({
   roadmapData,
@@ -111,9 +114,6 @@ export function LearningMapEditor({
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [edgeDrawerOpen, setEdgeDrawerOpen] = useState(false);
 
-  // Track Shift key state
-  const [shiftPressed, setShiftPressed] = useState(false);
-
   useEffect(() => {
     const parsedRoadmap = parseRoadmapData(roadmapData || "");
     loadRoadmapStateIntoReactFlowState(parsedRoadmap);
@@ -129,6 +129,7 @@ export function LearningMapEditor({
     const rawNodes = nodesArr.map((n) => ({
       ...n,
       draggable: true,
+      className: n.data.color ? n.data.color : n.className,
       data: { ...n.data },
     }));
 
@@ -413,7 +414,7 @@ export function LearningMapEditor({
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapState, null, 2));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `${roadmapState.settings.title ?? new Date().toString()}.learningmap`);
+    downloadAnchorNode.setAttribute("download", `${roadmapState.settings.title?.trim() ?? getDefaultFilename()}.learningmap`);
     document.body.appendChild(downloadAnchorNode); // required for firefox
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
@@ -428,42 +429,10 @@ export function LearningMapEditor({
     type: "default",
   };
 
-  const handleExportSVG = useCallback(async () => {
-    const nodesBounds = getNodesBounds(nodes);
-    const imageWidth = nodesBounds.width;
-    const imageHeight = nodesBounds.height;
-    let viewport = getViewportForBounds(nodesBounds, imageWidth, imageHeight, 0.1, 5);
-
-    const dom = document.querySelector(".react-flow__viewport") as HTMLElement;
-    if (!dom) return;
-
-    toSvg(dom, {
-      backgroundColor: settings?.background?.color || "#ffffff",
-      width: imageWidth,
-      height: imageHeight,
-      style: {
-        transform: `translate(${viewport.x / 2.0}px, ${viewport.y / 2.0}px) scale(${viewport.zoom})`,
-        width: `${imageWidth}px`,
-        height: `${imageHeight}px`,
-      }
-    }).then((dataUrl) => {
-      const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.setAttribute("href", dataUrl);
-      downloadAnchorNode.setAttribute("download", "roadmap.svg");
-      document.body.appendChild(downloadAnchorNode); // required for firefox
-      downloadAnchorNode.click();
-      downloadAnchorNode.remove();
-
-      // Restore old viewport
-    }).catch((err) => {
-      alert(t.failedToExportSVG + err.message);
-    });
-  }, [nodes, roadmapState, t]);
-
   const handleOpen = useCallback(() => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json,application/json';
+    input.accept = '.learningmap,application/json';
     input.onchange = (e: any) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -544,7 +513,6 @@ export function LearningMapEditor({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Shift") setShiftPressed(true);
       //save shortcut
       if ((e.ctrlKey || e.metaKey) && e.key === 's' && !e.shiftKey) {
         e.preventDefault();
@@ -600,21 +568,15 @@ export function LearningMapEditor({
         setHelpOpen(false);
       }
     };
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === "Shift") setShiftPressed(false);
-    };
     window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
     };
   }, [handleSave, handleUndo, handleRedo, addNewNode, helpOpen, setHelpOpen, togglePreviewMode, toggleDebugMode]);
 
   return (
     <>
       <EditorToolbar
-        saved={saved}
         debugMode={debugMode}
         previewMode={previewMode}
         showCompletionNeeds={showCompletionNeeds}
@@ -627,10 +589,8 @@ export function LearningMapEditor({
         onSetShowUnlockAfter={handleSetShowUnlockAfter}
         onAddNewNode={addNewNode}
         onOpenSettingsDrawer={handleOpenSettingsDrawer}
-        onSave={handleSave}
         onDownlad={handleDownload}
         onOpen={handleOpen}
-        onExportSVG={handleExportSVG}
         language={effectiveLanguage}
       />
       {previewMode && <LearningMap roadmapData={roadmapState} language={effectiveLanguage} />}
@@ -650,16 +610,7 @@ export function LearningMapEditor({
             />
           )}
           <ReactFlow
-            nodes={nodes.map(n => {
-              const className = [];
-              if (n.data?.color) {
-                className.push(n.data.color);
-              }
-              return {
-                ...n,
-                className: className.join(" ")
-              };
-            })}
+            nodes={nodes}
             edges={edges}
             onEdgesChange={handleEdgesChange}
             onNodeDoubleClick={onNodeClick}
@@ -671,7 +622,6 @@ export function LearningMapEditor({
             selectionOnDrag={false}
             edgeTypes={edgeTypes}
             fitView
-            snapToGrid={!shiftPressed}
             proOptions={{ hideAttribution: true }}
             defaultEdgeOptions={defaultEdgeOptions}
             nodesDraggable={true}
@@ -694,8 +644,8 @@ export function LearningMapEditor({
                 <Info />
               </ControlButton>
             </Controls>
-            {!saved && <Panel position="top-right" title={t.unsavedChanges} onClick={() => { handleSave(); }}>
-              <ShieldAlert size={32} color="red" />
+            {!saved && <Panel position="bottom-right" title={t.unsavedChanges} onClick={() => { handleSave(); }}>
+              <ShieldAlert size={32} color="var(--learningmap-color-coal)" />
             </Panel>}
             {selectedNodeIds.length > 1 && <MultiNodePanel nodes={nodes.filter(n => selectedNodeIds.includes(n.id))} onUpdate={updateNodes} />}
           </ReactFlow>

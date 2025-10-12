@@ -77,6 +77,10 @@ export const buildPackage = async (path) => {
     // outExtension: {
     //   ".js": ".esm.mjs",
     // },
+    loader: {
+      ".svg": "dataurl",
+      ".woff2": "dataurl",
+    },
     format: "esm",
   }).catch((e) => {
     throw new Error(`ESM Build failed for ${packageName} \n ${e}`);
