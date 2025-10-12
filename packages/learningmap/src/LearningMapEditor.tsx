@@ -91,7 +91,7 @@ export function LearningMapEditor({
     { action: t.shortcuts.addTaskNode, shortcut: "Ctrl+A" },
     { action: t.shortcuts.addTopicNode, shortcut: "Ctrl+O" },
     { action: t.shortcuts.addImageNode, shortcut: "Ctrl+I" },
-    { action: t.shortcuts.addTextNode, shortcut: "Ctrl+T" },
+    { action: t.shortcuts.addTextNode, shortcut: "Ctrl+B" },
     { action: t.shortcuts.deleteNodeEdge, shortcut: "Delete" },
     { action: t.shortcuts.togglePreviewMode, shortcut: "Ctrl+P" },
     { action: t.shortcuts.toggleDebugMode, shortcut: "Ctrl+D" },
@@ -654,7 +654,7 @@ export function LearningMapEditor({
         addNewNode("image");
       }
       // add text node shortcut - changed to Ctrl+T
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 't' && !e.shiftKey) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b' && !e.shiftKey) {
         e.preventDefault();
         addNewNode("text");
       }
