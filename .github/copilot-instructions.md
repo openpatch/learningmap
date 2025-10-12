@@ -60,6 +60,7 @@ pnpm dev            # Watch mode for development
 ### Package Scripts
 
 Each package has its own scripts defined in its `package.json`:
+
 - `build`: Compiles TypeScript and bundles with esbuild
 - `lint`: Type-checks with TypeScript (tsc --noEmit)
 - `test`: Runs tests with Vitest
@@ -91,6 +92,7 @@ Each package has its own scripts defined in its `package.json`:
 ### Translations
 
 The project supports internationalization (i18n):
+
 - Translations are defined in `packages/learningmap/src/translations.ts`
 - Use the `getTranslations(language)` helper
 - Default language is English (`en`), German (`de`) is also supported
@@ -110,10 +112,12 @@ The project supports internationalization (i18n):
 ### Working with the Editor
 
 The core editor (`LearningMapEditor`) has two modes:
+
 - **Edit Mode**: Full editing capabilities with toolbar
 - **Preview Mode**: View-only mode for testing the learner experience
 
 Key components:
+
 - `EditorToolbar`: Main menu and controls
 - `EditorDrawer`: Side panel for node/edge editing
 - Node types: `TopicNode`, `TaskNode`, `TextNode`, `ImageNode`
@@ -136,6 +140,7 @@ Key components:
 ## Documentation
 
 Documentation is built with Hyperbook and located in the `docs/` directory:
+
 - `docs/book/index.md`: Main documentation entry
 - `docs/book/development.md`: Development guide
 - `docs/book/contributing.md`: Contribution guidelines
@@ -144,11 +149,13 @@ Documentation is built with Hyperbook and located in the `docs/` directory:
 ## CI/CD
 
 GitHub Actions workflows:
+
 - `pull-request.yml`: Runs tests and build on PRs
 - `changeset-version.yml`: Manages version bumps and releases
 - `docs.yml`: Deploys documentation
 
 All PRs must pass:
+
 1. TypeScript type checking (`pnpm lint`)
 2. Tests (`pnpm test`)
 3. Build (`pnpm build`)
@@ -165,6 +172,7 @@ All PRs must pass:
 ## Dependencies
 
 When adding new dependencies:
+
 - Add to the appropriate package's `package.json`
 - Use `pnpm add <package>` in the package directory
 - Consider bundle size impact for the web component
