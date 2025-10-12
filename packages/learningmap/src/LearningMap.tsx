@@ -169,6 +169,18 @@ export function LearningMap({
     loadRoadmap();
   }, [roadmapData, initialState]);
 
+  // Apply font class to container when settings change
+  useEffect(() => {
+    const container = document.querySelector('.hyperbook-learningmap-container');
+    if (container) {
+      // Remove existing font classes
+      container.classList.remove('font-sans', 'font-serif', 'font-mono', 'font-playful', 'font-dyslexic');
+      // Add new font class
+      const fontClass = settings?.font ? `font-${settings.font}` : 'font-playful';
+      container.classList.add(fontClass);
+    }
+  }, [settings?.font]);
+
   const onNodeClick = useCallback((_: any, node: Node, focus: boolean = false) => {
     if (!isInteractableNode(node)) return;
     setSelectedNode(node);

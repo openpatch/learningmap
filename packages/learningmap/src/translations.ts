@@ -159,6 +159,14 @@ export interface Translations {
   languageEnglish: string;
   languageGerman: string;
 
+  // Font settings
+  fontLabel: string;
+  fontSans: string;
+  fontSerif: string;
+  fontMono: string;
+  fontPlayful: string;
+  fontDyslexic: string;
+
   // Welcome message
   welcomeTitle: string;
   welcomeSubtitle: string;
@@ -328,6 +336,14 @@ const en: Translations = {
   languageLabel: "Language",
   languageEnglish: "English",
   languageGerman: "German",
+
+  // Font settings
+  fontLabel: "Font",
+  fontSans: "Sans Serif (Default)",
+  fontSerif: "Serif",
+  fontMono: "Monospace",
+  fontPlayful: "Playful (Concert One)",
+  fontDyslexic: "Dyslexic-Friendly (OpenDyslexic)",
 
   // Welcome message
   welcomeTitle: "Learningmap",
@@ -500,6 +516,14 @@ const de: Translations = {
   languageLabel: "Sprache",
   languageEnglish: "Englisch",
   languageGerman: "Deutsch",
+
+  // Font settings
+  fontLabel: "Schriftart",
+  fontSans: "Sans Serif (Standard)",
+  fontSerif: "Serif",
+  fontMono: "Monospace",
+  fontPlayful: "Verspielt (Concert One)",
+  fontDyslexic: "Dyslexie-Freundlich (OpenDyslexic)",
 
   // Welcome message
   welcomeTitle: "Learningmap",

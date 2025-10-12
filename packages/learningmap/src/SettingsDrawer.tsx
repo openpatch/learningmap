@@ -65,6 +65,19 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             </select>
           </div>
           <div className="form-group">
+            <label>{t.fontLabel}</label>
+            <select
+              value={localSettings?.font || "playful"}
+              onChange={(e) => setLocalSettings(settings => ({ ...settings, font: e.target.value }))}
+            >
+              <option value="sans">{t.fontSans}</option>
+              <option value="serif">{t.fontSerif}</option>
+              <option value="mono">{t.fontMono}</option>
+              <option value="playful">{t.fontPlayful}</option>
+              <option value="dyslexic">{t.fontDyslexic}</option>
+            </select>
+          </div>
+          <div className="form-group">
             <ColorSelector
               label={t.backgroundColor}
               value={localSettings?.background?.color || "#ffffff"}

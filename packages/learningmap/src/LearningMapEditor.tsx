@@ -120,6 +120,18 @@ export function LearningMapEditor({
     resetInitialState(parsedRoadmap);
   }, [roadmapData])
 
+  // Apply font class to container when settings change
+  useEffect(() => {
+    const container = document.querySelector('.hyperbook-learningmap-container');
+    if (container) {
+      // Remove existing font classes
+      container.classList.remove('font-sans', 'font-serif', 'font-mono', 'font-playful', 'font-dyslexic');
+      // Add new font class
+      const fontClass = settings?.font ? `font-${settings.font}` : 'font-playful';
+      container.classList.add(fontClass);
+    }
+  }, [settings?.font]);
+
   const loadRoadmapStateIntoReactFlowState = useCallback((roadmapState: RoadmapData) => {
     const nodesArr = Array.isArray(roadmapState?.nodes) ? roadmapState.nodes : [];
     const edgesArr = Array.isArray(roadmapState?.edges) ? roadmapState.edges : [];

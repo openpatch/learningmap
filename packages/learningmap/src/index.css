@@ -1,5 +1,30 @@
 @import "@xyflow/react/dist/style.css";
 
+/* Font imports for special fonts */
+@import url('https://fonts.googleapis.com/css2?family=Concert+One&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/@opendyslexic/opendyslexic@2.0.1/OpenDyslexic.min.css');
+
+/* Font family definitions */
+.font-sans {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.font-serif {
+  font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+.font-playful {
+  font-family: 'Concert One', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-dyslexic {
+  font-family: 'OpenDyslexic', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 /* Container */
 .hyperbook-learningmap-container {
   width: 100%;
@@ -7,7 +32,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: sans-serif;
+  font-family: 'Concert One', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Toolbar */
