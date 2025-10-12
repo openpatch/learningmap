@@ -386,6 +386,17 @@ export function LearningMapEditor({
     }
   }, [nodes, edges, settings]);
 
+  // Auto-save when changes are made
+  useEffect(() => {
+    if (!saved) {
+      const timeoutId = setTimeout(() => {
+        handleSave();
+      }, 1000); // Auto-save after 1 second of inactivity
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [saved, handleSave]);
+
   const togglePreviewMode = useCallback(() => {
     handleSave();
     setPreviewMode((mode) => {
