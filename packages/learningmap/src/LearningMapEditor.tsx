@@ -516,13 +516,13 @@ export function LearningMapEditor({
     const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
     if (selectedNodes.length > 0) {
       const selectedNodeIdSet = new Set(selectedNodeIds);
-      const relatedEdges = edges.filter(e => 
+      const relatedEdges = edges.filter(e =>
         selectedNodeIdSet.has(e.source) && selectedNodeIdSet.has(e.target)
       );
       setClipboard({ nodes: selectedNodes, edges: relatedEdges });
       // Delete the selected nodes
       setNodes(nds => nds.filter(n => !selectedNodeIdSet.has(n.id)));
-      setEdges(eds => eds.filter(e => 
+      setEdges(eds => eds.filter(e =>
         !selectedNodeIdSet.has(e.source) && !selectedNodeIdSet.has(e.target)
       ));
       setSelectedNodeIds([]);
@@ -534,7 +534,7 @@ export function LearningMapEditor({
     const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
     if (selectedNodes.length > 0) {
       const selectedNodeIdSet = new Set(selectedNodeIds);
-      const relatedEdges = edges.filter(e => 
+      const relatedEdges = edges.filter(e =>
         selectedNodeIdSet.has(e.source) && selectedNodeIdSet.has(e.target)
       );
       setClipboard({ nodes: selectedNodes, edges: relatedEdges });
@@ -543,18 +543,18 @@ export function LearningMapEditor({
 
   const handlePaste = useCallback(() => {
     if (!clipboard) return;
-    
+
     // Create a mapping from old node IDs to new node IDs
     const idMapping: Record<string, string> = {};
     let newNextNodeId = nextNodeId;
-    
+
     const newNodes = clipboard.nodes.map(node => {
-      const newId = node.id.startsWith('background-node') 
-        ? `background-node${newNextNodeId}` 
+      const newId = node.id.startsWith('background-node')
+        ? `background-node${newNextNodeId}`
         : `node${newNextNodeId}`;
       idMapping[node.id] = newId;
       newNextNodeId++;
-      
+
       return {
         ...node,
         id: newId,
@@ -564,14 +564,14 @@ export function LearningMapEditor({
         },
       };
     });
-    
+
     const newEdges = clipboard.edges.map((edge, idx) => ({
       ...edge,
       id: `e${Date.now()}-${idx}`,
       source: idMapping[edge.source] || edge.source,
       target: idMapping[edge.target] || edge.target,
     }));
-    
+
     setNodes(nds => [...nds, ...newNodes]);
     setEdges(eds => [...eds, ...newEdges]);
     setNextNodeId(newNextNodeId);
@@ -597,7 +597,7 @@ export function LearningMapEditor({
 
   const handleZoomToSelection = useCallback(() => {
     if (selectedNodeIds.length > 0) {
-      fitView({ nodes: selectedNodeIds, duration: 300, padding: 0.2 });
+      fitView({ nodes: selectedNodeIds.map(s => ({ id: s })), duration: 300, padding: 0.2 });
     }
   }, [selectedNodeIds, fitView]);
 
@@ -606,7 +606,7 @@ export function LearningMapEditor({
   }, []);
 
   const handleResetMap = useCallback(() => {
-    if (confirm(t.openFileWarning)) {
+    if (confirm(t.resetMapWarning)) {
       setNodes([]);
       setEdges([]);
       setNextNodeId(1);
@@ -616,11 +616,7 @@ export function LearningMapEditor({
 
   const handleSelectionChange: OnSelectionChangeFunc = useCallback(
     ({ nodes: selectedNodes }) => {
-      if (selectedNodes.length > 1) {
-        setSelectedNodeIds(selectedNodes.map(n => n.id));
-      } else {
-        setSelectedNodeIds([]);
-      }
+      setSelectedNodeIds(selectedNodes.map(n => n.id));
     },
     [setSelectedNodeIds]
   );
@@ -677,7 +673,7 @@ export function LearningMapEditor({
         e.preventDefault();
         toggleDebugMode();
       }
-      
+
       // Zoom in shortcut
       if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '=') && !e.shiftKey) {
         e.preventDefault();
@@ -694,17 +690,19 @@ export function LearningMapEditor({
         handleResetZoom();
       }
       // Fit view shortcut
-      if (e.shiftKey && e.key === '1' && !e.ctrlKey && !e.metaKey) {
+      if (e.shiftKey && e.code === 'Digit1' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         handleFitView();
       }
       // Zoom to selection shortcut
-      if (e.shiftKey && e.key === '2' && !e.ctrlKey && !e.metaKey) {
+      if (e.shiftKey && e.code === 'Digit2' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         handleZoomToSelection();
       }
+
+      console.log(e);
       // Toggle grid shortcut
-      if ((e.ctrlKey || e.metaKey) && e.key === "'" && !e.shiftKey) {
+      if ((e.ctrlKey || e.metaKey) && e.code === "Backslash") {
         e.preventDefault();
         handleToggleGrid();
       }
@@ -728,7 +726,7 @@ export function LearningMapEditor({
         e.preventDefault();
         handlePaste();
       }
-      
+
       // Dismiss with Escape
       if (helpOpen && e.key === 'Escape') {
         setHelpOpen(false);
@@ -738,9 +736,9 @@ export function LearningMapEditor({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleSave, handleUndo, handleRedo, addNewNode, helpOpen, setHelpOpen, togglePreviewMode, toggleDebugMode, 
-      handleZoomIn, handleZoomOut, handleResetZoom, handleFitView, handleZoomToSelection, handleToggleGrid, 
-      handleResetMap, handleCut, handleCopy, handlePaste]);
+  }, [handleSave, handleUndo, handleRedo, addNewNode, helpOpen, setHelpOpen, togglePreviewMode, toggleDebugMode,
+    handleZoomIn, handleZoomOut, handleResetZoom, handleFitView, handleZoomToSelection, handleToggleGrid,
+    handleResetMap, handleCut, handleCopy, handlePaste]);
 
   return (
     <>
