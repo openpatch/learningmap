@@ -37,6 +37,7 @@ import { Info, Redo, Undo, RotateCw, ShieldAlert } from "lucide-react";
 import useUndoable from "./useUndoable";
 import { MultiNodePanel } from "./MultiNodePanel";
 import { getTranslations } from "./translations";
+import { WelcomeMessage } from "./WelcomeMessage";
 
 const nodeTypes = {
   topic: TopicNode,
@@ -629,6 +630,14 @@ export function LearningMapEditor({
             backgroundColor: settings?.background?.color || "#ffffff",
           }}
         >
+          {nodes.length === 0 && edges.filter(e => !e.id.startsWith("debug-")).length === 0 && (
+            <WelcomeMessage
+              onOpenFile={handleOpen}
+              onAddTopic={() => addNewNode("topic")}
+              onShowHelp={() => setHelpOpen(true)}
+              language={effectiveLanguage}
+            />
+          )}
           <ReactFlow
             nodes={nodes.map(n => {
               const className = [];
