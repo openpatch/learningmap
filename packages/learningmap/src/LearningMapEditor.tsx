@@ -501,7 +501,7 @@ export function LearningMapEditor({
       const id = hash.substring(6);
       handleLoadExternal(id);
     }
-  }, []);
+  }, [handleLoadExternal]);
 
 
   const defaultEdgeOptions = {
