@@ -553,13 +553,14 @@ dialog.help[open] {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   padding: 24px;
   background: white;
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   gap: 16px;
   display: flex;
   flex-direction: column;
+  z-index: 1000;
 
   table {
     width: 100%;
@@ -700,20 +701,23 @@ dialog.help[open] {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #ffffff;
   z-index: 1;
   pointer-events: none;
+  overflow-y: auto;
 }
 
 .welcome-content {
   text-align: center;
   max-width: 500px;
-  padding: 40px;
+  width: 100%;
+  padding: 40px 20px;
   pointer-events: auto;
+  box-sizing: border-box;
 }
 
 .welcome-title {
@@ -742,4 +746,24 @@ dialog.help[open] {
   justify-content: center;
   font-size: 16px;
   padding: 12px 24px;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 640px) {
+  .welcome-title {
+    font-size: 36px;
+  }
+
+  .welcome-content {
+    padding: 20px 16px;
+  }
+
+  .welcome-subtitle {
+    font-size: 14px;
+  }
+
+  .welcome-actions button {
+    max-width: 100%;
+    font-size: 14px;
+  }
 }
