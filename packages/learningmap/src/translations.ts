@@ -43,6 +43,7 @@ export interface Translations {
     togglePreviewMode: string;
     toggleDebugMode: string;
     selectMultipleNodes: string;
+    selectAllNodes: string;
     showHelp: string;
     zoomIn: string;
     zoomOut: string;
@@ -234,6 +235,7 @@ const en: Translations = {
     togglePreviewMode: "Toggle Preview Mode",
     toggleDebugMode: "Toggle Debug Mode",
     selectMultipleNodes: "Select Multiple Nodes",
+    selectAllNodes: "Select All Nodes",
     showHelp: "Show Help",
     zoomIn: "Zoom In",
     zoomOut: "Zoom Out",
@@ -430,6 +432,7 @@ const de: Translations = {
     togglePreviewMode: "Vorschau-Modus umschalten",
     toggleDebugMode: "Debug-Modus umschalten",
     selectMultipleNodes: "Mehrere Knoten auswählen",
+    selectAllNodes: "Alle Knoten auswählen",
     showHelp: "Hilfe anzeigen",
     zoomIn: "Vergrößern",
     zoomOut: "Verkleinern",
