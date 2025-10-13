@@ -30,7 +30,7 @@ import FloatingEdge from "./FloatingEdge";
 import { EditorToolbar } from "./EditorToolbar";
 import { parseRoadmapData } from "./helper";
 import { LearningMap } from "./LearningMap";
-import { Info, Redo, Undo, RotateCw, ShieldAlert } from "lucide-react";
+import { Info, Redo, Undo, RotateCw, ShieldAlert, X } from "lucide-react";
 import useUndoable from "./useUndoable";
 import { MultiNodePanel } from "./MultiNodePanel";
 import { getTranslations } from "./translations";
@@ -936,24 +936,33 @@ export function LearningMapEditor({
           open={helpOpen}
           onClose={() => setHelpOpen(false)}
         >
-          <h2>{t.keyboardShortcuts}</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>{t.action}</th>
-                <th>{t.shortcut}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {keyboardShortcuts.map((item) => (
-                <tr key={item.action}>
-                  <td>{item.action}</td>
-                  <td>{item.shortcut}</td>
+          <header className="help-header">
+            <h2>{t.keyboardShortcuts}</h2>
+            <button className="close-button" onClick={() => setHelpOpen(false)} aria-label={t.close}>
+              <X size={20} />
+            </button>
+          </header>
+          <div className="help-content">
+            <table>
+              <thead>
+                <tr>
+                  <th>{t.action}</th>
+                  <th>{t.shortcut}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <button className="primary-button" onClick={() => setHelpOpen(false)}>{t.close}</button>
+              </thead>
+              <tbody>
+                {keyboardShortcuts.map((item) => (
+                  <tr key={item.action}>
+                    <td>{item.action}</td>
+                    <td>{item.shortcut}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="help-footer">
+            <button className="primary-button" onClick={() => setHelpOpen(false)}>{t.close}</button>
+          </div>
         </dialog>
         <ShareDialog
           open={shareDialogOpen}
