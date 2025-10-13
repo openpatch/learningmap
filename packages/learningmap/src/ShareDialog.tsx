@@ -6,7 +6,6 @@ import { useJsonStore } from "./useJsonStore";
 
 export function ShareDialog() {
   const [copied, setCopied] = useState(false);
-  const [_, postToJsonStore] = useJsonStore();
 
   // Get state from store
   const open = useEditorStore(state => state.shareDialogOpen);
@@ -18,10 +17,6 @@ export function ShareDialog() {
   const t = getTranslations(language);
 
   const onClose = () => setShareDialogOpen(false);
-
-  useEffect(() => {
-    postToJsonStore();
-  }, [])
 
   if (!open) return null;
 

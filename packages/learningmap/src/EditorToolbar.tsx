@@ -7,6 +7,7 @@ import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 import { Node } from "@xyflow/react";
 import { NodeData } from "./types";
+import { useJsonStore } from "./useJsonStore";
 
 interface EditorToolbarProps {
   defaultLanguage?: string;
@@ -32,8 +33,9 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const addNode = useEditorStore(state => state.addNode);
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
-  const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
   const reset = useEditorStore(state => state.reset);
+
+  const [_, postToJsonStore] = useJsonStore();;
 
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
@@ -93,8 +95,6 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     input.click();
   };
 
-  const onShare = () => setShareDialogOpen(true);
-
   const onReset = () => {
     if (confirm(t.resetMapWarning)) {
       reset();
@@ -134,7 +134,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           <MenuItem onClick={onDownload}>
             <Download size={16} /> <span>{t.download}</span>
           </MenuItem>
-          <MenuItem onClick={onShare}>
+          <MenuItem onClick={postToJsonStore}>
             <Share2 size={16} /> <span>{t.share}</span>
           </MenuItem>
           <MenuDivider />
