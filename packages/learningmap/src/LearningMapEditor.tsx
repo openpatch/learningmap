@@ -34,7 +34,6 @@ export function LearningMapEditor({
 }: LearningMapEditorProps) {
 
   const parsedRoadmap = parseRoadmapData(roadmapData || "");
-  const { screenToFlowPosition } = useReactFlow();
   
   // Only get minimal state needed in this component
   const nodes = useEditorStore(state => state.nodes);
@@ -45,70 +44,9 @@ export function LearningMapEditor({
   // Store actions
   const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
-  const setHelpOpen = useEditorStore(state => state.setHelpOpen);
-  const setSettings = useEditorStore(state => state.setSettings);
 
   // Use language from settings if available, otherwise use prop
   const effectiveLanguage = settings?.language || language;
-  const t = getTranslations(effectiveLanguage);
-
-  // Use the custom hook for all editor actions
-  const {
-    handleNodeClick,
-    handleEdgeClick,
-    closeDrawer,
-    handleUpdateNode,
-    handleUpdateEdge,
-    handleDeleteEdge,
-    handleDeleteNode,
-    addNewNode,
-    togglePreviewMode,
-    toggleDebugMode,
-    handleDownload,
-    handleShare,
-    loadFromJsonStore,
-    handleOpen,
-    handleOpenSettingsDrawer,
-    handleCut,
-    handleCopy,
-    handlePaste,
-    handleZoomIn,
-    handleZoomOut,
-    handleResetZoom,
-    handleFitView,
-    handleZoomToSelection,
-    handleToggleGrid,
-    handleResetMap,
-    handleSelectAll,
-    handleDeleteSelected,
-    handleSave,
-  } = useEditorActions(t, screenToFlowPosition, jsonStore);
-
-  const keyboardShortcuts = [
-    { action: t.shortcuts.undo, shortcut: "Ctrl+Z" },
-    { action: t.shortcuts.redo, shortcut: "Ctrl+Y or Ctrl+Shift+Z" },
-    { action: t.shortcuts.addTaskNode, shortcut: "Ctrl+1" },
-    { action: t.shortcuts.addTopicNode, shortcut: "Ctrl+2" },
-    { action: t.shortcuts.addImageNode, shortcut: "Ctrl+3" },
-    { action: t.shortcuts.addTextNode, shortcut: "Ctrl+4" },
-    { action: t.shortcuts.deleteNodeEdge, shortcut: "Delete" },
-    { action: t.shortcuts.togglePreviewMode, shortcut: "Ctrl+P" },
-    { action: t.shortcuts.toggleDebugMode, shortcut: "Ctrl+D" },
-    { action: t.shortcuts.selectMultipleNodes, shortcut: "Ctrl+Click or Shift+Drag" },
-    { action: t.shortcuts.selectAllNodes, shortcut: "Ctrl+A" },
-    { action: t.shortcuts.showHelp, shortcut: "Ctrl+? or Help Button" },
-    { action: t.shortcuts.save, shortcut: "Ctrl+S" },
-    { action: t.shortcuts.zoomIn, shortcut: "Ctrl++" },
-    { action: t.shortcuts.zoomOut, shortcut: "Ctrl+-" },
-    { action: t.shortcuts.resetZoom, shortcut: "Ctrl+0" },
-    { action: t.shortcuts.resetMap, shortcut: "Ctrl+Delete" },
-    { action: t.shortcuts.fitView, shortcut: "Shift+!" },
-    { action: t.shortcuts.zoomToSelection, shortcut: "Shift+@" },
-    { action: t.shortcuts.toggleGrid, shortcut: "Ctrl+'" },
-    { action: t.shortcuts.cut, shortcut: "Ctrl+X" },
-    { action: t.shortcuts.copy, shortcut: "Ctrl+C" },
-    { action: t.shortcuts.paste, shortcut: "Ctrl+V" },
-  ];
 
   // Load roadmap data when prop changes
   useEffect(() => {
@@ -129,84 +67,27 @@ export function LearningMapEditor({
       <DebugModeEdges />
       
       {/* Keyboard shortcuts handler */}
-      <KeyboardShortcuts
-        onAddNode={addNewNode}
-        onDeleteSelected={handleDeleteSelected}
-        onSave={handleSave}
-        onUndo={() => {}} // Handled by EditorCanvas
-        onRedo={() => {}} // Handled by EditorCanvas
-        onTogglePreview={togglePreviewMode}
-        onToggleDebug={toggleDebugMode}
-        onResetMap={handleResetMap}
-        onCut={handleCut}
-        onCopy={handleCopy}
-        onPaste={handlePaste}
-        onSelectAll={handleSelectAll}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onResetZoom={handleResetZoom}
-        onFitView={handleFitView}
-        onZoomToSelection={handleZoomToSelection}
-        onToggleGrid={handleToggleGrid}
-      />
+      <KeyboardShortcuts jsonStore={jsonStore} />
       
       {/* Toolbar */}
-      <EditorToolbar
-        onAddNewNode={addNewNode}
-        onOpenSettingsDrawer={handleOpenSettingsDrawer}
-        onDownlad={handleDownload}
-        onOpen={handleOpen}
-        onShare={handleShare}
-        onReset={handleResetMap}
-        language={effectiveLanguage}
-      />
+      <EditorToolbar defaultLanguage={language} />
       
       {/* Preview or Edit mode */}
       {previewMode && <LearningMap roadmapData={getRoadmapData()} language={effectiveLanguage} />}
       {!previewMode && <>
         {/* Welcome message when empty */}
-        {nodes.length === 0 && edges.length === 0 && <WelcomeMessage
-          onOpenFile={handleOpen}
-          onAddTopic={() => addNewNode("topic")}
-          onShowHelp={() => setHelpOpen(true)}
-          language={effectiveLanguage}
-        />}
+        {nodes.length === 0 && edges.length === 0 && <WelcomeMessage defaultLanguage={language} />}
         
         {/* Main canvas */}
-        <EditorCanvas
-          onNodeClick={handleNodeClick}
-          onEdgeClick={handleEdgeClick}
-          onSave={handleSave}
-          language={effectiveLanguage}
-        />
+        <EditorCanvas defaultLanguage={language} />
         
         {/* Drawers */}
-        <EditorDrawer
-          isOpen={true}
-          onClose={closeDrawer}
-          onUpdate={handleUpdateNode}
-          onDelete={handleDeleteNode}
-          language={effectiveLanguage}
-        />
-        <EdgeDrawer
-          onClose={closeDrawer}
-          onUpdate={handleUpdateEdge}
-          onDelete={handleDeleteEdge}
-          language={effectiveLanguage}
-        />
-        <SettingsDrawer
-          onClose={closeDrawer}
-          onUpdate={setSettings}
-          language={effectiveLanguage}
-        />
+        <EditorDrawer defaultLanguage={language} />
+        <EdgeDrawer defaultLanguage={language} />
+        <SettingsDrawer defaultLanguage={language} />
         
         {/* Dialogs */}
-        <EditorDialogs
-          onDownload={handleDownload}
-          onLoadFromStore={loadFromJsonStore}
-          language={effectiveLanguage}
-          keyboardShortcuts={keyboardShortcuts}
-        />
+        <EditorDialogs defaultLanguage={language} jsonStore={jsonStore} />
       </>}
     </>
   );

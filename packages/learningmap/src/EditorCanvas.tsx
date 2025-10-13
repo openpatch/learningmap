@@ -22,29 +22,34 @@ const edgeTypes = {
 };
 
 interface EditorCanvasProps {
-  onNodeClick: (event: any, node: any) => void;
-  onEdgeClick: (event: any, edge: any) => void;
-  onSave: () => void;
-  language?: string;
+  defaultLanguage?: string;
 }
 
-export const EditorCanvas = memo(({ onNodeClick, onEdgeClick, onSave, language = "en" }: EditorCanvasProps) => {
-  const t = getTranslations(language);
-  
+export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps) => {
   // Get state from store
+  const settings = useEditorStore(state => state.settings);
   const nodes = useEditorStore(state => state.nodes);
   const edges = useEditorStore(state => state.edges);
-  const settings = useEditorStore(state => state.settings);
   const showGrid = useEditorStore(state => state.showGrid);
   const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
+  const selectedNodeId = useEditorStore(state => state.selectedNodeId);
+  const selectedEdge = useEditorStore(state => state.selectedEdge);
   
   // Get actions from store
   const onNodesChange = useEditorStore(state => state.onNodesChange);
   const onEdgesChange = useEditorStore(state => state.onEdgesChange);
   const onConnect = useEditorStore(state => state.onConnect);
   const setSelectedNodeIds = useEditorStore(state => state.setSelectedNodeIds);
+  const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
+  const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
+  const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
+  const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
   const updateNodes = useEditorStore(state => state.updateNodes);
+  const getRoadmapData = useEditorStore(state => state.getRoadmapData);
+  
+  const language = settings?.language || defaultLanguage;
+  const t = getTranslations(language);
   
   // Temporal store for undo/redo
   const { undo, redo } = useTemporalStore((state) => ({
@@ -53,6 +58,31 @@ export const EditorCanvas = memo(({ onNodeClick, onEdgeClick, onSave, language =
   }));
   const canUndo = useTemporalStore((state) => state.pastStates.length > 0);
   const canRedo = useTemporalStore((state) => state.futureStates.length > 0);
+
+  const handleNodeClick = useCallback((event: any, node: any) => {
+    setSelectedNodeId(node.id);
+    setDrawerOpen(true);
+    setSelectedEdge(null);
+    setEdgeDrawerOpen(false);
+  }, [setSelectedNodeId, setDrawerOpen, setSelectedEdge, setEdgeDrawerOpen]);
+
+  const handleEdgeClick = useCallback((event: any, edge: any) => {
+    setSelectedEdge(edge);
+    setEdgeDrawerOpen(true);
+    setSelectedNodeId(null);
+    setDrawerOpen(false);
+  }, [setSelectedEdge, setEdgeDrawerOpen, setSelectedNodeId, setDrawerOpen]);
+
+  const handleSave = useCallback(() => {
+    const roadmapData = getRoadmapData();
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "learningmap.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  }, [getRoadmapData]);
 
   const handleNodesChange: OnNodesChange = useCallback(
     (changes) => {
@@ -102,8 +132,8 @@ export const EditorCanvas = memo(({ onNodeClick, onEdgeClick, onSave, language =
         nodes={nodes}
         edges={edges}
         onEdgesChange={handleEdgesChange}
-        onNodeDoubleClick={onNodeClick}
-        onEdgeDoubleClick={onEdgeClick}
+        onNodeDoubleClick={handleNodeClick}
+        onEdgeDoubleClick={handleEdgeClick}
         onNodesChange={handleNodesChange}
         onConnect={onConnect}
         onSelectionChange={handleSelectionChange}
@@ -126,11 +156,14 @@ export const EditorCanvas = memo(({ onNodeClick, onEdgeClick, onSave, language =
           <ControlButton title={t.redo} disabled={!canRedo} onClick={() => redo()}>
             <Redo />
           </ControlButton>
+          <ControlButton title={t.save} onClick={handleSave}>
+            <RotateCw />
+          </ControlButton>
           <ControlButton title={t.help} onClick={() => setHelpOpen(true)}>
             <Info />
           </ControlButton>
         </Controls>
-        {selectedNodeIds.length > 1 && <MultiNodePanel onUpdate={handleUpdateNodes} />}
+        {selectedNodeIds.length > 1 && <MultiNodePanel />}
       </ReactFlow>
     </div>
   );

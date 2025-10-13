@@ -10,25 +10,27 @@ import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 
 interface EditorDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onUpdate: (node: Node<NodeData>) => void;
-  onDelete: () => void;
-  language?: string;
+  defaultLanguage?: string;
 }
 
 export const EditorDrawer: React.FC<EditorDrawerProps> = ({
-  isOpen,
-  onClose,
-  onUpdate,
-  onDelete,
-  language = "en",
+  defaultLanguage = "en",
 }) => {
-  const t = getTranslations(language);
-  
   // Get node and all nodes from store
   const selectedNodeId = useEditorStore(state => state.selectedNodeId);
   const nodes = useEditorStore(state => state.nodes);
+  const isOpen = useEditorStore(state => state.drawerOpen);
+  const settings = useEditorStore(state => state.settings);
+  
+  // Get actions from store
+  const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
+  const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
+  const updateNode = useEditorStore(state => state.updateNode);
+  const deleteNode = useEditorStore(state => state.deleteNode);
+  
+  const language = settings?.language || defaultLanguage;
+  const t = getTranslations(language);
+  
   const node = nodes.find(n => n.id === selectedNodeId) || null;
   
   const [localNode, setLocalNode] = useState<Node<NodeData> | null>(node);
@@ -36,6 +38,22 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
   useEffect(() => {
     setLocalNode(node);
   }, [node]);
+
+  const onClose = () => {
+    setDrawerOpen(false);
+    setSelectedNodeId(null);
+  };
+
+  const onUpdate = (updatedNode: Node<NodeData>) => {
+    updateNode(updatedNode.id, updatedNode);
+  };
+
+  const onDelete = () => {
+    if (node && confirm(t.resetMapWarning)) {
+      deleteNode(node.id);
+      onClose();
+    }
+  };
 
   if (!isOpen || !node || !localNode) return null;
 

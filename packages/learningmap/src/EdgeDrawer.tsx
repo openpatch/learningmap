@@ -6,23 +6,41 @@ import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 
 interface EdgeDrawerProps {
-  onClose: () => void;
-  onUpdate: (edge: Edge) => void;
-  onDelete: () => void;
-  language?: string;
+  defaultLanguage?: string;
 }
 
 export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
-  onClose: closeDrawer,
-  onUpdate: updateEdge,
-  onDelete: deleteEdge,
-  language = "en",
+  defaultLanguage = "en",
 }) => {
-  const t = getTranslations(language);
-  
   // Get edge and drawer state from store
   const selectedEdge = useEditorStore(state => state.selectedEdge);
   const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
+  const settings = useEditorStore(state => state.settings);
+  
+  // Get actions from store
+  const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
+  const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
+  const updateEdge = useEditorStore(state => state.updateEdge);
+  const deleteEdge = useEditorStore(state => state.deleteEdge);
+  
+  const language = settings?.language || defaultLanguage;
+  const t = getTranslations(language);
+  
+  const closeDrawer = () => {
+    setEdgeDrawerOpen(false);
+    setSelectedEdge(null);
+  };
+  
+  const onUpdate = (edge: Edge) => {
+    updateEdge(edge.id, edge);
+  };
+  
+  const onDelete = () => {
+    if (selectedEdge && confirm(t.resetMapWarning)) {
+      deleteEdge(selectedEdge.id);
+      closeDrawer();
+    }
+  };
   
   if (!selectedEdge || !edgeDrawerOpen) return null;
   return (
@@ -49,12 +67,12 @@ export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
             } else if (field === "type") {
               updated = { ...updated, type: value };
             }
-            updateEdge(updated);
+            onUpdate(updated);
           }}
           language={language}
         />
         <div className="drawer-footer">
-          <button onClick={deleteEdge} className="danger-button">
+          <button onClick={onDelete} className="danger-button">
             <Trash2 size={16} /> {t.deleteEdge}
           </button>
           <button onClick={closeDrawer} className="primary-button">

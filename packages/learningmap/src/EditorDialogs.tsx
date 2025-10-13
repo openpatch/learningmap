@@ -6,16 +6,13 @@ import { LoadExternalDialog } from "./LoadExternalDialog";
 import { getTranslations } from "./translations";
 
 interface EditorDialogsProps {
-  onDownload: () => void;
-  onLoadFromStore: (id: string) => void;
-  language?: string;
-  keyboardShortcuts: Array<{ action: string; shortcut: string }>;
+  defaultLanguage?: string;
+  jsonStore?: string;
 }
 
-export const EditorDialogs = memo(({ onDownload, onLoadFromStore, language = "en", keyboardShortcuts }: EditorDialogsProps) => {
-  const t = getTranslations(language);
-  
+export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https://json.openpatch.org" }: EditorDialogsProps) => {
   // Get state from store
+  const settings = useEditorStore(state => state.settings);
   const helpOpen = useEditorStore(state => state.helpOpen);
   const pendingExternalId = useEditorStore(state => state.pendingExternalId);
   
@@ -24,6 +21,61 @@ export const EditorDialogs = memo(({ onDownload, onLoadFromStore, language = "en
   const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
   const setLoadExternalDialogOpen = useEditorStore(state => state.setLoadExternalDialogOpen);
   const setPendingExternalId = useEditorStore(state => state.setPendingExternalId);
+  const getRoadmapData = useEditorStore(state => state.getRoadmapData);
+  const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
+
+  const language = settings?.language || defaultLanguage;
+  const t = getTranslations(language);
+
+  const onDownload = () => {
+    const roadmapData = getRoadmapData();
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "learningmap.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const onLoadFromStore = async (id: string) => {
+    try {
+      const response = await fetch(`${jsonStore}/api/json/${id}`);
+      if (!response.ok) throw new Error("Failed to load from JSON store");
+      const data = await response.json();
+      loadRoadmapData(data);
+      setLoadExternalDialogOpen(false);
+      setPendingExternalId(null);
+    } catch (error) {
+      console.error("Failed to load from JSON store", error);
+    }
+  };
+
+  const keyboardShortcuts = [
+    { action: t.shortcuts.undo, shortcut: "Ctrl+Z" },
+    { action: t.shortcuts.redo, shortcut: "Ctrl+Y or Ctrl+Shift+Z" },
+    { action: t.shortcuts.addTaskNode, shortcut: "Ctrl+1" },
+    { action: t.shortcuts.addTopicNode, shortcut: "Ctrl+2" },
+    { action: t.shortcuts.addImageNode, shortcut: "Ctrl+3" },
+    { action: t.shortcuts.addTextNode, shortcut: "Ctrl+4" },
+    { action: t.shortcuts.deleteNodeEdge, shortcut: "Delete" },
+    { action: t.shortcuts.togglePreviewMode, shortcut: "Ctrl+P" },
+    { action: t.shortcuts.toggleDebugMode, shortcut: "Ctrl+D" },
+    { action: t.shortcuts.selectMultipleNodes, shortcut: "Ctrl+Click or Shift+Drag" },
+    { action: t.shortcuts.selectAllNodes, shortcut: "Ctrl+A" },
+    { action: t.shortcuts.showHelp, shortcut: "Ctrl+? or Help Button" },
+    { action: t.shortcuts.save, shortcut: "Ctrl+S" },
+    { action: t.shortcuts.zoomIn, shortcut: "Ctrl++" },
+    { action: t.shortcuts.zoomOut, shortcut: "Ctrl+-" },
+    { action: t.shortcuts.resetZoom, shortcut: "Ctrl+0" },
+    { action: t.shortcuts.resetMap, shortcut: "Ctrl+Delete" },
+    { action: t.shortcuts.fitView, shortcut: "Shift+!" },
+    { action: t.shortcuts.zoomToSelection, shortcut: "Shift+@" },
+    { action: t.shortcuts.toggleGrid, shortcut: "Ctrl+'" },
+    { action: t.shortcuts.cut, shortcut: "Ctrl+X" },
+    { action: t.shortcuts.copy, shortcut: "Ctrl+C" },
+    { action: t.shortcuts.paste, shortcut: "Ctrl+V" },
+  ];
 
   return (
     <>
@@ -60,10 +112,7 @@ export const EditorDialogs = memo(({ onDownload, onLoadFromStore, language = "en
           <button className="primary-button" onClick={() => setHelpOpen(false)}>{t.close}</button>
         </div>
       </dialog>
-      <ShareDialog
-        onClose={() => setShareDialogOpen(false)}
-        language={language}
-      />
+      <ShareDialog />
       <LoadExternalDialog
         onClose={() => {
           setLoadExternalDialogOpen(false);
@@ -75,7 +124,6 @@ export const EditorDialogs = memo(({ onDownload, onLoadFromStore, language = "en
             onLoadFromStore(pendingExternalId);
           }
         }}
-        language={language}
       />
     </>
   );

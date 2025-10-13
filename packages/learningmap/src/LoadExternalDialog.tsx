@@ -7,19 +7,19 @@ interface LoadExternalDialogProps {
   onClose: () => void;
   onDownloadCurrent: () => void;
   onReplace: () => void;
-  language?: string;
 }
 
 export function LoadExternalDialog({
   onClose,
   onDownloadCurrent,
   onReplace,
-  language = "en",
 }: LoadExternalDialogProps) {
-  const t = getTranslations(language);
-  
   // Get state from store
   const open = useEditorStore(state => state.loadExternalDialogOpen);
+  const settings = useEditorStore(state => state.settings);
+  
+  const language = settings?.language || "en";
+  const t = getTranslations(language);
 
   if (!open) return null;
 

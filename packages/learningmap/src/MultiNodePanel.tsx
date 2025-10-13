@@ -4,14 +4,12 @@ import { FC } from "react";
 import { AlignCenterVertical, AlignCenterHorizontal, AlignEndHorizontal, AlignEndVertical, AlignStartVertical, AlignStartHorizontal, RulerDimensionLine, AlignVerticalDistributeCenter, AlignHorizontalDistributeCenter } from "lucide-react";
 import { useEditorStore } from "./editorStore";
 
-interface Props {
-  onUpdate: (nodes: Node<NodeData>[]) => void;
-}
-
-export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
+export const MultiNodePanel: FC = () => {
   // Get selected nodes from store
   const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
   const allNodes = useEditorStore(state => state.nodes);
+  const updateNodes = useEditorStore(state => state.updateNodes);
+  
   const nodes = allNodes.filter(n => selectedNodeIds.includes(n.id));
   
   if (nodes.length < 2) return null;
@@ -23,7 +21,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       ...n,
       position: { ...n.position, x: minX }
     }));
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   const alignCenterVertical = () => {
@@ -33,7 +31,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       ...n,
       position: { ...n.position, x: avgX - (n.width || n.measured.width) / 2 }
     }));
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   const alignRightVertical = () => {
@@ -43,7 +41,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       ...n,
       position: { ...n.position, x: maxX - (n.width || n.measured.width) }
     }));
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   const alignLeft = () => {
@@ -53,7 +51,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       ...n,
       position: { ...n.position, y: minY }
     }));
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   const alignCenter = () => {
@@ -63,7 +61,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       ...n,
       position: { ...n.position, y: avgY - (n.height || n.measured.height) / 2 }
     }));
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   const alignRight = () => {
@@ -73,7 +71,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       ...n,
       position: { ...n.position, y: maxY - (n.height || n.measured.height) }
     }));
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   const distributeVertical = () => {
@@ -94,7 +92,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       currentY += (n.height || n.measured.height) + gap;
       return updatedNode;
     });
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   const distributeHorizontal = () => {
@@ -114,7 +112,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       currentX += (n.width || n.measured.width) + gap;
       return updatedNode;
     });
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   const sameWidth = () => {
@@ -124,7 +122,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       ...n,
       width: maxWidth
     }));
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   const sameHeight = () => {
@@ -134,7 +132,7 @@ export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
       ...n,
       height: maxHeight
     }));
-    onUpdate(updatedNodes);
+    updateNodes(updatedNodes);
   };
 
   return <Panel position="bottom-center" className="multi-node-panel">
