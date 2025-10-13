@@ -3,6 +3,7 @@ import { X, Save } from "lucide-react";
 import { Settings } from "./types";
 import { ColorSelector } from "./ColorSelector";
 import { getTranslations } from "./translations";
+import { useReactFlow } from "@xyflow/react";
 
 interface SettingsDrawerProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
 }) => {
   const t = getTranslations(language);
   const [localSettings, setLocalSettings] = useState<Settings>(settings);
+  const { getViewport } = useReactFlow();
 
   useEffect(() => {
     setLocalSettings(settings);
