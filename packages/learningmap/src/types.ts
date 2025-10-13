@@ -69,6 +69,8 @@ export interface RoadmapData {
   edges: Edge[];
   settings: Settings;
   version: number;
+  type?: string;
+  source?: string;
 }
 
 export interface RoadmapState {

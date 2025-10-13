@@ -5,6 +5,7 @@ import { useEditorStore } from "./editorStore";
 import { Node } from "@xyflow/react";
 import { NodeData } from "./types";
 import logo from "./logo.svg";
+import { useFileOperations } from "./useFileOperations";
 
 interface WelcomeMessageProps {
   defaultLanguage?: string;
@@ -17,32 +18,11 @@ export const WelcomeMessage: React.FC<WelcomeMessageProps> = ({
   const settings = useEditorStore(state => state.settings);
   const addNode = useEditorStore(state => state.addNode);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
-  const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
+
+  const { openRoadmap } = useFileOperations();
 
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
-
-  const onOpenFile = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.onchange = (e: any) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          try {
-            const data = JSON.parse(e.target.result);
-            loadRoadmapData(data);
-          } catch (error) {
-            console.error("Failed to parse JSON file", error);
-          }
-        };
-        reader.readAsText(file);
-      }
-    };
-    input.click();
-  };
 
   const onAddTopic = () => {
     const position = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -68,7 +48,7 @@ export const WelcomeMessage: React.FC<WelcomeMessageProps> = ({
           {t.welcomeTitle}</h1>
         <p className="welcome-subtitle">{t.welcomeSubtitle}</p>
         <div className="welcome-actions">
-          <button onClick={onOpenFile} className="primary-button">
+          <button onClick={openRoadmap} className="primary-button">
             <FolderOpen size={18} />
             {t.welcomeOpenFile}
           </button>
