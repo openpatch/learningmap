@@ -25,6 +25,9 @@ export interface EditorState {
   edges: Edge[];
   settings: Settings;
 
+  jsonStore?: string;
+  defaultLanguage?: string;
+
   // UI state
   previewMode: boolean;
   debugMode: boolean;

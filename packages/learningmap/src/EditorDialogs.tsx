@@ -4,6 +4,7 @@ import { useEditorStore } from "./editorStore";
 import { ShareDialog } from "./ShareDialog";
 import { LoadExternalDialog } from "./LoadExternalDialog";
 import { getTranslations } from "./translations";
+import { useJsonStore } from "./useJsonStore";
 
 interface EditorDialogsProps {
   defaultLanguage?: string;
@@ -15,14 +16,14 @@ export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https:
   const settings = useEditorStore(state => state.settings);
   const helpOpen = useEditorStore(state => state.helpOpen);
   const pendingExternalId = useEditorStore(state => state.pendingExternalId);
-  
+  const [getFromJsonStore] = useJsonStore();
+
   // Get actions from store
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
   const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
   const setLoadExternalDialogOpen = useEditorStore(state => state.setLoadExternalDialogOpen);
   const setPendingExternalId = useEditorStore(state => state.setPendingExternalId);
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
-  const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
 
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
@@ -36,19 +37,6 @@ export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https:
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
-  };
-
-  const onLoadFromStore = async (id: string) => {
-    try {
-      const response = await fetch(`${jsonStore}/api/json/${id}`);
-      if (!response.ok) throw new Error("Failed to load from JSON store");
-      const data = await response.json();
-      loadRoadmapData(data);
-      setLoadExternalDialogOpen(false);
-      setPendingExternalId(null);
-    } catch (error) {
-      console.error("Failed to load from JSON store", error);
-    }
   };
 
   const keyboardShortcuts = [
@@ -121,7 +109,7 @@ export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https:
         onDownloadCurrent={onDownload}
         onReplace={() => {
           if (pendingExternalId) {
-            onLoadFromStore(pendingExternalId);
+            getFromJsonStore(pendingExternalId);
           }
         }}
       />

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Link2, Check } from "lucide-react";
 import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
+import { useJsonStore } from "./useJsonStore";
 
 export function ShareDialog() {
   const [copied, setCopied] = useState(false);
-  
+  const [_, postToJsonStore] = useJsonStore();
+
   // Get state from store
   const open = useEditorStore(state => state.shareDialogOpen);
   const shareLink = useEditorStore(state => state.shareLink);
@@ -14,8 +16,12 @@ export function ShareDialog() {
 
   const language = settings?.language || "en";
   const t = getTranslations(language);
-  
+
   const onClose = () => setShareDialogOpen(false);
+
+  useEffect(() => {
+    postToJsonStore();
+  }, [])
 
   if (!open) return null;
 
