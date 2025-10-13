@@ -1,43 +1,64 @@
 import React, { useState, useEffect } from "react";
 import { X, Trash2, Save } from "lucide-react";
-import { Node, useReactFlow } from "@xyflow/react";
+import { Node } from "@xyflow/react";
 import { EditorDrawerTaskContent } from "./EditorDrawerTaskContent";
 import { EditorDrawerTopicContent } from "./EditorDrawerTopicContent";
 import { EditorDrawerImageContent } from "./EditorDrawerImageContent";
 import { EditorDrawerTextContent } from "./EditorDrawerTextContent";
 import { Completion, NodeData } from "./types";
 import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
 
 interface EditorDrawerProps {
-  node: Node<NodeData> | null;
-  isOpen: boolean;
-  onClose: () => void;
-  onUpdate: (node: Node<NodeData>) => void;
-  onDelete: () => void;
-  language?: string;
+  defaultLanguage?: string;
 }
 
 export const EditorDrawer: React.FC<EditorDrawerProps> = ({
-  node,
-  isOpen,
-  onClose,
-  onUpdate,
-  onDelete,
-  language = "en",
+  defaultLanguage = "en",
 }) => {
+  // Get node and all nodes from store
+  const selectedNodeId = useEditorStore(state => state.selectedNodeId);
+  const nodes = useEditorStore(state => state.nodes);
+  const isOpen = useEditorStore(state => state.drawerOpen);
+  const settings = useEditorStore(state => state.settings);
+
+  // Get actions from store
+  const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
+  const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
+  const updateNode = useEditorStore(state => state.updateNode);
+  const deleteNode = useEditorStore(state => state.deleteNode);
+
+  const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
+
+  const node = nodes.find(n => n.id === selectedNodeId) || null;
+
   const [localNode, setLocalNode] = useState<Node<NodeData> | null>(node);
-  const { getNodes } = useReactFlow();
-  const allNodes = getNodes();
 
   useEffect(() => {
     setLocalNode(node);
   }, [node]);
 
+  const onClose = () => {
+    setDrawerOpen(false);
+    setSelectedNodeId(null);
+  };
+
+  const onUpdate = (updatedNode: Node<NodeData>) => {
+    updateNode(updatedNode.id, updatedNode);
+  };
+
+  const onDelete = () => {
+    if (node && confirm(t.resetMapWarning)) {
+      deleteNode(node.id);
+      onClose();
+    }
+  };
+
   if (!isOpen || !node || !localNode) return null;
 
   // Filter out the current node from selectable options
-  const nodeOptions = allNodes.filter(n => n.id !== node.id && n.type === "task" || n.type === "topic");
+  const nodeOptions = nodes.filter(n => n.id !== node.id && (n.type === "task" || n.type === "topic"));
 
   // Helper for dropdowns
   const renderNodeSelect = (value: string, onChange: (id: string) => void) => (

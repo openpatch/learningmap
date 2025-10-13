@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { X, Link2, Check } from "lucide-react";
 import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
 
-interface ShareDialogProps {
-  open: boolean;
-  onClose: () => void;
-  shareLink: string;
-  language?: string;
-}
-
-export function ShareDialog({ open, onClose, shareLink, language = "en" }: ShareDialogProps) {
-  const t = getTranslations(language);
+export function ShareDialog() {
   const [copied, setCopied] = useState(false);
+  
+  // Get state from store
+  const open = useEditorStore(state => state.shareDialogOpen);
+  const shareLink = useEditorStore(state => state.shareLink);
+  const settings = useEditorStore(state => state.settings);
+  const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
+
+  const language = settings?.language || "en";
+  const t = getTranslations(language);
+  
+  const onClose = () => setShareDialogOpen(false);
 
   if (!open) return null;
 

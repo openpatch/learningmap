@@ -1,22 +1,24 @@
 import React from "react";
 import { X, Download, AlertTriangle } from "lucide-react";
 import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
 
 interface LoadExternalDialogProps {
-  open: boolean;
   onClose: () => void;
   onDownloadCurrent: () => void;
   onReplace: () => void;
-  language?: string;
 }
 
 export function LoadExternalDialog({
-  open,
   onClose,
   onDownloadCurrent,
   onReplace,
-  language = "en",
 }: LoadExternalDialogProps) {
+  // Get state from store
+  const open = useEditorStore(state => state.loadExternalDialogOpen);
+  const settings = useEditorStore(state => state.settings);
+  
+  const language = settings?.language || "en";
   const t = getTranslations(language);
 
   if (!open) return null;

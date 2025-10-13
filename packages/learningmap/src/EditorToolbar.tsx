@@ -4,47 +4,102 @@ import "@szhsin/react-menu/dist/index.css";
 import '@szhsin/react-menu/dist/transitions/zoom.css';
 import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2, RotateCcw } from "lucide-react";
 import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
+import { Node } from "@xyflow/react";
+import { NodeData } from "./types";
 
 interface EditorToolbarProps {
-  debugMode: boolean;
-  previewMode: boolean;
-  showCompletionNeeds: boolean;
-  showCompletionOptional: boolean;
-  showUnlockAfter: boolean;
-  onToggleDebugMode: () => void;
-  onTogglePreviewMode: () => void;
-  onSetShowCompletionNeeds: (checked: boolean) => void;
-  onSetShowCompletionOptional: (checked: boolean) => void;
-  onSetShowUnlockAfter: (checked: boolean) => void;
-  onAddNewNode: (type: "task" | "topic" | "image" | "text") => void;
-  onOpenSettingsDrawer: () => void;
-  onDownlad: () => void;
-  onOpen: () => void;
-  onShare: () => void;
-  onReset: () => void;
-  language?: string;
+  defaultLanguage?: string;
 }
 
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
-  debugMode,
-  previewMode,
-  showCompletionNeeds,
-  showCompletionOptional,
-  showUnlockAfter,
-  onTogglePreviewMode,
-  onToggleDebugMode,
-  onSetShowCompletionNeeds,
-  onSetShowCompletionOptional,
-  onSetShowUnlockAfter,
-  onAddNewNode,
-  onOpenSettingsDrawer,
-  onDownlad,
-  onOpen,
-  onShare,
-  onReset,
-  language = "en",
+  defaultLanguage = "en",
 }) => {
+  // Get state directly from store
+  const settings = useEditorStore(state => state.settings);
+  const debugMode = useEditorStore(state => state.debugMode);
+  const previewMode = useEditorStore(state => state.previewMode);
+  const showCompletionNeeds = useEditorStore(state => state.showCompletionNeeds);
+  const showCompletionOptional = useEditorStore(state => state.showCompletionOptional);
+  const showUnlockAfter = useEditorStore(state => state.showUnlockAfter);
+
+  // Get actions directly from store
+  const setDebugMode = useEditorStore(state => state.setDebugMode);
+  const setPreviewMode = useEditorStore(state => state.setPreviewMode);
+  const setShowCompletionNeeds = useEditorStore(state => state.setShowCompletionNeeds);
+  const setShowCompletionOptional = useEditorStore(state => state.setShowCompletionOptional);
+  const setShowUnlockAfter = useEditorStore(state => state.setShowUnlockAfter);
+  const addNode = useEditorStore(state => state.addNode);
+  const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
+  const getRoadmapData = useEditorStore(state => state.getRoadmapData);
+  const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
+  const reset = useEditorStore(state => state.reset);
+
+  const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
+
+  const onToggleDebugMode = () => setDebugMode(!debugMode);
+  const onTogglePreviewMode = () => setPreviewMode(!previewMode);
+  const onSetShowCompletionNeeds = (checked: boolean) => setShowCompletionNeeds(checked);
+  const onSetShowCompletionOptional = (checked: boolean) => setShowCompletionOptional(checked);
+  const onSetShowUnlockAfter = (checked: boolean) => setShowUnlockAfter(checked);
+
+  const onAddNewNode = (type: "task" | "topic" | "image" | "text") => {
+    const position = { x: Math.random() * 500, y: Math.random() * 500 };
+    const newNode: Node<NodeData> = {
+      id: `node-${Date.now()}`,
+      type,
+      position,
+      data: {
+        label: type === "task" ? t.newTask : type === "topic" ? t.newTopic : type,
+        state: "unlocked",
+      },
+    };
+    addNode(newNode);
+  };
+
+  const onOpenSettingsDrawer = () => setSettingsDrawerOpen(true);
+
+  const onDownload = () => {
+    const roadmapData = getRoadmapData();
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "learningmap.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const onOpen = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = (e: any) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            useEditorStore.getState().loadRoadmapData(data);
+          } catch (error) {
+            console.error("Failed to parse JSON file", error);
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
+
+  const onShare = () => setShareDialogOpen(true);
+
+  const onReset = () => {
+    if (confirm(t.resetMapWarning)) {
+      reset();
+    }
+  };
 
   return (
     <div className="editor-toolbar">
@@ -76,7 +131,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           <MenuItem onClick={onOpen}>
             <FolderOpen size={16} /> <span>{t.open}</span>
           </MenuItem>
-          <MenuItem onClick={onDownlad}>
+          <MenuItem onClick={onDownload}>
             <Download size={16} /> <span>{t.download}</span>
           </MenuItem>
           <MenuItem onClick={onShare}>
