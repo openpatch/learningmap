@@ -66,6 +66,9 @@ export const useJsonStore = () => {
         })
         .catch(() => {
           alert(t.loadFailed);
+          setLoadExternalDialogOpen(false);
+          setPendingExternalId(null);
+          window.location.hash = "";
         });
     },
     [jsonStore, t, loadRoadmapData],
