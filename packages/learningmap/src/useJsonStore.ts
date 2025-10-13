@@ -12,6 +12,12 @@ export const useJsonStore = () => {
   const setShareDialogOpen = useEditorStore(
     (state) => state.setShareDialogOpen,
   );
+  const setLoadExternalDialogOpen = useEditorStore(
+    (state) => state.setLoadExternalDialogOpen,
+  );
+  const setPendingExternalId = useEditorStore(
+    (state) => state.setPendingExternalId,
+  );
   const loadRoadmapData = useEditorStore((state) => state.loadRoadmapData);
 
   const post = useCallback(() => {
@@ -55,6 +61,8 @@ export const useJsonStore = () => {
         .then((text) => {
           const json = JSON.parse(text);
           loadRoadmapData(json);
+          setLoadExternalDialogOpen(false);
+          setPendingExternalId(null);
         })
         .catch(() => {
           alert(t.loadFailed);
