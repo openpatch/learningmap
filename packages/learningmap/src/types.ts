@@ -50,6 +50,11 @@ export interface Settings {
   title?: string;
   background?: BackgroundConfig;
   language?: string;
+  viewport?: {
+    x: number;
+    y: number;
+    zoom: number;
+  };
 }
 
 export interface EdgeConfig {
@@ -60,8 +65,8 @@ export interface EdgeConfig {
 }
 
 export interface RoadmapData {
-  nodes?: Node<NodeData>[];
-  edges?: Edge[];
+  nodes: Node<NodeData>[];
+  edges: Edge[];
   settings: Settings;
   version: number;
 }

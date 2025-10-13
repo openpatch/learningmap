@@ -28,7 +28,7 @@ import { RoadmapData, NodeData, ImageNodeData, TextNodeData, Settings } from "./
 import { SettingsDrawer } from "./SettingsDrawer";
 import FloatingEdge from "./FloatingEdge";
 import { EditorToolbar } from "./EditorToolbar";
-import { parseRoadmapData, isDefaultRoadmapData } from "./helper";
+import { parseRoadmapData } from "./helper";
 import { LearningMap } from "./LearningMap";
 import { Info, Redo, Undo, RotateCw, ShieldAlert } from "lucide-react";
 import useUndoable from "./useUndoable";
@@ -54,7 +54,6 @@ export interface LearningMapEditorProps {
   language?: string;
   onChange?: (data: RoadmapData) => void;
   jsonStore?: string;
-  onLoadExternal?: (id: string) => void;
 }
 
 const getDefaultFilename = () => {
@@ -68,22 +67,20 @@ export function LearningMapEditor({
   language = "en",
   onChange,
   jsonStore = "https://json.openpatch.org",
-  onLoadExternal,
 }: LearningMapEditorProps) {
-  const { screenToFlowPosition, zoomIn, zoomOut, setCenter, fitView, getNodes, getEdges } = useReactFlow();
-  const [roadmapState, setRoadmapState, { undo, redo, canUndo, canRedo, reset, resetInitialState }] = useUndoable<RoadmapData>({
-    settings: {},
-    version: 1,
-  });
+
+  const parsedRoadmap = parseRoadmapData(roadmapData || "");
+  const { screenToFlowPosition, zoomIn, zoomOut, setCenter, fitView } = useReactFlow();
+  const [roadmapState, setRoadmapState, { undo, redo, canUndo, canRedo, reset, resetInitialState }] = useUndoable<RoadmapData>(parsedRoadmap);
 
   const [saved, setSaved] = useState(true);
   const [didUndoRedo, setDidUndoRedo] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
-  const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const [settings, setSettings] = useState<Settings>({ background: { color: "#ffffff" } });
-  const [showGrid, setShowGrid] = useState(true);
+  const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>(parsedRoadmap.nodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(parsedRoadmap.edges);
+  const [settings, setSettings] = useState<Settings>(parsedRoadmap.settings);
+  const [showGrid, setShowGrid] = useState(false);
   const [clipboard, setClipboard] = useState<{ nodes: Node<NodeData>[]; edges: Edge[] } | null>(null);
 
   // Use language from settings if available, otherwise use prop
@@ -91,13 +88,12 @@ export function LearningMapEditor({
   const t = getTranslations(effectiveLanguage);
 
   const keyboardShortcuts = [
-    { action: t.shortcuts.save, shortcut: "Ctrl+S" },
     { action: t.shortcuts.undo, shortcut: "Ctrl+Z" },
     { action: t.shortcuts.redo, shortcut: "Ctrl+Y or Ctrl+Shift+Z" },
-    { action: t.shortcuts.addTaskNode, shortcut: "Ctrl+A" },
-    { action: t.shortcuts.addTopicNode, shortcut: "Ctrl+O" },
-    { action: t.shortcuts.addImageNode, shortcut: "Ctrl+I" },
-    { action: t.shortcuts.addTextNode, shortcut: "Ctrl+B" },
+    { action: t.shortcuts.addTaskNode, shortcut: "Ctrl+1" },
+    { action: t.shortcuts.addTopicNode, shortcut: "Ctrl+2" },
+    { action: t.shortcuts.addImageNode, shortcut: "Ctrl+3" },
+    { action: t.shortcuts.addTextNode, shortcut: "Ctrl+4" },
     { action: t.shortcuts.deleteNodeEdge, shortcut: "Delete" },
     { action: t.shortcuts.togglePreviewMode, shortcut: "Ctrl+P" },
     { action: t.shortcuts.toggleDebugMode, shortcut: "Ctrl+D" },
@@ -139,7 +135,6 @@ export function LearningMapEditor({
   const [edgeDrawerOpen, setEdgeDrawerOpen] = useState(false);
 
   useEffect(() => {
-    const parsedRoadmap = parseRoadmapData(roadmapData || "");
     loadRoadmapStateIntoReactFlowState(parsedRoadmap);
     resetInitialState(parsedRoadmap);
   }, [roadmapData])
@@ -414,11 +409,9 @@ export function LearningMapEditor({
   // Auto-save when changes are made
   useEffect(() => {
     if (!saved) {
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         handleSave();
-      }, 1000); // Auto-save after 1 second of inactivity
-
-      return () => clearTimeout(timeoutId);
+      }, 2000);
     }
   }, [saved, handleSave]);
 
@@ -711,22 +704,21 @@ export function LearningMapEditor({
         handleRedo();
       }
       // add task node shortcut
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a' && !e.shiftKey) {
+      if ((e.ctrlKey || e.metaKey) && e.key === '1' && !e.shiftKey) {
         e.preventDefault();
         addNewNode("task");
       }
       // add topic node shortcut
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o' && !e.shiftKey) {
+      if ((e.ctrlKey || e.metaKey) && e.key === '2' && !e.shiftKey) {
         e.preventDefault();
         addNewNode("topic");
       }
       // add image node shortcut
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i' && !e.shiftKey) {
+      if ((e.ctrlKey || e.metaKey) && e.key === '3' && !e.shiftKey) {
         e.preventDefault();
         addNewNode("image");
       }
-      // add text node shortcut - changed to Ctrl+T
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b' && !e.shiftKey) {
+      if ((e.ctrlKey || e.metaKey) && e.key === '4' && !e.shiftKey) {
         e.preventDefault();
         addNewNode("text");
       }
@@ -840,14 +832,12 @@ export function LearningMapEditor({
             backgroundColor: settings?.background?.color || "#ffffff",
           }}
         >
-          {isDefaultRoadmapData(nodes, edges, settings) && (
-            <WelcomeMessage
-              onOpenFile={handleOpen}
-              onAddTopic={() => addNewNode("topic")}
-              onShowHelp={() => setHelpOpen(true)}
-              language={effectiveLanguage}
-            />
-          )}
+          {nodes.length === 0 && edges.length === 0 && <WelcomeMessage
+            onOpenFile={handleOpen}
+            onAddTopic={() => addNewNode("topic")}
+            onShowHelp={() => setHelpOpen(true)}
+            language={effectiveLanguage}
+          />}
           <ReactFlow
             nodes={nodes}
             edges={edges}

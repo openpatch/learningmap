@@ -71,39 +71,38 @@ export function getEdgeParams(source: Node, target: Node) {
   };
 }
 
+const defaultRoadmapData: RoadmapData = {
+  settings: { title: "New Roadmap", viewport: { x: 0, y: 0, zoom: 1 } },
+  version: 1,
+  nodes: [],
+  edges: [],
+};
+
 export const parseRoadmapData = (
   roadmapData: string | RoadmapData,
 ): RoadmapData => {
+  let userRoadmapData = {};
   if (typeof roadmapData !== "string") {
-    return roadmapData || {};
+    userRoadmapData = roadmapData;
+  } else {
+    try {
+      userRoadmapData = JSON.parse(roadmapData);
+    } catch (err) {}
   }
-  try {
-    return JSON.parse(roadmapData);
-  } catch (err) {
-    return { settings: { title: "New Roadmap" }, version: 1 };
-  }
-};
 
-export const isDefaultRoadmapData = (
-  nodes: any[],
-  edges: any[],
-  settings?: any
-): boolean => {
-  // Check if there are no nodes or edges
-  const hasNoContent = nodes.length === 0 && edges.filter(e => !e.id.startsWith("debug-")).length === 0;
-  
-  if (!hasNoContent) {
-    return false;
-  }
-  
-  // Check if settings are in default state
-  // Default settings: { background: { color: "#ffffff" } }
-  const hasDefaultSettings = 
-    !settings?.title &&
-    !settings?.language &&
-    (!settings?.background || 
-      (settings.background.color === "#ffffff" && 
-       (!settings.background.nodes || settings.background.nodes.length === 0)));
-  
-  return hasDefaultSettings;
+  // Merge userRoadmapData with defaultRoadmapData to ensure all fields are present
+  return {
+    ...defaultRoadmapData,
+    ...userRoadmapData,
+    settings: {
+      ...defaultRoadmapData.settings,
+      ...(userRoadmapData as any).settings,
+      viewport: {
+        ...defaultRoadmapData.settings.viewport,
+        ...((userRoadmapData as any).settings?.viewport || {}),
+      },
+    },
+    nodes: (userRoadmapData as any).nodes || defaultRoadmapData.nodes,
+    edges: (userRoadmapData as any).edges || defaultRoadmapData.edges,
+  };
 };
