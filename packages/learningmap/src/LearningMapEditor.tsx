@@ -1,13 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   ReactFlow,
   Controls,
-  useNodesState,
-  useEdgesState,
   ColorMode,
   useReactFlow,
   Node,
-  addEdge,
   Connection,
   Edge,
   Background,
@@ -31,7 +28,7 @@ import { EditorToolbar } from "./EditorToolbar";
 import { parseRoadmapData } from "./helper";
 import { LearningMap } from "./LearningMap";
 import { Info, Redo, Undo, RotateCw, ShieldAlert, X } from "lucide-react";
-import useUndoable from "./useUndoable";
+import { useEditorStore, useTemporalStore } from "./editorStore";
 import { MultiNodePanel } from "./MultiNodePanel";
 import { getTranslations } from "./translations";
 import { WelcomeMessage } from "./WelcomeMessage";
@@ -71,18 +68,75 @@ export function LearningMapEditor({
 
   const parsedRoadmap = parseRoadmapData(roadmapData || "");
   const { screenToFlowPosition, zoomIn, zoomOut, setCenter, fitView } = useReactFlow();
-  const [roadmapState, setRoadmapState, { undo, redo, canUndo, canRedo, reset, resetInitialState }] = useUndoable<RoadmapData>(parsedRoadmap);
+  
+  // Use Zustand store
+  const nodes = useEditorStore(state => state.nodes);
+  const edges = useEditorStore(state => state.edges);
+  const settings = useEditorStore(state => state.settings);
+  const saved = useEditorStore(state => state.saved);
+  const previewMode = useEditorStore(state => state.previewMode);
+  const debugMode = useEditorStore(state => state.debugMode);
+  const showGrid = useEditorStore(state => state.showGrid);
+  const helpOpen = useEditorStore(state => state.helpOpen);
+  const drawerOpen = useEditorStore(state => state.drawerOpen);
+  const settingsDrawerOpen = useEditorStore(state => state.settingsDrawerOpen);
+  const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
+  const shareDialogOpen = useEditorStore(state => state.shareDialogOpen);
+  const loadExternalDialogOpen = useEditorStore(state => state.loadExternalDialogOpen);
+  const selectedNodeId = useEditorStore(state => state.selectedNodeId);
+  const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
+  const selectedEdge = useEditorStore(state => state.selectedEdge);
+  const nextNodeId = useEditorStore(state => state.nextNodeId);
+  const clipboard = useEditorStore(state => state.clipboard);
+  const lastMousePosition = useEditorStore(state => state.lastMousePosition);
+  const shareLink = useEditorStore(state => state.shareLink);
+  const pendingExternalId = useEditorStore(state => state.pendingExternalId);
+  const showCompletionNeeds = useEditorStore(state => state.showCompletionNeeds);
+  const showCompletionOptional = useEditorStore(state => state.showCompletionOptional);
+  const showUnlockAfter = useEditorStore(state => state.showUnlockAfter);
+  
+  // Store actions
+  const onNodesChange = useEditorStore(state => state.onNodesChange);
+  const onEdgesChange = useEditorStore(state => state.onEdgesChange);
+  const onConnect = useEditorStore(state => state.onConnect);
+  const setSaved = useEditorStore(state => state.setSaved);
+  const setPreviewMode = useEditorStore(state => state.setPreviewMode);
+  const setDebugMode = useEditorStore(state => state.setDebugMode);
+  const setShowGrid = useEditorStore(state => state.setShowGrid);
+  const setHelpOpen = useEditorStore(state => state.setHelpOpen);
+  const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
+  const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
+  const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
+  const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
+  const setLoadExternalDialogOpen = useEditorStore(state => state.setLoadExternalDialogOpen);
+  const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
+  const setSelectedNodeIds = useEditorStore(state => state.setSelectedNodeIds);
+  const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
+  const setNextNodeId = useEditorStore(state => state.setNextNodeId);
+  const setClipboard = useEditorStore(state => state.setClipboard);
+  const setLastMousePosition = useEditorStore(state => state.setLastMousePosition);
+  const setShareLink = useEditorStore(state => state.setShareLink);
+  const setPendingExternalId = useEditorStore(state => state.setPendingExternalId);
+  const setShowCompletionNeeds = useEditorStore(state => state.setShowCompletionNeeds);
+  const setShowCompletionOptional = useEditorStore(state => state.setShowCompletionOptional);
+  const setShowUnlockAfter = useEditorStore(state => state.setShowUnlockAfter);
+  const updateNode = useEditorStore(state => state.updateNode);
+  const updateNodes = useEditorStore(state => state.updateNodes);
+  const updateEdge = useEditorStore(state => state.updateEdge);
+  const deleteNode = useEditorStore(state => state.deleteNode);
+  const deleteEdge = useEditorStore(state => state.deleteEdge);
+  const addNode = useEditorStore(state => state.addNode);
+  const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
+  const getRoadmapData = useEditorStore(state => state.getRoadmapData);
+  const closeAllDrawers = useEditorStore(state => state.closeAllDrawers);
+  const setNodes = useEditorStore(state => state.setNodes);
+  const setEdges = useEditorStore(state => state.setEdges);
+  const setSettings = useEditorStore(state => state.setSettings);
+  
+  // Temporal store for undo/redo
+  const { undo, redo, canUndo, canRedo } = useTemporalStore();
 
-  const [saved, setSaved] = useState(true);
-  const [didUndoRedo, setDidUndoRedo] = useState(false);
-  const [previewMode, setPreviewMode] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-  const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>(parsedRoadmap.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(parsedRoadmap.edges);
-  const [settings, setSettings] = useState<Settings>(parsedRoadmap.settings);
-  const [showGrid, setShowGrid] = useState(false);
-  const [clipboard, setClipboard] = useState<{ nodes: Node<NodeData>[]; edges: Edge[] } | null>(null);
-  const [lastMousePosition, setLastMousePosition] = useState<{ x: number; y: number } | null>(null);
+  const colorMode: ColorMode = "light";
 
   // Use language from settings if available, otherwise use prop
   const effectiveLanguage = settings?.language || language;
@@ -113,67 +167,9 @@ export function LearningMapEditor({
     { action: t.shortcuts.paste, shortcut: "Ctrl+V" },
   ];
 
-  const [helpOpen, setHelpOpen] = useState(false);
-  const [colorMode] = useState<ColorMode>("light");
-  const [selectedNodeId, setSelectedNodeId] = useState<Node<NodeData> | null>(null);
-  const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [settingsDrawerOpen, setSettingsDrawerOpen] = useState(false);
-  const [nextNodeId, setNextNodeId] = useState(1);
-
-  // Debug settings state
-  const [showCompletionNeeds, setShowCompletionNeeds] = useState(true);
-  const [showCompletionOptional, setShowCompletionOptional] = useState(true);
-  const [showUnlockAfter, setShowUnlockAfter] = useState(true);
-
-  // Share dialog state
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
-  const [shareLink, setShareLink] = useState("");
-  const [loadExternalDialogOpen, setLoadExternalDialogOpen] = useState(false);
-  const [pendingExternalId, setPendingExternalId] = useState<string | null>(null);
-
-  // Edge drawer state
-  const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
-  const [edgeDrawerOpen, setEdgeDrawerOpen] = useState(false);
-
   useEffect(() => {
-    loadRoadmapStateIntoReactFlowState(parsedRoadmap);
-    resetInitialState(parsedRoadmap);
-  }, [roadmapData])
-
-  const loadRoadmapStateIntoReactFlowState = useCallback((roadmapState: RoadmapData) => {
-    const nodesArr = Array.isArray(roadmapState?.nodes) ? roadmapState.nodes : [];
-    const edgesArr = Array.isArray(roadmapState?.edges) ? roadmapState.edges : [];
-
-    setSettings(roadmapState?.settings || { background: { color: "#ffffff" } });
-
-    const rawNodes = nodesArr.map((n) => ({
-      ...n,
-      draggable: true,
-      className: n.data.color ? n.data.color : n.className,
-      data: { ...n.data },
-    }));
-
-    setEdges(edgesArr);
-    setNodes(rawNodes);
-
-    // Calculate next node ID
-    if (nodesArr.length > 0) {
-      const maxId = Math.max(
-        ...nodesArr
-          .map((n) => parseInt(n.id.replace(/\D/g, ""), 10))
-          .filter((id) => !isNaN(id))
-      );
-      setNextNodeId(maxId + 1);
-    }
-  }, [setNodes, setEdges, setSettings]);
-
-  useEffect(() => {
-    if (didUndoRedo) {
-      setDidUndoRedo(false);
-      loadRoadmapStateIntoReactFlowState(roadmapState);
-    }
-  }, [roadmapState, didUndoRedo, loadRoadmapStateIntoReactFlowState]);
+    loadRoadmapData(parsedRoadmap);
+  }, [roadmapData]);
 
   useEffect(() => {
     const newEdges: Edge[] = edges.filter((e) => !e.id.startsWith("debug-"));
@@ -223,88 +219,60 @@ export function LearningMapEditor({
       });
     }
     setEdges(newEdges);
-  }, [nodes, setEdges, debugMode, showCompletionNeeds, showCompletionOptional, showUnlockAfter]);
+  }, [nodes, edges, setEdges, debugMode, showCompletionNeeds, showCompletionOptional, showUnlockAfter]);
 
   // Event handlers
-  const onNodeClick = useCallback((_: any, node: Node) => {
+  const handleNodeClick = useCallback((_: any, node: Node) => {
     setSelectedNodeId(node.id);
     setDrawerOpen(true);
-  }, []);
+  }, [setSelectedNodeId, setDrawerOpen]);
 
-  const onEdgeClick = useCallback((_: any, edge: Edge) => {
+  const handleEdgeClick = useCallback((_: any, edge: Edge) => {
     setSelectedEdge(edge);
     setEdgeDrawerOpen(true);
-  }, []);
-
-  const onConnect = useCallback(
-    (connection: Connection) => {
-      setEdges((eds) => addEdge(connection, eds));
-      setSaved(false);
-    },
-    [setEdges, setSaved]
-  );
+  }, [setSelectedEdge, setEdgeDrawerOpen]);
 
   const toggleDebugMode = useCallback(() => {
-    setDebugMode((mode) => !mode);
-  }, [setDebugMode]);
+    setDebugMode(!debugMode);
+  }, [debugMode, setDebugMode]);
 
   const closeDrawer = useCallback(() => {
-    setDrawerOpen(false);
-    setSelectedNodeId(null);
-    setEdgeDrawerOpen(false);
-    setSelectedEdge(null);
-    setSettingsDrawerOpen(false)
-  }, []);
+    closeAllDrawers();
+  }, [closeAllDrawers]);
 
-  const updateNode = useCallback(
+  const handleUpdateNode = useCallback(
     (updatedNode: Node) => {
-      setNodes((nds) =>
-        nds.map((n) => (n.id === updatedNode.id ? updatedNode : n))
-      );
-      setSaved(false);
+      updateNode(updatedNode.id, updatedNode);
     },
-    [setNodes, setSaved]
+    [updateNode]
   );
 
-  const updateNodes = useCallback(
+  const handleUpdateNodes = useCallback(
     (updatedNodes: Node[]) => {
-      setNodes((nds) => nds.map(n => {
-        const updated = updatedNodes.find(un => un.id === n.id);
-        return updated ? updated : n;
-      }));
-      setSaved(false);
+      updateNodes(updatedNodes);
     },
-    [setNodes, setSaved]
+    [updateNodes]
   );
 
-  const updateEdge = useCallback(
+  const handleUpdateEdge = useCallback(
     (updatedEdge: Edge) => {
-      setEdges((eds) =>
-        eds.map((e) => (e.id === updatedEdge.id ? { ...e, ...updatedEdge } : e))
-      );
-      setSelectedEdge(updatedEdge);
-      setSaved(false);
+      updateEdge(updatedEdge.id, updatedEdge);
     },
-    [setEdges, setSelectedEdge, setSaved]
+    [updateEdge]
   );
 
   // Delete selected edge
-  const deleteEdge = useCallback(() => {
+  const handleDeleteEdge = useCallback(() => {
     if (!selectedEdge) return;
-    setEdges((eds) => eds.filter((e) => e.id !== selectedEdge.id));
-    setSaved(false);
-    closeDrawer();
-  }, [selectedEdge, setEdges, closeDrawer]);
+    deleteEdge(selectedEdge.id);
+    closeAllDrawers();
+  }, [selectedEdge, deleteEdge, closeAllDrawers]);
 
-  const deleteNode = useCallback(() => {
+  const handleDeleteNode = useCallback(() => {
     if (!selectedNodeId) return;
-    setNodes((nds) => nds.filter((n) => n.id !== selectedNodeId));
-    setEdges((eds) =>
-      eds.filter((e) => e.source !== selectedNodeId && e.target !== selectedNodeId)
-    );
-    setSaved(false);
-    closeDrawer();
-  }, [selectedNodeId, setNodes, setEdges, closeDrawer, setSaved]);
+    deleteNode(selectedNodeId);
+    closeAllDrawers();
+  }, [selectedNodeId, deleteNode, closeAllDrawers]);
 
   const addNewNode = useCallback(
     (type: "task" | "topic" | "image" | "text") => {
@@ -324,8 +292,8 @@ export function LearningMapEditor({
             description: "",
           },
         };
-        setNodes((nds) => [...nds, newNode]);
-        setNextNodeId((id) => id + 1);
+        addNode(newNode);
+        setNextNodeId(nextNodeId + 1);
       } else if (type === "topic") {
         const newNode: Node<NodeData> = {
           id: `node${nextNodeId}`,
@@ -337,8 +305,8 @@ export function LearningMapEditor({
             description: "",
           },
         };
-        setNodes((nds) => [...nds, newNode]);
-        setNextNodeId((id) => id + 1);
+        addNode(newNode);
+        setNextNodeId(nextNodeId + 1);
       }
       else if (type === "image") {
         const newNode: Node<ImageNodeData> = {
@@ -350,8 +318,8 @@ export function LearningMapEditor({
             src: "",
           },
         };
-        setNodes((nds) => [...nds, newNode]);
-        setNextNodeId((id) => id + 1);
+        addNode(newNode);
+        setNextNodeId(nextNodeId + 1);
       } else if (type === "text") {
         const newNode: Node<TextNodeData> = {
           id: `background-node${nextNodeId}`,
@@ -364,41 +332,15 @@ export function LearningMapEditor({
             color: "#e5e7eb",
           },
         };
-        setNodes((nds) => [...nds, newNode]);
-        setNextNodeId((id) => id + 1);
+        addNode(newNode);
+        setNextNodeId(nextNodeId + 1);
       }
-      setSaved(false);
     },
-    [nextNodeId, lastMousePosition, screenToFlowPosition, setNodes, setSaved, t]
+    [nextNodeId, lastMousePosition, screenToFlowPosition, addNode, setNextNodeId, t]
   );
 
   const handleSave = useCallback(() => {
-    const roadmapData: RoadmapData = {
-      nodes: nodes.map((n) => ({
-        id: n.id,
-        type: n.type,
-        position: n.position,
-        width: n.width,
-        height: n.height,
-        zIndex: n.zIndex,
-        data: n.data,
-      })),
-      edges: edges.filter((e) => !e.id.startsWith("debug-"))
-        .map((e) => ({
-          id: e.id,
-          source: e.source,
-          target: e.target,
-          sourceHandle: e.sourceHandle,
-          targetHandle: e.targetHandle,
-          animated: e.animated,
-          type: e.type,
-          style: e.style,
-        })),
-      settings,
-      version: 1
-    };
-
-    setRoadmapState(roadmapData);
+    const roadmapData = getRoadmapData();
     setSaved(true);
 
     if (onChange) {
@@ -410,7 +352,7 @@ export function LearningMapEditor({
         root.dispatchEvent(new CustomEvent("change", { detail: roadmapData }));
       }
     }
-  }, [nodes, edges, settings]);
+  }, [nodes, edges, settings, onChange, getRoadmapData, setSaved]);
 
   // Auto-save when changes are made
   useEffect(() => {
@@ -423,29 +365,30 @@ export function LearningMapEditor({
 
   const togglePreviewMode = useCallback(() => {
     handleSave();
-    setPreviewMode((mode) => {
-      const newMode = !mode;
-      if (newMode) {
-        setDebugMode(false);
-        closeDrawer();
-      }
-      return newMode;
-    });
-  }, [setPreviewMode, handleSave]);
+    const newMode = !previewMode;
+    setPreviewMode(newMode);
+    if (newMode) {
+      setDebugMode(false);
+      closeDrawer();
+    }
+  }, [previewMode, setPreviewMode, setDebugMode, handleSave, closeDrawer]);
 
   const handleDownload = useCallback(() => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapState, null, 2));
+    const roadmapData = getRoadmapData();
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `${roadmapState.settings.title?.trim() ?? getDefaultFilename()}.learningmap`);
+    downloadAnchorNode.setAttribute("download", `${roadmapData.settings.title?.trim() ?? getDefaultFilename()}.learningmap`);
     document.body.appendChild(downloadAnchorNode); // required for firefox
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
-  }, [roadmapState]);
+  }, [getRoadmapData]);
 
   const handleShare = useCallback(() => {
+    const roadmapData = getRoadmapData();
+    
     // Check if map is empty (no nodes)
-    if (!roadmapState.nodes || roadmapState.nodes.length === 0) {
+    if (!roadmapData.nodes || roadmapData.nodes.length === 0) {
       alert(t.emptyMapCannotBeShared);
       return;
     }
@@ -457,7 +400,7 @@ export function LearningMapEditor({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(roadmapState),
+      body: JSON.stringify(roadmapData),
     })
       .then((r) => r.json())
       .then((json) => {
@@ -468,7 +411,7 @@ export function LearningMapEditor({
       .catch(() => {
         alert(t.uploadFailed);
       });
-  }, [roadmapState, jsonStore, t]);
+  }, [getRoadmapData, jsonStore, t, setShareLink, setShareDialogOpen]);
 
   const loadFromJsonStore = useCallback((id: string) => {
     fetch(`${jsonStore}/api/v2/${id}`, {
@@ -478,20 +421,19 @@ export function LearningMapEditor({
       .then((r) => r.text())
       .then((text) => {
         const json = JSON.parse(text);
-        setRoadmapState(json);
-        loadRoadmapStateIntoReactFlowState(json);
+        loadRoadmapData(json);
         setLoadExternalDialogOpen(false);
         setPendingExternalId(null);
       })
       .catch(() => {
         alert(t.loadFailed);
       });
-  }, [jsonStore, t, setRoadmapState]);
+  }, [jsonStore, t, loadRoadmapData, setLoadExternalDialogOpen, setPendingExternalId]);
 
   const handleLoadExternal = useCallback((id: string) => {
     setPendingExternalId(id);
     setLoadExternalDialogOpen(true);
-  }, []);
+  }, [setPendingExternalId, setLoadExternalDialogOpen]);
 
   // Check for external JSON in URL hash on mount
   useEffect(() => {
@@ -530,8 +472,7 @@ export function LearningMapEditor({
           const content = evt.target?.result;
           if (typeof content === 'string') {
             const json = JSON.parse(content);
-            setRoadmapState(json);
-            loadRoadmapStateIntoReactFlowState(json);
+            loadRoadmapData(json);
           }
         } catch (err) {
           alert(t.failedToLoadFile);
@@ -540,48 +481,39 @@ export function LearningMapEditor({
       reader.readAsText(file);
     };
     input.click();
-  }, [setRoadmapState, setDidUndoRedo, t]);
+  }, [loadRoadmapData, t]);
 
   // Toolbar handler wrappers for EditorToolbar props
-  const handleOpenSettingsDrawer = useCallback(() => setSettingsDrawerOpen(true), []);
-  const handleSetShowCompletionNeeds = useCallback((checked: boolean) => setShowCompletionNeeds(checked), []);
-  const handleSetShowCompletionOptional = useCallback((checked: boolean) => setShowCompletionOptional(checked), []);
-  const handleSetShowUnlockAfter = useCallback((checked: boolean) => setShowUnlockAfter(checked), []);
+  const handleOpenSettingsDrawer = useCallback(() => setSettingsDrawerOpen(true), [setSettingsDrawerOpen]);
+  const handleSetShowCompletionNeeds = useCallback((checked: boolean) => setShowCompletionNeeds(checked), [setShowCompletionNeeds]);
+  const handleSetShowCompletionOptional = useCallback((checked: boolean) => setShowCompletionOptional(checked), [setShowCompletionOptional]);
+  const handleSetShowUnlockAfter = useCallback((checked: boolean) => setShowUnlockAfter(checked), [setShowUnlockAfter]);
 
   const handleNodesChange: OnNodesChange = useCallback(
     (changes) => {
-      setSaved(false);
       onNodesChange(changes);
     },
-    [onNodesChange, setSaved]
+    [onNodesChange]
   );
 
   const handleEdgesChange: OnEdgesChange = useCallback(
     (changes) => {
-      setSaved(false);
       onEdgesChange(changes);
     },
-    [onEdgesChange, setSaved]
+    [onEdgesChange]
   );
 
   const handleUndo = useCallback(() => {
     if (canUndo) {
       undo();
-      setDidUndoRedo(true);
     }
   }, [canUndo, undo]);
 
   const handleRedo = useCallback(() => {
     if (canRedo) {
       redo();
-      setDidUndoRedo(true);
     }
   }, [canRedo, redo]);
-
-  const handleReset = useCallback(() => {
-    reset();
-    setDidUndoRedo(true);
-  }, [reset]);
 
   const handleCut = useCallback(() => {
     const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
@@ -592,14 +524,10 @@ export function LearningMapEditor({
       );
       setClipboard({ nodes: selectedNodes, edges: relatedEdges });
       // Delete the selected nodes
-      setNodes(nds => nds.filter(n => !selectedNodeIdSet.has(n.id)));
-      setEdges(eds => eds.filter(e =>
-        !selectedNodeIdSet.has(e.source) && !selectedNodeIdSet.has(e.target)
-      ));
+      selectedNodeIds.forEach(id => deleteNode(id));
       setSelectedNodeIds([]);
-      setSaved(false);
     }
-  }, [nodes, edges, selectedNodeIds, setNodes, setEdges, setSelectedNodeIds, setSaved]);
+  }, [nodes, edges, selectedNodeIds, deleteNode, setSelectedNodeIds, setClipboard]);
 
   const handleCopy = useCallback(() => {
     const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
@@ -610,7 +538,7 @@ export function LearningMapEditor({
       );
       setClipboard({ nodes: selectedNodes, edges: relatedEdges });
     }
-  }, [nodes, edges, selectedNodeIds]);
+  }, [nodes, edges, selectedNodeIds, setClipboard]);
 
   const handlePaste = useCallback(() => {
     if (!clipboard) return;
@@ -643,12 +571,11 @@ export function LearningMapEditor({
       target: idMapping[edge.target] || edge.target,
     }));
 
-    setNodes(nds => [...nds, ...newNodes]);
-    setEdges(eds => [...eds, ...newEdges]);
+    newNodes.forEach(node => addNode(node));
+    setEdges([...edges, ...newEdges]);
     setNextNodeId(newNextNodeId);
     setSelectedNodeIds(newNodes.map(n => n.id));
-    setSaved(false);
-  }, [clipboard, nextNodeId, setNodes, setEdges, setNextNodeId, setSelectedNodeIds, setSaved]);
+  }, [clipboard, nextNodeId, edges, addNode, setEdges, setNextNodeId, setSelectedNodeIds]);
 
   const handleZoomIn = useCallback(() => {
     zoomIn();
@@ -673,23 +600,19 @@ export function LearningMapEditor({
   }, [selectedNodeIds, fitView]);
 
   const handleToggleGrid = useCallback(() => {
-    setShowGrid(prev => !prev);
-  }, []);
+    setShowGrid(!showGrid);
+  }, [showGrid, setShowGrid]);
 
   const handleResetMap = useCallback(() => {
     if (confirm(t.resetMapWarning)) {
       setNodes([]);
       setEdges([]);
       setNextNodeId(1);
-      setSaved(false);
     }
-  }, [setNodes, setEdges, setNextNodeId, setSaved, t]);
+  }, [setNodes, setEdges, setNextNodeId, t]);
 
   const handleSelectAll = useCallback(() => {
-    setNodes(nds => nds.map(n => ({
-      ...n,
-      selected: true,
-    })))
+    setSelectedNodeIds(nodes.map(n => n.id));
   }, [nodes, setSelectedNodeIds]);
 
   const handleSelectionChange: OnSelectionChangeFunc = useCallback(
@@ -749,7 +672,7 @@ export function LearningMapEditor({
 
       if ((e.ctrlKey || e.metaKey) && (e.key === '?' || (e.shiftKey && e.key === '/'))) {
         e.preventDefault();
-        setHelpOpen(h => !h);
+        setHelpOpen(!helpOpen);
       }
       //preview toggle shortcut
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p' && !e.shiftKey) {
@@ -853,7 +776,7 @@ export function LearningMapEditor({
         onReset={handleResetMap}
         language={effectiveLanguage}
       />
-      {previewMode && <LearningMap roadmapData={roadmapState} language={effectiveLanguage} />}
+      {previewMode && <LearningMap roadmapData={getRoadmapData()} language={effectiveLanguage} />}
       {!previewMode && <>
         <div
           className="editor-canvas"
@@ -871,8 +794,8 @@ export function LearningMapEditor({
             nodes={nodes}
             edges={edges}
             onEdgesChange={handleEdgesChange}
-            onNodeDoubleClick={onNodeClick}
-            onEdgeDoubleClick={onEdgeClick}
+            onNodeDoubleClick={handleNodeClick}
+            onEdgeDoubleClick={handleEdgeClick}
             onNodesChange={handleNodesChange}
             onConnect={onConnect}
             onSelectionChange={handleSelectionChange}
@@ -895,7 +818,7 @@ export function LearningMapEditor({
               <ControlButton title={t.redo} disabled={!canRedo} onClick={handleRedo}>
                 <Redo />
               </ControlButton>
-              <ControlButton title={t.reset} onClick={handleReset}>
+              <ControlButton title={t.shortcuts.resetMap} onClick={handleResetMap}>
                 <RotateCw />
               </ControlButton>
               <ControlButton title={t.help} onClick={() => setHelpOpen(true)}>
@@ -905,23 +828,23 @@ export function LearningMapEditor({
             {!saved && <Panel position="bottom-right" title={t.unsavedChanges} onClick={() => { handleSave(); }}>
               <ShieldAlert size={32} color="var(--learningmap-color-coal)" />
             </Panel>}
-            {selectedNodeIds.length > 1 && <MultiNodePanel nodes={nodes.filter(n => selectedNodeIds.includes(n.id))} onUpdate={updateNodes} />}
+            {selectedNodeIds.length > 1 && <MultiNodePanel nodes={nodes.filter(n => selectedNodeIds.includes(n.id))} onUpdate={handleUpdateNodes} />}
           </ReactFlow>
         </div>
         <EditorDrawer
           node={nodes.find(n => n.id === selectedNodeId)}
           isOpen={drawerOpen}
           onClose={closeDrawer}
-          onUpdate={updateNode}
-          onDelete={deleteNode}
+          onUpdate={handleUpdateNode}
+          onDelete={handleDeleteNode}
           language={effectiveLanguage}
         />
         <EdgeDrawer
           edge={selectedEdge}
           isOpen={edgeDrawerOpen}
           onClose={closeDrawer}
-          onUpdate={updateEdge}
-          onDelete={deleteEdge}
+          onUpdate={handleUpdateEdge}
+          onDelete={handleDeleteEdge}
           language={effectiveLanguage}
         />
         <SettingsDrawer

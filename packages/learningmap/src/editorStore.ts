@@ -319,5 +319,21 @@ export const useEditorStore = create<EditorState>()(
   )
 );
 
-// Temporal store selector for accessing undo/redo state
-export const useTemporalStore = useEditorStore.temporal;
+// Hook for accessing temporal store (undo/redo)
+import { useStore } from 'zustand';
+
+export const useTemporalStore = () => {
+  const undo = useEditorStore.temporal.getState().undo;
+  const redo = useEditorStore.temporal.getState().redo;
+  const pastStates = useStore(useEditorStore.temporal, (state) => state.pastStates);
+  const futureStates = useStore(useEditorStore.temporal, (state) => state.futureStates);
+  
+  return {
+    undo,
+    redo,
+    pastStates,
+    futureStates,
+    canUndo: pastStates.length > 0,
+    canRedo: futureStates.length > 0,
+  };
+};
