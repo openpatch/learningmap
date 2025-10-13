@@ -47,7 +47,12 @@ export const EditorCanvas = memo(({ onNodeClick, onEdgeClick, onSave, language =
   const updateNodes = useEditorStore(state => state.updateNodes);
   
   // Temporal store for undo/redo
-  const { undo, redo, canUndo, canRedo } = useTemporalStore();
+  const { undo, redo } = useTemporalStore((state) => ({
+    undo: state.undo,
+    redo: state.redo,
+  }));
+  const canUndo = useTemporalStore((state) => state.pastStates.length > 0);
+  const canRedo = useTemporalStore((state) => state.futureStates.length > 0);
 
   const handleNodesChange: OnNodesChange = useCallback(
     (changes) => {

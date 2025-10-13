@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { temporal } from 'zundo';
+import { useStoreWithEqualityFn } from 'zustand/traditional';
+import type { TemporalState } from 'zundo';
 import { Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge, NodeChange, EdgeChange, Connection } from '@xyflow/react';
 import { NodeData, RoadmapData, Settings, ImageNodeData, TextNodeData } from './types';
 
@@ -322,20 +324,9 @@ export const useEditorStore = create<EditorState>()(
 );
 
 // Hook for accessing temporal store (undo/redo)
-import { useStore } from 'zustand';
-
-export const useTemporalStore = () => {
-  const undo = useEditorStore.temporal.getState().undo;
-  const redo = useEditorStore.temporal.getState().redo;
-  const pastStates = useStore(useEditorStore.temporal, (state) => state.pastStates);
-  const futureStates = useStore(useEditorStore.temporal, (state) => state.futureStates);
-  
-  return {
-    undo,
-    redo,
-    pastStates,
-    futureStates,
-    canUndo: pastStates.length > 0,
-    canRedo: futureStates.length > 0,
-  };
+export const useTemporalStore = <T,>(
+  selector?: (state: TemporalState<EditorState>) => T,
+  equality?: (a: T, b: T) => boolean
+) => {
+  return useStoreWithEqualityFn(useEditorStore.temporal, selector as any, equality);
 };
