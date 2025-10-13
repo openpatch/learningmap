@@ -28,7 +28,7 @@ import { RoadmapData, NodeData, ImageNodeData, TextNodeData, Settings } from "./
 import { SettingsDrawer } from "./SettingsDrawer";
 import FloatingEdge from "./FloatingEdge";
 import { EditorToolbar } from "./EditorToolbar";
-import { parseRoadmapData } from "./helper";
+import { parseRoadmapData, isDefaultRoadmapData } from "./helper";
 import { LearningMap } from "./LearningMap";
 import { Info, Redo, Undo, RotateCw, ShieldAlert } from "lucide-react";
 import useUndoable from "./useUndoable";
@@ -840,7 +840,7 @@ export function LearningMapEditor({
             backgroundColor: settings?.background?.color || "#ffffff",
           }}
         >
-          {nodes.length === 0 && edges.filter(e => !e.id.startsWith("debug-")).length === 0 && (
+          {isDefaultRoadmapData(nodes, edges, settings) && (
             <WelcomeMessage
               onOpenFile={handleOpen}
               onAddTopic={() => addNewNode("topic")}

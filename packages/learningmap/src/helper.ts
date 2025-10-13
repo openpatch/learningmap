@@ -83,3 +83,27 @@ export const parseRoadmapData = (
     return { settings: { title: "New Roadmap" }, version: 1 };
   }
 };
+
+export const isDefaultRoadmapData = (
+  nodes: any[],
+  edges: any[],
+  settings?: any
+): boolean => {
+  // Check if there are no nodes or edges
+  const hasNoContent = nodes.length === 0 && edges.filter(e => !e.id.startsWith("debug-")).length === 0;
+  
+  if (!hasNoContent) {
+    return false;
+  }
+  
+  // Check if settings are in default state
+  // Default settings: { background: { color: "#ffffff" } }
+  const hasDefaultSettings = 
+    !settings?.title &&
+    !settings?.language &&
+    (!settings?.background || 
+      (settings.background.color === "#ffffff" && 
+       (!settings.background.nodes || settings.background.nodes.length === 0)));
+  
+  return hasDefaultSettings;
+};
