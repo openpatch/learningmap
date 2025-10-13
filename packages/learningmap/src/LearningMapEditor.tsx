@@ -82,6 +82,7 @@ export function LearningMapEditor({
   const [settings, setSettings] = useState<Settings>(parsedRoadmap.settings);
   const [showGrid, setShowGrid] = useState(false);
   const [clipboard, setClipboard] = useState<{ nodes: Node<NodeData>[]; edges: Edge[] } | null>(null);
+  const [lastMousePosition, setLastMousePosition] = useState<{ x: number; y: number } | null>(null);
 
   // Use language from settings if available, otherwise use prop
   const effectiveLanguage = settings?.language || language;
@@ -98,6 +99,7 @@ export function LearningMapEditor({
     { action: t.shortcuts.togglePreviewMode, shortcut: "Ctrl+P" },
     { action: t.shortcuts.toggleDebugMode, shortcut: "Ctrl+D" },
     { action: t.shortcuts.selectMultipleNodes, shortcut: "Ctrl+Click or Shift+Drag" },
+    { action: t.shortcuts.selectAllNodes, shortcut: "Ctrl+A" },
     { action: t.shortcuts.showHelp, shortcut: "Ctrl+? or Help Button" },
     { action: t.shortcuts.zoomIn, shortcut: "Ctrl++" },
     { action: t.shortcuts.zoomOut, shortcut: "Ctrl+-" },
@@ -306,12 +308,16 @@ export function LearningMapEditor({
 
   const addNewNode = useCallback(
     (type: "task" | "topic" | "image" | "text") => {
-      const centerPos = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+      // Use last mouse position if available, otherwise use center of screen
+      const position = lastMousePosition 
+        ? screenToFlowPosition(lastMousePosition)
+        : screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+      
       if (type === "task") {
         const newNode: Node<NodeData> = {
           id: `node${nextNodeId}`,
           type,
-          position: centerPos,
+          position,
           data: {
             label: t.newTask,
             summary: "",
@@ -324,7 +330,7 @@ export function LearningMapEditor({
         const newNode: Node<NodeData> = {
           id: `node${nextNodeId}`,
           type,
-          position: centerPos,
+          position,
           data: {
             label: t.newTopic,
             summary: "",
@@ -339,7 +345,7 @@ export function LearningMapEditor({
           id: `background-node${nextNodeId}`,
           type,
           zIndex: -2,
-          position: centerPos,
+          position,
           data: {
             src: "",
           },
@@ -350,7 +356,7 @@ export function LearningMapEditor({
         const newNode: Node<TextNodeData> = {
           id: `background-node${nextNodeId}`,
           type,
-          position: centerPos,
+          position,
           zIndex: -1,
           data: {
             text: t.backgroundTextDefault,
@@ -363,7 +369,7 @@ export function LearningMapEditor({
       }
       setSaved(false);
     },
-    [nextNodeId, screenToFlowPosition, setNodes, setSaved, t]
+    [nextNodeId, lastMousePosition, screenToFlowPosition, setNodes, setSaved, t]
   );
 
   const handleSave = useCallback(() => {
@@ -679,12 +685,27 @@ export function LearningMapEditor({
     }
   }, [setNodes, setEdges, setNextNodeId, setSaved, t]);
 
+  const handleSelectAll = useCallback(() => {
+    setSelectedNodeIds(nodes.map(n => n.id));
+  }, [nodes, setSelectedNodeIds]);
+
   const handleSelectionChange: OnSelectionChangeFunc = useCallback(
     ({ nodes: selectedNodes }) => {
       setSelectedNodeIds(selectedNodes.map(n => n.id));
     },
     [setSelectedNodeIds]
   );
+
+  // Track mouse position for node placement
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setLastMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -764,7 +785,6 @@ export function LearningMapEditor({
         handleZoomToSelection();
       }
 
-      console.log(e);
       // Toggle grid shortcut
       if ((e.ctrlKey || e.metaKey) && e.code === "Backslash") {
         e.preventDefault();
@@ -790,6 +810,11 @@ export function LearningMapEditor({
         e.preventDefault();
         handlePaste();
       }
+      // Select all shortcut
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a' && !e.shiftKey) {
+        e.preventDefault();
+        handleSelectAll();
+      }
 
       // Dismiss with Escape
       if (helpOpen && e.key === 'Escape') {
@@ -802,7 +827,7 @@ export function LearningMapEditor({
     };
   }, [handleSave, handleUndo, handleRedo, addNewNode, helpOpen, setHelpOpen, togglePreviewMode, toggleDebugMode,
     handleZoomIn, handleZoomOut, handleResetZoom, handleFitView, handleZoomToSelection, handleToggleGrid,
-    handleResetMap, handleCut, handleCopy, handlePaste]);
+    handleResetMap, handleCut, handleCopy, handlePaste, handleSelectAll]);
 
   return (
     <>
@@ -822,6 +847,7 @@ export function LearningMapEditor({
         onDownlad={handleDownload}
         onOpen={handleOpen}
         onShare={handleShare}
+        onReset={handleResetMap}
         language={effectiveLanguage}
       />
       {previewMode && <LearningMap roadmapData={roadmapState} language={effectiveLanguage} />}

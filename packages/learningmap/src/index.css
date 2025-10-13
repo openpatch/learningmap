@@ -624,6 +624,7 @@ header.drawer-header {
 dialog.help[open] {
   width: 600px;
   max-width: 90vw;
+  max-height: 90vh;
   border: none;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -636,6 +637,7 @@ dialog.help[open] {
   display: flex;
   flex-direction: column;
   z-index: 1000;
+  overflow-y: auto;
 
   table {
     width: 100%;

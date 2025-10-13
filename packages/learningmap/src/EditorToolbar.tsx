@@ -2,7 +2,7 @@ import React from "react";
 import { Menu, MenuButton, MenuDivider, MenuItem, SubMenu } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
 import '@szhsin/react-menu/dist/transitions/zoom.css';
-import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2 } from "lucide-react";
+import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2, RotateCcw } from "lucide-react";
 import { getTranslations } from "./translations";
 
 interface EditorToolbarProps {
@@ -21,6 +21,7 @@ interface EditorToolbarProps {
   onDownlad: () => void;
   onOpen: () => void;
   onShare: () => void;
+  onReset: () => void;
   language?: string;
 }
 
@@ -40,6 +41,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   onDownlad,
   onOpen,
   onShare,
+  onReset,
   language = "en",
 }) => {
   const t = getTranslations(language);
@@ -48,10 +50,22 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     <div className="editor-toolbar">
       <div className="toolbar-group">
         <Menu menuButton={<MenuButton disabled={previewMode} className="toolbar-button"><Plus size={16} /> <span className="toolbar-label">{t.nodes}</span></MenuButton>}>
-          <MenuItem onClick={() => onAddNewNode("task")}>{t.addTask}</MenuItem>
-          <MenuItem onClick={() => onAddNewNode("topic")}>{t.addTopic}</MenuItem>
-          <MenuItem onClick={() => onAddNewNode("image")}>{t.addImage}</MenuItem>
-          <MenuItem onClick={() => onAddNewNode("text")}>{t.addText}</MenuItem>
+          <MenuItem onClick={() => onAddNewNode("task")}>
+            <span>{t.addTask}</span>
+            <span style={{ marginLeft: 'auto', paddingLeft: '16px', color: '#9ca3af', fontSize: '0.875rem' }}>Ctrl+1</span>
+          </MenuItem>
+          <MenuItem onClick={() => onAddNewNode("topic")}>
+            <span>{t.addTopic}</span>
+            <span style={{ marginLeft: 'auto', paddingLeft: '16px', color: '#9ca3af', fontSize: '0.875rem' }}>Ctrl+2</span>
+          </MenuItem>
+          <MenuItem onClick={() => onAddNewNode("image")}>
+            <span>{t.addImage}</span>
+            <span style={{ marginLeft: 'auto', paddingLeft: '16px', color: '#9ca3af', fontSize: '0.875rem' }}>Ctrl+3</span>
+          </MenuItem>
+          <MenuItem onClick={() => onAddNewNode("text")}>
+            <span>{t.addText}</span>
+            <span style={{ marginLeft: 'auto', paddingLeft: '16px', color: '#9ca3af', fontSize: '0.875rem' }}>Ctrl+4</span>
+          </MenuItem>
         </Menu>
         <button disabled={previewMode} onClick={onOpenSettingsDrawer} className="toolbar-button">
           <Settings size={16} /> <span className="toolbar-label">{t.settings}</span>
@@ -69,9 +83,15 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
             <Share2 size={16} /> <span>{t.share}</span>
           </MenuItem>
           <MenuDivider />
+          <MenuItem onClick={onReset}>
+            <RotateCcw size={16} /> <span>{t.reset}</span>
+            <span style={{ marginLeft: 'auto', paddingLeft: '16px', color: '#9ca3af', fontSize: '0.875rem' }}>Ctrl+Del</span>
+          </MenuItem>
+          <MenuDivider />
           <SubMenu className={`${debugMode ? "active" : ""}`} label={<><Bug size={16} /> <span>{t.debug}</span></>}>
             <MenuItem type="checkbox" checked={debugMode} onClick={onToggleDebugMode}>
-              {t.enableDebugMode}
+              <span>{t.enableDebugMode}</span>
+              <span style={{ marginLeft: 'auto', paddingLeft: '16px', color: '#9ca3af', fontSize: '0.875rem' }}>Ctrl+D</span>
             </MenuItem>
             <MenuItem type="checkbox" checked={showCompletionNeeds} onClick={e => onSetShowCompletionNeeds(e.checked ?? false)} disabled={!debugMode}>
               {t.showCompletionNeedsEdges}
@@ -85,6 +105,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           </SubMenu>
           <MenuItem onClick={onTogglePreviewMode} className={`${previewMode ? "active" : ""}`}>
             <Eye size={16} /> <span>{t.preview}</span>
+            <span style={{ marginLeft: 'auto', paddingLeft: '16px', color: '#9ca3af', fontSize: '0.875rem' }}>Ctrl+P</span>
           </MenuItem>
           <MenuDivider />
           <MenuItem href="https://openpatch.org" target="_blank" rel="noopener noreferrer">
