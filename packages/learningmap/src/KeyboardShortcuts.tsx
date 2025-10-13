@@ -11,14 +11,14 @@ interface KeyboardShortcutsProps {
 
 export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: KeyboardShortcutsProps) => {
   const { zoomIn, zoomOut, setCenter, fitView, screenToFlowPosition } = useReactFlow();
-  
+
   // Get store state
   const helpOpen = useEditorStore(state => state.helpOpen);
   const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
   const nodes = useEditorStore(state => state.nodes);
   const lastMousePosition = useEditorStore(state => state.lastMousePosition);
   const settings = useEditorStore(state => state.settings);
-  
+
   // Get store actions
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
   const addNode = useEditorStore(state => state.addNode);
@@ -33,16 +33,16 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
   const showGrid = useEditorStore(state => state.showGrid);
   const setShowGrid = useEditorStore(state => state.setShowGrid);
   const deleteNode = useEditorStore(state => state.deleteNode);
-  
+
   const language = settings?.language || "en";
   const t = getTranslations(language);
-  
+
   // Temporal store for undo/redo
   const { undo, redo } = useTemporalStore((state) => ({
     undo: state.undo,
     redo: state.redo,
   }));
-  
+
   const onAddNode = (type: "task" | "topic" | "image" | "text") => {
     const position = lastMousePosition || screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
     const newNode: Node<NodeData> = {
@@ -56,7 +56,7 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
     };
     addNode(newNode);
   };
-  
+
   const onDeleteSelected = () => {
     if (selectedNodeIds.length > 0) {
       // Delete all selected nodes
@@ -66,7 +66,7 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
       setSelectedNodeIds([]);
     }
   };
-  
+
   const onSave = () => {
     const roadmapData = getRoadmapData();
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
@@ -77,24 +77,24 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
   };
-  
+
   const onTogglePreview = () => {
     const currentPreviewMode = useEditorStore.getState().previewMode;
     setPreviewMode(!currentPreviewMode);
   };
-  
+
   const onToggleDebug = () => {
     const currentDebugMode = useEditorStore.getState().debugMode;
     setDebugMode(!currentDebugMode);
   };
-  
+
   const onResetMap = () => {
     if (confirm(t.resetMapWarning)) {
       setNodes([]);
       setEdges([]);
     }
   };
-  
+
   const onCut = () => {
     const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
     if (selectedNodes.length > 0) {
@@ -106,14 +106,14 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
       setSelectedNodeIds([]);
     }
   };
-  
+
   const onCopy = () => {
     const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
     if (selectedNodes.length > 0) {
       setClipboard({ nodes: selectedNodes, edges: [] });
     }
   };
-  
+
   const onPaste = () => {
     if (clipboard && clipboard.nodes.length > 0) {
       const newNodes = clipboard.nodes.map(n => ({
@@ -125,16 +125,16 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
       setSelectedNodeIds(newNodes.map(n => n.id));
     }
   };
-  
+
   const onSelectAll = () => {
     setSelectedNodeIds(nodes.map(n => n.id));
   };
-  
+
   const onZoomIn = () => zoomIn();
   const onZoomOut = () => zoomOut();
   const onResetZoom = () => setCenter(0, 0, { zoom: 1 });
   const onFitView = () => fitView();
-  
+
   const onZoomToSelection = () => {
     if (selectedNodeIds.length > 0) {
       const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
@@ -143,9 +143,9 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
       }
     }
   };
-  
+
   const onToggleGrid = () => setShowGrid(!showGrid);
-  
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {

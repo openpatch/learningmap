@@ -62,7 +62,6 @@ export const useJsonStore = () => {
           const json = JSON.parse(text);
           loadRoadmapData(json);
           setLoadExternalDialogOpen(false);
-          setPendingExternalId(null);
         })
         .catch(() => {
           alert(t.loadFailed);
