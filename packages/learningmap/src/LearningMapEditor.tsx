@@ -68,12 +68,11 @@ export function LearningMapEditor({
 
   const parsedRoadmap = parseRoadmapData(roadmapData || "");
   const { screenToFlowPosition, zoomIn, zoomOut, setCenter, fitView } = useReactFlow();
-  
+
   // Only get minimal state needed in this component
   const nodes = useEditorStore(state => state.nodes);
   const edges = useEditorStore(state => state.edges);
   const settings = useEditorStore(state => state.settings);
-  const saved = useEditorStore(state => state.saved);
   const previewMode = useEditorStore(state => state.previewMode);
   const debugMode = useEditorStore(state => state.debugMode);
   const showGrid = useEditorStore(state => state.showGrid);
@@ -88,12 +87,11 @@ export function LearningMapEditor({
   const nextNodeId = useEditorStore(state => state.nextNodeId);
   const clipboard = useEditorStore(state => state.clipboard);
   const pendingExternalId = useEditorStore(state => state.pendingExternalId);
-  
+
   // Store actions
   const onNodesChange = useEditorStore(state => state.onNodesChange);
   const onEdgesChange = useEditorStore(state => state.onEdgesChange);
   const onConnect = useEditorStore(state => state.onConnect);
-  const setSaved = useEditorStore(state => state.setSaved);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
   const setShowGrid = useEditorStore(state => state.setShowGrid);
   const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
@@ -123,7 +121,7 @@ export function LearningMapEditor({
   const setNodes = useEditorStore(state => state.setNodes);
   const setEdges = useEditorStore(state => state.setEdges);
   const setSettings = useEditorStore(state => state.setSettings);
-  
+
   // Temporal store for undo/redo
   const { undo, redo, canUndo, canRedo } = useTemporalStore();
 
@@ -166,7 +164,7 @@ export function LearningMapEditor({
     // Filter out existing debug edges, but use the store's edges directly to avoid dependency loop
     const baseEdges = useEditorStore.getState().edges.filter((e) => !e.id.startsWith("debug-"));
     const newEdges: Edge[] = [...baseEdges];
-    
+
     if (debugMode) {
       nodes.forEach((node) => {
         if (showCompletionNeeds && node.type === "topic" && node.data?.completion?.needs) {
@@ -331,7 +329,6 @@ export function LearningMapEditor({
 
   const handleSave = useCallback(() => {
     const roadmapData = getRoadmapData();
-    setSaved(true);
 
     if (onChange) {
       onChange(roadmapData);
@@ -342,16 +339,7 @@ export function LearningMapEditor({
         root.dispatchEvent(new CustomEvent("change", { detail: roadmapData }));
       }
     }
-  }, [nodes, edges, settings, onChange, getRoadmapData, setSaved]);
-
-  // Auto-save when changes are made
-  useEffect(() => {
-    if (!saved) {
-      setTimeout(() => {
-        handleSave();
-      }, 2000);
-    }
-  }, [saved, handleSave]);
+  }, [nodes, edges, settings, onChange, getRoadmapData]);
 
   const togglePreviewMode = useCallback(() => {
     handleSave();
@@ -380,7 +368,7 @@ export function LearningMapEditor({
 
   const handleShare = useCallback(() => {
     const roadmapData = getRoadmapData();
-    
+
     // Check if map is empty (no nodes)
     if (!roadmapData.nodes || roadmapData.nodes.length === 0) {
       alert(t.emptyMapCannotBeShared);
@@ -806,9 +794,6 @@ export function LearningMapEditor({
                 <Info />
               </ControlButton>
             </Controls>
-            {!saved && <Panel position="bottom-right" title={t.unsavedChanges} onClick={() => { handleSave(); }}>
-              <ShieldAlert size={32} color="var(--learningmap-color-coal)" />
-            </Panel>}
             {selectedNodeIds.length > 1 && <MultiNodePanel onUpdate={handleUpdateNodes} />}
           </ReactFlow>
         </div>
