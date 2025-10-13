@@ -420,6 +420,8 @@ export const useEditorStore = create<EditorState>()(
               })),
             settings: state.settings,
             version: 1,
+            type: "learningmap",
+            source: "https://learningmap.app",
           };
         },
 
