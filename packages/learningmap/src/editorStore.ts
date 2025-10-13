@@ -3,6 +3,8 @@ import { temporal } from 'zundo';
 import { Node, Edge, applyNodeChanges, applyEdgeChanges, addEdge, NodeChange, EdgeChange, Connection } from '@xyflow/react';
 import { NodeData, RoadmapData, Settings, ImageNodeData, TextNodeData } from './types';
 
+// Note: This is a global store for the editor. Typically only one editor instance is active at a time.
+// If you need multiple independent editor instances, consider creating store instances per component or using context.
 export interface EditorState {
   // Core data
   nodes: Node<NodeData>[];

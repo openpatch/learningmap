@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { Node, Edge, applyNodeChanges, NodeChange } from '@xyflow/react';
 import { NodeData, RoadmapData, RoadmapState, Settings } from './types';
-import { persist, createJSONStorage } from 'zustand/middleware';
 
+// Note: This is a global store. If you need multiple independent LearningMap instances
+// on the same page, consider creating store instances per component or using context.
 export interface ViewerState {
   // Core data
   nodes: Node<NodeData>[];
