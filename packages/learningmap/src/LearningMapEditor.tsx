@@ -309,10 +309,10 @@ export function LearningMapEditor({
   const addNewNode = useCallback(
     (type: "task" | "topic" | "image" | "text") => {
       // Use last mouse position if available, otherwise use center of screen
-      const position = lastMousePosition 
+      const position = lastMousePosition
         ? screenToFlowPosition(lastMousePosition)
         : screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-      
+
       if (type === "task") {
         const newNode: Node<NodeData> = {
           id: `node${nextNodeId}`,
@@ -686,7 +686,10 @@ export function LearningMapEditor({
   }, [setNodes, setEdges, setNextNodeId, setSaved, t]);
 
   const handleSelectAll = useCallback(() => {
-    setSelectedNodeIds(nodes.map(n => n.id));
+    setNodes(nds => nds.map(n => ({
+      ...n,
+      selected: true,
+    })))
   }, [nodes, setSelectedNodeIds]);
 
   const handleSelectionChange: OnSelectionChangeFunc = useCallback(
