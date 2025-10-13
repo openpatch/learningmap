@@ -319,18 +319,10 @@ export const useEditorStore = create<EditorState>()(
         setSelectedNodeId: (selectedNodeId) =>
           set({
             selectedNodeId,
-            nodes: get().nodes.map((n) => ({
-              ...n,
-              selected: n.id === selectedNodeId,
-            })),
           }),
         setSelectedNodeIds: (selectedNodeIds) =>
           set({
             selectedNodeIds,
-            nodes: get().nodes.map((n) => ({
-              ...n,
-              selected: selectedNodeIds.includes(n.id),
-            })),
           }),
         setSelectedEdge: (selectedEdge) => set({ selectedEdge }),
         setNextNodeId: (nextNodeId) => set({ nextNodeId }),
