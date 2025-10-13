@@ -5,13 +5,11 @@ import {
   ColorMode,
   useReactFlow,
   Node,
-  Connection,
   Edge,
   Background,
   ControlButton,
   OnNodesChange,
   OnEdgesChange,
-  Panel,
   OnSelectionChangeFunc,
   ReactFlowProvider,
 } from "@xyflow/react";
@@ -21,13 +19,12 @@ import { TaskNode } from "./nodes/TaskNode";
 import { TopicNode } from "./nodes/TopicNode";
 import { ImageNode } from "./nodes/ImageNode";
 import { TextNode } from "./nodes/TextNode";
-import { RoadmapData, NodeData, ImageNodeData, TextNodeData, Settings } from "./types";
+import { RoadmapData, NodeData, ImageNodeData, TextNodeData } from "./types";
 import { SettingsDrawer } from "./SettingsDrawer";
 import FloatingEdge from "./FloatingEdge";
 import { EditorToolbar } from "./EditorToolbar";
-import { parseRoadmapData } from "./helper";
 import { LearningMap } from "./LearningMap";
-import { Info, Redo, Undo, RotateCw, ShieldAlert, X } from "lucide-react";
+import { Info, Redo, Undo, RotateCw, X } from "lucide-react";
 import { useEditorStore, useTemporalStore } from "./editorStore";
 import { MultiNodePanel } from "./MultiNodePanel";
 import { getTranslations } from "./translations";
@@ -49,7 +46,6 @@ const edgeTypes = {
 export interface LearningMapEditorProps {
   roadmapData?: string | RoadmapData;
   language?: string;
-  onChange?: (data: RoadmapData) => void;
   jsonStore?: string;
 }
 
@@ -60,13 +56,9 @@ const getDefaultFilename = () => {
 };
 
 export function LearningMapEditor({
-  roadmapData,
   language = "en",
-  onChange,
   jsonStore = "https://json.openpatch.org",
 }: LearningMapEditorProps) {
-
-  const parsedRoadmap = parseRoadmapData(roadmapData || "");
   const { screenToFlowPosition, zoomIn, zoomOut, setCenter, fitView } = useReactFlow();
 
   // Only get minimal state needed in this component
@@ -155,10 +147,6 @@ export function LearningMapEditor({
     { action: t.shortcuts.copy, shortcut: "Ctrl+C" },
     { action: t.shortcuts.paste, shortcut: "Ctrl+V" },
   ];
-
-  useEffect(() => {
-    loadRoadmapData(parsedRoadmap);
-  }, [roadmapData, loadRoadmapData]);
 
   useEffect(() => {
     // Filter out existing debug edges, but use the store's edges directly to avoid dependency loop
@@ -327,29 +315,14 @@ export function LearningMapEditor({
     [nextNodeId, lastMousePosition, screenToFlowPosition, addNode, setNextNodeId, t]
   );
 
-  const handleSave = useCallback(() => {
-    const roadmapData = getRoadmapData();
-
-    if (onChange) {
-      onChange(roadmapData);
-      return;
-    } else {
-      const root = document.querySelector("hyperbook-learningmap-editor");
-      if (root) {
-        root.dispatchEvent(new CustomEvent("change", { detail: roadmapData }));
-      }
-    }
-  }, [nodes, edges, settings, onChange, getRoadmapData]);
-
   const togglePreviewMode = useCallback(() => {
-    handleSave();
     const newMode = !previewMode;
     setPreviewMode(newMode);
     if (newMode) {
       setDebugMode(false);
       closeDrawer();
     }
-  }, [previewMode, setPreviewMode, setDebugMode, handleSave, closeDrawer]);
+  }, [previewMode, setPreviewMode, setDebugMode, closeDrawer]);
 
   const toggleDebugMode = useCallback(() => {
     setDebugMode(!debugMode);
@@ -614,11 +587,6 @@ export function LearningMapEditor({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      //save shortcut
-      if ((e.ctrlKey || e.metaKey) && e.key === 's' && !e.shiftKey) {
-        e.preventDefault();
-        handleSave();
-      }
       // undo shortcut
       if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault();
@@ -730,7 +698,7 @@ export function LearningMapEditor({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleSave, handleUndo, handleRedo, addNewNode, helpOpen, setHelpOpen, togglePreviewMode, toggleDebugMode,
+  }, [handleUndo, handleRedo, addNewNode, helpOpen, setHelpOpen, togglePreviewMode, toggleDebugMode,
     handleZoomIn, handleZoomOut, handleResetZoom, handleFitView, handleZoomToSelection, handleToggleGrid,
     handleResetMap, handleCut, handleCopy, handlePaste, handleSelectAll]);
 

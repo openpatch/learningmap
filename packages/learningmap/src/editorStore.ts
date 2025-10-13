@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { temporal } from "zundo";
+import { persist } from "zustand/middleware";
 import {
   Node,
   Edge,
@@ -10,13 +11,7 @@ import {
   EdgeChange,
   Connection,
 } from "@xyflow/react";
-import {
-  NodeData,
-  RoadmapData,
-  Settings,
-  ImageNodeData,
-  TextNodeData,
-} from "./types";
+import { NodeData, RoadmapData, Settings } from "./types";
 
 // Note: This is a global store for the editor. Typically only one editor instance is active at a time.
 // If you need multiple independent editor instances, consider creating store instances per component or using context.
@@ -128,206 +123,218 @@ const initialState = {
 
 export const useEditorStore = create<EditorState>()(
   temporal(
-    (set, get) => ({
-      ...initialState,
+    persist(
+      (set, get) => ({
+        ...initialState,
 
-      // ReactFlow handlers
-      onNodesChange: (changes) => {
-        set({
-          nodes: applyNodeChanges(changes, get().nodes),
-        });
-      },
+        // ReactFlow handlers
+        onNodesChange: (changes) => {
+          set({
+            nodes: applyNodeChanges(changes, get().nodes),
+          });
+        },
 
-      onEdgesChange: (changes) => {
-        set({
-          edges: applyEdgeChanges(changes, get().edges),
-        });
-      },
+        onEdgesChange: (changes) => {
+          set({
+            edges: applyEdgeChanges(changes, get().edges),
+          });
+        },
 
-      onConnect: (connection) => {
-        set({
-          edges: addEdge(connection, get().edges),
-        });
-      },
+        onConnect: (connection) => {
+          set({
+            edges: addEdge(connection, get().edges),
+          });
+        },
 
-      // Node operations
-      setNodes: (nodes) => {
-        set({ nodes });
-      },
+        // Node operations
+        setNodes: (nodes) => {
+          set({ nodes });
+        },
 
-      setEdges: (edges) => {
-        set({ edges });
-      },
+        setEdges: (edges) => {
+          set({ edges });
+        },
 
-      setSettings: (settings) => {
-        set({ settings });
-      },
+        setSettings: (settings) => {
+          set({ settings });
+        },
 
-      updateNode: (nodeId, updates) => {
-        set({
-          nodes: get().nodes.map((n) =>
-            n.id === nodeId ? { ...n, ...updates } : n,
-          ),
-        });
-      },
+        updateNode: (nodeId, updates) => {
+          set({
+            nodes: get().nodes.map((n) =>
+              n.id === nodeId ? { ...n, ...updates } : n,
+            ),
+          });
+        },
 
-      updateNodeData: (nodeId, dataUpdates) => {
-        set({
-          nodes: get().nodes.map((n) =>
-            n.id === nodeId ? { ...n, data: { ...n.data, ...dataUpdates } } : n,
-          ),
-        });
-      },
+        updateNodeData: (nodeId, dataUpdates) => {
+          set({
+            nodes: get().nodes.map((n) =>
+              n.id === nodeId
+                ? { ...n, data: { ...n.data, ...dataUpdates } }
+                : n,
+            ),
+          });
+        },
 
-      updateNodes: (updates) => {
-        set({
-          nodes: get().nodes.map((n) => {
-            const updated = updates.find((un) => un.id === n.id);
-            return updated ? updated : n;
-          }),
-        });
-      },
+        updateNodes: (updates) => {
+          set({
+            nodes: get().nodes.map((n) => {
+              const updated = updates.find((un) => un.id === n.id);
+              return updated ? updated : n;
+            }),
+          });
+        },
 
-      updateEdge: (edgeId, updates) => {
-        set({
-          edges: get().edges.map((e) =>
-            e.id === edgeId ? { ...e, ...updates } : e,
-          ),
-        });
-        // Update selected edge if it's the one being updated
-        const selectedEdge = get().selectedEdge;
-        if (selectedEdge && selectedEdge.id === edgeId) {
-          set({ selectedEdge: { ...selectedEdge, ...updates } });
-        }
-      },
+        updateEdge: (edgeId, updates) => {
+          set({
+            edges: get().edges.map((e) =>
+              e.id === edgeId ? { ...e, ...updates } : e,
+            ),
+          });
+          // Update selected edge if it's the one being updated
+          const selectedEdge = get().selectedEdge;
+          if (selectedEdge && selectedEdge.id === edgeId) {
+            set({ selectedEdge: { ...selectedEdge, ...updates } });
+          }
+        },
 
-      deleteNode: (nodeId) => {
-        set({
-          nodes: get().nodes.filter((n) => n.id !== nodeId),
-          edges: get().edges.filter(
-            (e) => e.source !== nodeId && e.target !== nodeId,
-          ),
-        });
-      },
+        deleteNode: (nodeId) => {
+          set({
+            nodes: get().nodes.filter((n) => n.id !== nodeId),
+            edges: get().edges.filter(
+              (e) => e.source !== nodeId && e.target !== nodeId,
+            ),
+          });
+        },
 
-      deleteEdge: (edgeId) => {
-        set({
-          edges: get().edges.filter((e) => e.id !== edgeId),
-        });
-      },
+        deleteEdge: (edgeId) => {
+          set({
+            edges: get().edges.filter((e) => e.id !== edgeId),
+          });
+        },
 
-      addNode: (node) => {
-        set({
-          nodes: [...get().nodes, node],
-        });
-      },
+        addNode: (node) => {
+          set({
+            nodes: [...get().nodes, node],
+          });
+        },
 
-      // UI state setters
-      setPreviewMode: (previewMode) => set({ previewMode }),
-      setDebugMode: (debugMode) => set({ debugMode }),
-      setShowGrid: (showGrid) => set({ showGrid }),
-      setHelpOpen: (helpOpen) => set({ helpOpen }),
-      setDrawerOpen: (drawerOpen) => set({ drawerOpen }),
-      setSettingsDrawerOpen: (settingsDrawerOpen) =>
-        set({ settingsDrawerOpen }),
-      setEdgeDrawerOpen: (edgeDrawerOpen) => set({ edgeDrawerOpen }),
-      setShareDialogOpen: (shareDialogOpen) => set({ shareDialogOpen }),
-      setLoadExternalDialogOpen: (loadExternalDialogOpen) =>
-        set({ loadExternalDialogOpen }),
-      setSelectedNodeId: (selectedNodeId) => set({ selectedNodeId }),
-      setSelectedNodeIds: (selectedNodeIds) => set({ selectedNodeIds }),
-      setSelectedEdge: (selectedEdge) => set({ selectedEdge }),
-      setNextNodeId: (nextNodeId) => set({ nextNodeId }),
-      setClipboard: (clipboard) => set({ clipboard }),
-      setLastMousePosition: (lastMousePosition) => set({ lastMousePosition }),
-      setShareLink: (shareLink) => set({ shareLink }),
-      setPendingExternalId: (pendingExternalId) => set({ pendingExternalId }),
-      setShowCompletionNeeds: (showCompletionNeeds) =>
-        set({ showCompletionNeeds }),
-      setShowCompletionOptional: (showCompletionOptional) =>
-        set({ showCompletionOptional }),
-      setShowUnlockAfter: (showUnlockAfter) => set({ showUnlockAfter }),
+        // UI state setters
+        setPreviewMode: (previewMode) => set({ previewMode }),
+        setDebugMode: (debugMode) => set({ debugMode }),
+        setShowGrid: (showGrid) => set({ showGrid }),
+        setHelpOpen: (helpOpen) => set({ helpOpen }),
+        setDrawerOpen: (drawerOpen) => set({ drawerOpen }),
+        setSettingsDrawerOpen: (settingsDrawerOpen) =>
+          set({ settingsDrawerOpen }),
+        setEdgeDrawerOpen: (edgeDrawerOpen) => set({ edgeDrawerOpen }),
+        setShareDialogOpen: (shareDialogOpen) => set({ shareDialogOpen }),
+        setLoadExternalDialogOpen: (loadExternalDialogOpen) =>
+          set({ loadExternalDialogOpen }),
+        setSelectedNodeId: (selectedNodeId) => set({ selectedNodeId }),
+        setSelectedNodeIds: (selectedNodeIds) => set({ selectedNodeIds }),
+        setSelectedEdge: (selectedEdge) => set({ selectedEdge }),
+        setNextNodeId: (nextNodeId) => set({ nextNodeId }),
+        setClipboard: (clipboard) => set({ clipboard }),
+        setLastMousePosition: (lastMousePosition) => set({ lastMousePosition }),
+        setShareLink: (shareLink) => set({ shareLink }),
+        setPendingExternalId: (pendingExternalId) => set({ pendingExternalId }),
+        setShowCompletionNeeds: (showCompletionNeeds) =>
+          set({ showCompletionNeeds }),
+        setShowCompletionOptional: (showCompletionOptional) =>
+          set({ showCompletionOptional }),
+        setShowUnlockAfter: (showUnlockAfter) => set({ showUnlockAfter }),
 
-      // Bulk operations
-      loadRoadmapData: (roadmapData) => {
-        const nodesArr = Array.isArray(roadmapData?.nodes)
-          ? roadmapData.nodes
-          : [];
-        const edgesArr = Array.isArray(roadmapData?.edges)
-          ? roadmapData.edges
-          : [];
+        // Bulk operations
+        loadRoadmapData: (roadmapData) => {
+          const nodesArr = Array.isArray(roadmapData?.nodes)
+            ? roadmapData.nodes
+            : [];
+          const edgesArr = Array.isArray(roadmapData?.edges)
+            ? roadmapData.edges
+            : [];
 
-        const rawNodes = nodesArr.map((n) => ({
-          ...n,
-          draggable: true,
-          className: n.data.color ? n.data.color : n.className,
-          data: { ...n.data },
-        }));
+          const rawNodes = nodesArr.map((n) => ({
+            ...n,
+            draggable: true,
+            className: n.data.color ? n.data.color : n.className,
+            data: { ...n.data },
+          }));
 
-        // Calculate next node ID
-        let nextNodeId = 1;
-        if (nodesArr.length > 0) {
-          const maxId = Math.max(
-            ...nodesArr
-              .map((n) => parseInt(n.id.replace(/\D/g, ""), 10))
-              .filter((id) => !isNaN(id)),
-          );
-          nextNodeId = maxId + 1;
-        }
+          // Calculate next node ID
+          let nextNodeId = 1;
+          if (nodesArr.length > 0) {
+            const maxId = Math.max(
+              ...nodesArr
+                .map((n) => parseInt(n.id.replace(/\D/g, ""), 10))
+                .filter((id) => !isNaN(id)),
+            );
+            nextNodeId = maxId + 1;
+          }
 
-        set({
-          nodes: rawNodes,
-          edges: edgesArr,
-          settings: roadmapData?.settings || {
-            background: { color: "#ffffff" },
-          },
-          nextNodeId,
-        });
-      },
+          set({
+            nodes: rawNodes,
+            edges: edgesArr,
+            settings: roadmapData?.settings || {
+              background: { color: "#ffffff" },
+            },
+            nextNodeId,
+          });
+        },
 
-      getRoadmapData: () => {
-        const state = get();
-        return {
-          nodes: state.nodes.map((n) => ({
-            id: n.id,
-            type: n.type,
-            position: n.position,
-            width: n.width,
-            height: n.height,
-            zIndex: n.zIndex,
-            data: n.data,
-          })),
-          edges: state.edges
-            .filter((e) => !e.id.startsWith("debug-"))
-            .map((e) => ({
-              id: e.id,
-              source: e.source,
-              target: e.target,
-              sourceHandle: e.sourceHandle,
-              targetHandle: e.targetHandle,
-              animated: e.animated,
-              type: e.type,
-              style: e.style,
+        getRoadmapData: () => {
+          const state = get();
+          return {
+            nodes: state.nodes.map((n) => ({
+              id: n.id,
+              type: n.type,
+              position: n.position,
+              width: n.width,
+              height: n.height,
+              zIndex: n.zIndex,
+              data: n.data,
             })),
+            edges: state.edges
+              .filter((e) => !e.id.startsWith("debug-"))
+              .map((e) => ({
+                id: e.id,
+                source: e.source,
+                target: e.target,
+                sourceHandle: e.sourceHandle,
+                targetHandle: e.targetHandle,
+                animated: e.animated,
+                type: e.type,
+                style: e.style,
+              })),
+            settings: state.settings,
+            version: 1,
+          };
+        },
+
+        closeAllDrawers: () => {
+          set({
+            drawerOpen: false,
+            selectedNodeId: null,
+            edgeDrawerOpen: false,
+            selectedEdge: null,
+            settingsDrawerOpen: false,
+          });
+        },
+
+        reset: () => {
+          set(initialState);
+        },
+      }),
+      {
+        name: "roadmap-data",
+        partialize: (state) => ({
+          nodes: state.nodes,
+          edges: state.edges,
           settings: state.settings,
-          version: 1,
-        };
+        }),
       },
-
-      closeAllDrawers: () => {
-        set({
-          drawerOpen: false,
-          selectedNodeId: null,
-          edgeDrawerOpen: false,
-          selectedEdge: null,
-          settingsDrawerOpen: false,
-        });
-      },
-
-      reset: () => {
-        set(initialState);
-      },
-    }),
+    ),
     {
       // Zundo options
       limit: 100,
