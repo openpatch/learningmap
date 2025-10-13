@@ -1,87 +1,21 @@
-import { Controls, Edge, Node, Panel, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState, useReactFlow } from "@xyflow/react";
+import { Controls, Edge, Node, Panel, ReactFlow, ReactFlowProvider, useReactFlow } from "@xyflow/react";
 import { ImageNode } from "./nodes/ImageNode";
 import { TaskNode } from "./nodes/TaskNode";
 import { TextNode } from "./nodes/TextNode";
 import { TopicNode } from "./nodes/TopicNode";
 import { NodeData, RoadmapData, RoadmapState, Settings } from "./types";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { parseRoadmapData } from "./helper";
 import { Drawer } from "./Drawer";
 import { ProgressTracker } from "./ProgressTracker";
 import { getTranslations } from "./translations";
+import { useViewerStore } from "./viewerStore";
 
 const nodeTypes = {
   topic: TopicNode,
   task: TaskNode,
   image: ImageNode,
   text: TextNode,
-};
-
-const getStateMap = (nodes: Node<NodeData>[]) => {
-  const stateMap: Record<string, string> = {};
-  nodes.forEach(n => {
-    if (n.data?.state) {
-      stateMap[n.id] = n.data.state;
-    }
-  });
-  return stateMap;
-}
-
-const isCompleteState = (state: string) => state === 'completed' || state === 'mastered';
-
-const updateNodesStates = (nodes: Node<NodeData>[]) => {
-  for (let i = 0; i < 2; i++) {
-    const stateMap = getStateMap(nodes);
-    for (const node of nodes) {
-      node.data.state = node.data?.state || 'locked';
-      // check unlock conditions
-      if (node.data?.unlock?.after) {
-        const unlocked = node.data.unlock.after.every((depId: string) => isCompleteState(stateMap[depId]));
-        if (unlocked) {
-          if (node.data.state === "locked") {
-            node.data.state = 'unlocked';
-          }
-        } else {
-          node.data.state = 'locked';
-        }
-      }
-      if (node.data?.unlock?.date) {
-        const unlockDate = new Date(node.data.unlock.date);
-        const now = new Date();
-        if (now >= unlockDate) {
-          if (node.data.state === "locked") {
-            node.data.state = 'unlocked';
-          }
-        } else {
-          node.data.state = 'locked';
-        }
-      }
-      if (!node.data?.unlock?.after && !node.data?.unlock?.date) {
-        if (node.data.state === "locked") {
-          node.data.state = 'unlocked';
-        }
-      }
-      if (node.type != "topic") continue;
-      if (node.data?.completion?.needs) {
-        const noNeeds = node.data.completion.needs.every((need: string) => isCompleteState(stateMap[need]));
-        if (node.data.state === "unlocked" && noNeeds) {
-          node.data.state = 'completed';
-        }
-      } else if (!node.data?.completion?.needs && node.data.state === "unlocked") {
-        node.data.state = 'completed';
-      }
-      if (node.data?.completion?.optional) {
-        const noOptional = node.data.completion.optional.every((opt: string) => isCompleteState(stateMap[opt]));
-        if (node.data.state === "completed" && noOptional) {
-          node.data.state = 'mastered';
-        }
-      } else if (!node.data?.completion?.optional && node.data.state === "completed") {
-        node.data.state = 'mastered';
-      }
-    }
-  }
-
-  return nodes;
 };
 
 const isInteractableNode = (node: Node) => {
@@ -120,11 +54,20 @@ export function LearningMap({
   language = "en",
   initialState
 }: LearningMapProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [settings, setSettings] = useState<Settings>();
+  // Use Zustand store
+  const nodes = useViewerStore(state => state.nodes);
+  const edges = useViewerStore(state => state.edges);
+  const settings = useViewerStore(state => state.settings);
+  const selectedNode = useViewerStore(state => state.selectedNode);
+  const drawerOpen = useViewerStore(state => state.drawerOpen);
+  const onNodesChange = useViewerStore(state => state.onNodesChange);
+  const setSelectedNode = useViewerStore(state => state.setSelectedNode);
+  const setDrawerOpen = useViewerStore(state => state.setDrawerOpen);
+  const loadRoadmapData = useViewerStore(state => state.loadRoadmapData);
+  const getRoadmapState = useViewerStore(state => state.getRoadmapState);
+  const updateNodesStates = useViewerStore(state => state.updateNodesStates);
+  const updateNodeState = useViewerStore(state => state.updateNodeState);
+  
   const { fitView, getViewport, setViewport } = useReactFlow();
 
   // Use language from settings if available, otherwise use prop
@@ -136,37 +79,12 @@ export function LearningMap({
   const parsedRoadmap = parseRoadmapData(roadmapData);
 
   useEffect(() => {
-    async function loadRoadmap() {
-      const nodesArr = Array.isArray(parsedRoadmap?.nodes) ? parsedRoadmap.nodes : [];
-      const edgesArr = Array.isArray(parsedRoadmap?.edges) ? parsedRoadmap.edges : [];
-
-      setSettings(parsedRoadmap?.settings || {});
-
-      let rawNodes = nodesArr.map((n) => {
-        return {
-          ...n,
-          draggable: false,
-          connectable: false,
-          selectable: isInteractableNode(n),
-          focusable: isInteractableNode(n),
-          data: {
-            ...n.data,
-            state: initialState?.nodes?.[n.id]?.state,
-          }
-        }
-      });
-
-      rawNodes = updateNodesStates(rawNodes);
-
-      setViewport({
-        x: initialState?.x || 0,
-        y: initialState?.y || 0,
-        zoom: initialState?.zoom || 1,
-      });
-      setEdges(edgesArr);
-      setNodes(rawNodes);
-    }
-    loadRoadmap();
+    loadRoadmapData(parsedRoadmap, initialState);
+    setViewport({
+      x: initialState?.x || 0,
+      y: initialState?.y || 0,
+      zoom: initialState?.zoom || 1,
+    });
   }, [roadmapData, initialState]);
 
   const onNodeClick = useCallback((_: any, node: Node, focus: boolean = false) => {
@@ -177,34 +95,27 @@ export function LearningMap({
     if (focus) {
       fitView({ nodes: [node], duration: 150 });
     }
-  }, [fitView]);
+  }, [fitView, setSelectedNode, setDrawerOpen]);
 
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
     setSelectedNode(null);
-  }, []);
+  }, [setDrawerOpen, setSelectedNode]);
 
   const updateNode = useCallback(
     (updatedNode: Node) => {
-      setNodes((nds) => {
-        let newNodes = nds.map((n) => (n.id === updatedNode.id ? updatedNode : n))
-        newNodes = updateNodesStates(newNodes);
-        return newNodes;
+      if (updatedNode.data.state) {
+        updateNodeState(updatedNode.id, updatedNode.data.state);
       }
-      );
       setSelectedNode(updatedNode);
     },
-    [setNodes]
+    [updateNodeState, setSelectedNode]
   );
 
   useEffect(() => {
     const viewport = getViewport();
-    const minimalState: RoadmapState = { nodes: {}, x: viewport.x, y: viewport.y, zoom: viewport.zoom };
-    nodes.forEach((n) => {
-      if (n.data.state && n.type === "task") {
-        minimalState.nodes[n.id] = { state: n.data.state };
-      }
-    });
+    const minimalState = getRoadmapState(viewport);
+    
     if (onChange) {
       onChange(minimalState);
     } else {
@@ -213,7 +124,7 @@ export function LearningMap({
         root.dispatchEvent(new CustomEvent("change", { detail: minimalState }));
       }
     }
-  }, [nodes]);
+  }, [nodes, onChange, getViewport, getRoadmapState]);
 
   const defaultEdgeOptions = {
     animated: false,
@@ -245,7 +156,6 @@ export function LearningMap({
           };
         })}
         edges={edges}
-        onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
         onNodesChange={onNodesChange}
         nodeTypes={nodeTypes}
