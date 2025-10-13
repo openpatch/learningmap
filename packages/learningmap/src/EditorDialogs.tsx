@@ -5,6 +5,7 @@ import { ShareDialog } from "./ShareDialog";
 import { LoadExternalDialog } from "./LoadExternalDialog";
 import { getTranslations } from "./translations";
 import { useJsonStore } from "./useJsonStore";
+import { useFileOperations } from "./useFileOperations";
 
 interface EditorDialogsProps {
   defaultLanguage?: string;
@@ -23,21 +24,11 @@ export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https:
   const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
   const setLoadExternalDialogOpen = useEditorStore(state => state.setLoadExternalDialogOpen);
   const setPendingExternalId = useEditorStore(state => state.setPendingExternalId);
-  const getRoadmapData = useEditorStore(state => state.getRoadmapData);
+
+  const { downloadRoadmap } = useFileOperations();
 
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
-
-  const onDownload = () => {
-    const roadmapData = getRoadmapData();
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "learningmap.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  };
 
   useEffect(() => {
     // https://www.learningmap.app/#json=PjYfAMWXls8ipRsLrpt7t
@@ -118,7 +109,7 @@ export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https:
           setLoadExternalDialogOpen(false);
           setPendingExternalId(null);
         }}
-        onDownloadCurrent={onDownload}
+        onDownloadCurrent={downloadRoadmap}
         onReplace={() => {
           if (pendingExternalId) {
             getFromJsonStore(pendingExternalId);

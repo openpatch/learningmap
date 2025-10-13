@@ -8,6 +8,7 @@ import { useEditorStore } from "./editorStore";
 import { Node } from "@xyflow/react";
 import { NodeData } from "./types";
 import { useJsonStore } from "./useJsonStore";
+import { useFileOperations } from "./useFileOperations";
 
 interface EditorToolbarProps {
   defaultLanguage?: string;
@@ -32,10 +33,10 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const setShowUnlockAfter = useEditorStore(state => state.setShowUnlockAfter);
   const addNode = useEditorStore(state => state.addNode);
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
-  const getRoadmapData = useEditorStore(state => state.getRoadmapData);
   const reset = useEditorStore(state => state.reset);
 
-  const [_, postToJsonStore] = useJsonStore();;
+  const [_, postToJsonStore] = useJsonStore();
+  const { downloadRoadmap, openRoadmap } = useFileOperations();
 
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
@@ -61,39 +62,6 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   };
 
   const onOpenSettingsDrawer = () => setSettingsDrawerOpen(true);
-
-  const onDownload = () => {
-    const roadmapData = getRoadmapData();
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "learningmap.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  };
-
-  const onOpen = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.onchange = (e: any) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          try {
-            const data = JSON.parse(e.target.result);
-            useEditorStore.getState().loadRoadmapData(data);
-          } catch (error) {
-            console.error("Failed to parse JSON file", error);
-          }
-        };
-        reader.readAsText(file);
-      }
-    };
-    input.click();
-  };
 
   const onReset = () => {
     if (confirm(t.resetMapWarning)) {
@@ -128,10 +96,10 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
       </div>
       <div className="toolbar-group">
         <Menu menuButton={<MenuButton className="toolbar-button"><MenuI /></MenuButton>}>
-          <MenuItem onClick={onOpen}>
+          <MenuItem onClick={openRoadmap}>
             <FolderOpen size={16} /> <span>{t.open}</span>
           </MenuItem>
-          <MenuItem onClick={onDownload}>
+          <MenuItem onClick={downloadRoadmap}>
             <Download size={16} /> <span>{t.download}</span>
           </MenuItem>
           <MenuItem onClick={postToJsonStore}>

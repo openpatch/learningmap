@@ -9,3 +9,4 @@ export type { LearningMapEditorProps } from "./LearningMapEditor";
 export { LearningMap, LearningMapEditor };
 export { useEditorStore, useTemporalStore } from "./editorStore";
 export { useViewerStore } from "./viewerStore";
+export { useFileOperations } from "./useFileOperations";
