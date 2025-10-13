@@ -72,6 +72,9 @@ export interface EditorState {
   deleteEdge: (edgeId: string) => void;
   addNode: (node: Node<NodeData>) => void;
 
+  setJsonStore: (jsonStore: string) => void;
+  setDefaultLanguage: (defaultLanguage: string) => void;
+
   // UI state setters
   setPreviewMode: (previewMode: boolean) => void;
   setDebugMode: (debugMode: boolean) => void;
@@ -302,6 +305,14 @@ export const useEditorStore = create<EditorState>()(
           set({
             nodes: [...get().nodes, node],
           });
+        },
+
+        setJsonStore: (jsonStore) => {
+          set({ jsonStore });
+        },
+
+        setDefaultLanguage: (defaultLanguage) => {
+          set({ defaultLanguage });
         },
 
         // UI state setters

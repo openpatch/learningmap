@@ -32,9 +32,17 @@ export function LearningMapEditor({
 
   // Store actions
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
+  const setJsonStore = useEditorStore(state => state.setJsonStore);
+  const setDefaultLanguage = useEditorStore(state => state.setDefaultLanguage);
 
   // Use language from settings if available, otherwise use prop
   const effectiveLanguage = settings?.language || language;
+
+  useEffect(() => {
+    setJsonStore(jsonStore);
+    setDefaultLanguage(language);
+  }, [jsonStore, language, setJsonStore, setDefaultLanguage]);
+
 
   return (
     <>
