@@ -12,15 +12,16 @@ import { WelcomeMessage } from "./WelcomeMessage";
 import { EditorCanvas } from "./EditorCanvas";
 import { EditorDialogs } from "./EditorDialogs";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
+import { useEffect } from "react";
 
 export interface LearningMapEditorProps {
   roadmapData?: string | RoadmapData;
   language?: string;
-  onChange?: (data: RoadmapData) => void;
   jsonStore?: string;
 }
 
 export function LearningMapEditor({
+  roadmapData,
   language = "en",
   jsonStore = "https://json.openpatch.org",
 }: LearningMapEditorProps) {
@@ -34,6 +35,7 @@ export function LearningMapEditor({
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
   const setJsonStore = useEditorStore(state => state.setJsonStore);
   const setDefaultLanguage = useEditorStore(state => state.setDefaultLanguage);
+  const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
 
   // Use language from settings if available, otherwise use prop
   const effectiveLanguage = settings?.language || language;
@@ -42,6 +44,21 @@ export function LearningMapEditor({
     setJsonStore(jsonStore);
     setDefaultLanguage(language);
   }, [jsonStore, language, setJsonStore, setDefaultLanguage]);
+
+  useEffect(() => {
+    if (roadmapData) {
+      if (typeof roadmapData === "string") {
+        try {
+          const parsed = JSON.parse(roadmapData);
+          loadRoadmapData(parsed);
+        } catch (e) {
+          console.error("Failed to parse roadmapData JSON string", e);
+        }
+      } else {
+        loadRoadmapData(roadmapData);
+      }
+    }
+  }, [roadmapData, loadRoadmapData]);
 
 
   return (
