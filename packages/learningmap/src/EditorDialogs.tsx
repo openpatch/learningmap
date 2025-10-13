@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import { X } from "lucide-react";
 import { useEditorStore } from "./editorStore";
 import { ShareDialog } from "./ShareDialog";
@@ -38,6 +38,17 @@ export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https:
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
   };
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith("#json=")) {
+      const id = hash.replace("#json=", "");
+      if (id && id !== pendingExternalId) {
+        setPendingExternalId(id);
+        setLoadExternalDialogOpen(true);
+      }
+    }
+  }, [setLoadExternalDialogOpen, setPendingExternalId, pendingExternalId]);
 
   const keyboardShortcuts = [
     { action: t.shortcuts.undo, shortcut: "Ctrl+Z" },
