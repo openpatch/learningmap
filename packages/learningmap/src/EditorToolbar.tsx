@@ -22,7 +22,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const showCompletionNeeds = useEditorStore(state => state.showCompletionNeeds);
   const showCompletionOptional = useEditorStore(state => state.showCompletionOptional);
   const showUnlockAfter = useEditorStore(state => state.showUnlockAfter);
-  
+
   // Get actions directly from store
   const setDebugMode = useEditorStore(state => state.setDebugMode);
   const setPreviewMode = useEditorStore(state => state.setPreviewMode);
@@ -33,10 +33,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
   const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
-  const setLoadExternalDialogOpen = useEditorStore(state => state.setLoadExternalDialogOpen);
-  const setNodes = useEditorStore(state => state.setNodes);
-  const setEdges = useEditorStore(state => state.setEdges);
-  const setSettings = useEditorStore(state => state.setSettings);
+  const reset = useEditorStore(state => state.reset);
 
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
@@ -46,7 +43,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const onSetShowCompletionNeeds = (checked: boolean) => setShowCompletionNeeds(checked);
   const onSetShowCompletionOptional = (checked: boolean) => setShowCompletionOptional(checked);
   const onSetShowUnlockAfter = (checked: boolean) => setShowUnlockAfter(checked);
-  
+
   const onAddNewNode = (type: "task" | "topic" | "image" | "text") => {
     const position = { x: Math.random() * 500, y: Math.random() * 500 };
     const newNode: Node<NodeData> = {
@@ -60,9 +57,9 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     };
     addNode(newNode);
   };
-  
+
   const onOpenSettingsDrawer = () => setSettingsDrawerOpen(true);
-  
+
   const onDownload = () => {
     const roadmapData = getRoadmapData();
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
@@ -73,7 +70,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
   };
-  
+
   const onOpen = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -95,15 +92,12 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     };
     input.click();
   };
-  
+
   const onShare = () => setShareDialogOpen(true);
-  
+
   const onReset = () => {
     if (confirm(t.resetMapWarning)) {
-      // Reset all state
-      setNodes([]);
-      setEdges([]);
-      setSettings({});
+      reset();
     }
   };
 

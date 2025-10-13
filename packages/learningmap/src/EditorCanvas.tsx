@@ -1,6 +1,6 @@
-import React, { useCallback, memo } from "react";
-import { ReactFlow, Controls, Background, ControlButton, Panel, OnNodesChange, OnEdgesChange, OnSelectionChangeFunc } from "@xyflow/react";
-import { Info, Redo, Undo, RotateCw, ShieldAlert } from "lucide-react";
+import { useCallback, memo } from "react";
+import { ReactFlow, Controls, Background, ControlButton, OnSelectionChangeFunc, Node, Edge } from "@xyflow/react";
+import { Info, Redo, Undo } from "lucide-react";
 import { useEditorStore, useTemporalStore } from "./editorStore";
 import { TaskNode } from "./nodes/TaskNode";
 import { TopicNode } from "./nodes/TopicNode";
@@ -9,6 +9,7 @@ import { TextNode } from "./nodes/TextNode";
 import FloatingEdge from "./FloatingEdge";
 import { MultiNodePanel } from "./MultiNodePanel";
 import { getTranslations } from "./translations";
+import { NodeData } from "./types";
 
 const nodeTypes = {
   topic: TopicNode,
@@ -32,9 +33,7 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
   const edges = useEditorStore(state => state.edges);
   const showGrid = useEditorStore(state => state.showGrid);
   const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
-  const selectedNodeId = useEditorStore(state => state.selectedNodeId);
-  const selectedEdge = useEditorStore(state => state.selectedEdge);
-  
+
   // Get actions from store
   const onNodesChange = useEditorStore(state => state.onNodesChange);
   const onEdgesChange = useEditorStore(state => state.onEdgesChange);
@@ -45,71 +44,37 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
-  const updateNodes = useEditorStore(state => state.updateNodes);
-  const getRoadmapData = useEditorStore(state => state.getRoadmapData);
-  
+
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
-  
+
   // Temporal store for undo/redo
-  const { undo, redo } = useTemporalStore((state) => ({
+  const { undo, redo, canUndo, canRedo } = useTemporalStore((state) => ({
     undo: state.undo,
     redo: state.redo,
+    canUndo: state.pastStates.length > 0,
+    canRedo: state.futureStates.length > 0,
   }));
-  const canUndo = useTemporalStore((state) => state.pastStates.length > 0);
-  const canRedo = useTemporalStore((state) => state.futureStates.length > 0);
 
-  const handleNodeClick = useCallback((event: any, node: any) => {
+  const handleNodeClick = useCallback((_: any, node: Node<NodeData>) => {
     setSelectedNodeId(node.id);
     setDrawerOpen(true);
     setSelectedEdge(null);
     setEdgeDrawerOpen(false);
   }, [setSelectedNodeId, setDrawerOpen, setSelectedEdge, setEdgeDrawerOpen]);
 
-  const handleEdgeClick = useCallback((event: any, edge: any) => {
+  const handleEdgeClick = useCallback((_: any, edge: Edge) => {
     setSelectedEdge(edge);
     setEdgeDrawerOpen(true);
     setSelectedNodeId(null);
     setDrawerOpen(false);
   }, [setSelectedEdge, setEdgeDrawerOpen, setSelectedNodeId, setDrawerOpen]);
 
-  const handleSave = useCallback(() => {
-    const roadmapData = getRoadmapData();
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "learningmap.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  }, [getRoadmapData]);
-
-  const handleNodesChange: OnNodesChange = useCallback(
-    (changes) => {
-      onNodesChange(changes);
-    },
-    [onNodesChange]
-  );
-
-  const handleEdgesChange: OnEdgesChange = useCallback(
-    (changes) => {
-      onEdgesChange(changes);
-    },
-    [onEdgesChange]
-  );
-
   const handleSelectionChange: OnSelectionChangeFunc = useCallback(
     ({ nodes: selectedNodes }) => {
       setSelectedNodeIds(selectedNodes.map(n => n.id));
     },
     [setSelectedNodeIds]
-  );
-  
-  const handleUpdateNodes = useCallback(
-    (updatedNodes: any[]) => {
-      updateNodes(updatedNodes);
-    },
-    [updateNodes]
   );
 
   const defaultEdgeOptions = {
@@ -131,10 +96,10 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onEdgesChange={handleEdgesChange}
+        onEdgesChange={onEdgesChange}
         onNodeDoubleClick={handleNodeClick}
         onEdgeDoubleClick={handleEdgeClick}
-        onNodesChange={handleNodesChange}
+        onNodesChange={onNodesChange}
         onConnect={onConnect}
         onSelectionChange={handleSelectionChange}
         nodeTypes={nodeTypes}
@@ -155,9 +120,6 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
           </ControlButton>
           <ControlButton title={t.redo} disabled={!canRedo} onClick={() => redo()}>
             <Redo />
-          </ControlButton>
-          <ControlButton title={t.save} onClick={handleSave}>
-            <RotateCw />
           </ControlButton>
           <ControlButton title={t.help} onClick={() => setHelpOpen(true)}>
             <Info />

@@ -21,18 +21,18 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
   const nodes = useEditorStore(state => state.nodes);
   const isOpen = useEditorStore(state => state.drawerOpen);
   const settings = useEditorStore(state => state.settings);
-  
+
   // Get actions from store
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
   const updateNode = useEditorStore(state => state.updateNode);
   const deleteNode = useEditorStore(state => state.deleteNode);
-  
+
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
-  
+
   const node = nodes.find(n => n.id === selectedNodeId) || null;
-  
+
   const [localNode, setLocalNode] = useState<Node<NodeData> | null>(node);
 
   useEffect(() => {
