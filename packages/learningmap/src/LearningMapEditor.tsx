@@ -169,10 +169,13 @@ export function LearningMapEditor({
 
   useEffect(() => {
     loadRoadmapData(parsedRoadmap);
-  }, [roadmapData]);
+  }, [roadmapData, loadRoadmapData]);
 
   useEffect(() => {
-    const newEdges: Edge[] = edges.filter((e) => !e.id.startsWith("debug-"));
+    // Filter out existing debug edges, but use the store's edges directly to avoid dependency loop
+    const baseEdges = useEditorStore.getState().edges.filter((e) => !e.id.startsWith("debug-"));
+    const newEdges: Edge[] = [...baseEdges];
+    
     if (debugMode) {
       nodes.forEach((node) => {
         if (showCompletionNeeds && node.type === "topic" && node.data?.completion?.needs) {
@@ -219,7 +222,7 @@ export function LearningMapEditor({
       });
     }
     setEdges(newEdges);
-  }, [nodes, edges, setEdges, debugMode, showCompletionNeeds, showCompletionOptional, showUnlockAfter]);
+  }, [nodes, debugMode, showCompletionNeeds, showCompletionOptional, showUnlockAfter, setEdges]);
 
   // Event handlers
   const handleNodeClick = useCallback((_: any, node: Node) => {
