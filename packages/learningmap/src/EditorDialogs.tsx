@@ -40,6 +40,7 @@ export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https:
   };
 
   useEffect(() => {
+    // https://www.learningmap.app/#json=PjYfAMWXls8ipRsLrpt7t
     const hash = window.location.hash;
     if (hash.startsWith("#json=")) {
       const id = hash.replace("#json=", "");
@@ -48,7 +49,7 @@ export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https:
         setLoadExternalDialogOpen(true);
       }
     }
-  }, [setLoadExternalDialogOpen, setPendingExternalId, pendingExternalId]);
+  }, []);
 
   const keyboardShortcuts = [
     { action: t.shortcuts.undo, shortcut: "Ctrl+Z" },
