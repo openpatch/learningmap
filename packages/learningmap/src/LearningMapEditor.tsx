@@ -69,7 +69,7 @@ export function LearningMapEditor({
   const parsedRoadmap = parseRoadmapData(roadmapData || "");
   const { screenToFlowPosition, zoomIn, zoomOut, setCenter, fitView } = useReactFlow();
   
-  // Use Zustand store
+  // Only get minimal state needed in this component
   const nodes = useEditorStore(state => state.nodes);
   const edges = useEditorStore(state => state.edges);
   const settings = useEditorStore(state => state.settings);
@@ -78,48 +78,39 @@ export function LearningMapEditor({
   const debugMode = useEditorStore(state => state.debugMode);
   const showGrid = useEditorStore(state => state.showGrid);
   const helpOpen = useEditorStore(state => state.helpOpen);
-  const drawerOpen = useEditorStore(state => state.drawerOpen);
-  const settingsDrawerOpen = useEditorStore(state => state.settingsDrawerOpen);
-  const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
-  const shareDialogOpen = useEditorStore(state => state.shareDialogOpen);
-  const loadExternalDialogOpen = useEditorStore(state => state.loadExternalDialogOpen);
   const selectedNodeId = useEditorStore(state => state.selectedNodeId);
   const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
   const selectedEdge = useEditorStore(state => state.selectedEdge);
-  const nextNodeId = useEditorStore(state => state.nextNodeId);
-  const clipboard = useEditorStore(state => state.clipboard);
-  const lastMousePosition = useEditorStore(state => state.lastMousePosition);
-  const shareLink = useEditorStore(state => state.shareLink);
-  const pendingExternalId = useEditorStore(state => state.pendingExternalId);
   const showCompletionNeeds = useEditorStore(state => state.showCompletionNeeds);
   const showCompletionOptional = useEditorStore(state => state.showCompletionOptional);
   const showUnlockAfter = useEditorStore(state => state.showUnlockAfter);
+  const lastMousePosition = useEditorStore(state => state.lastMousePosition);
+  const nextNodeId = useEditorStore(state => state.nextNodeId);
+  const clipboard = useEditorStore(state => state.clipboard);
+  const pendingExternalId = useEditorStore(state => state.pendingExternalId);
   
   // Store actions
   const onNodesChange = useEditorStore(state => state.onNodesChange);
   const onEdgesChange = useEditorStore(state => state.onEdgesChange);
   const onConnect = useEditorStore(state => state.onConnect);
   const setSaved = useEditorStore(state => state.setSaved);
-  const setPreviewMode = useEditorStore(state => state.setPreviewMode);
-  const setDebugMode = useEditorStore(state => state.setDebugMode);
-  const setShowGrid = useEditorStore(state => state.setShowGrid);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
+  const setShowGrid = useEditorStore(state => state.setShowGrid);
+  const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
+  const setSelectedNodeIds = useEditorStore(state => state.setSelectedNodeIds);
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
-  const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
-  const setLoadExternalDialogOpen = useEditorStore(state => state.setLoadExternalDialogOpen);
-  const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
-  const setSelectedNodeIds = useEditorStore(state => state.setSelectedNodeIds);
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const setNextNodeId = useEditorStore(state => state.setNextNodeId);
   const setClipboard = useEditorStore(state => state.setClipboard);
   const setLastMousePosition = useEditorStore(state => state.setLastMousePosition);
-  const setShareLink = useEditorStore(state => state.setShareLink);
+  const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
+  const setLoadExternalDialogOpen = useEditorStore(state => state.setLoadExternalDialogOpen);
   const setPendingExternalId = useEditorStore(state => state.setPendingExternalId);
-  const setShowCompletionNeeds = useEditorStore(state => state.setShowCompletionNeeds);
-  const setShowCompletionOptional = useEditorStore(state => state.setShowCompletionOptional);
-  const setShowUnlockAfter = useEditorStore(state => state.setShowUnlockAfter);
+  const setShareLink = useEditorStore(state => state.setShareLink);
+  const setDebugMode = useEditorStore(state => state.setDebugMode);
+  const setPreviewMode = useEditorStore(state => state.setPreviewMode);
   const updateNode = useEditorStore(state => state.updateNode);
   const updateNodes = useEditorStore(state => state.updateNodes);
   const updateEdge = useEditorStore(state => state.updateEdge);
@@ -234,10 +225,6 @@ export function LearningMapEditor({
     setSelectedEdge(edge);
     setEdgeDrawerOpen(true);
   }, [setSelectedEdge, setEdgeDrawerOpen]);
-
-  const toggleDebugMode = useCallback(() => {
-    setDebugMode(!debugMode);
-  }, [debugMode, setDebugMode]);
 
   const closeDrawer = useCallback(() => {
     closeAllDrawers();
@@ -376,6 +363,10 @@ export function LearningMapEditor({
     }
   }, [previewMode, setPreviewMode, setDebugMode, handleSave, closeDrawer]);
 
+  const toggleDebugMode = useCallback(() => {
+    setDebugMode(!debugMode);
+  }, [debugMode, setDebugMode]);
+
   const handleDownload = useCallback(() => {
     const roadmapData = getRoadmapData();
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(roadmapData, null, 2));
@@ -488,9 +479,6 @@ export function LearningMapEditor({
 
   // Toolbar handler wrappers for EditorToolbar props
   const handleOpenSettingsDrawer = useCallback(() => setSettingsDrawerOpen(true), [setSettingsDrawerOpen]);
-  const handleSetShowCompletionNeeds = useCallback((checked: boolean) => setShowCompletionNeeds(checked), [setShowCompletionNeeds]);
-  const handleSetShowCompletionOptional = useCallback((checked: boolean) => setShowCompletionOptional(checked), [setShowCompletionOptional]);
-  const handleSetShowUnlockAfter = useCallback((checked: boolean) => setShowUnlockAfter(checked), [setShowUnlockAfter]);
 
   const handleNodesChange: OnNodesChange = useCallback(
     (changes) => {
@@ -761,16 +749,6 @@ export function LearningMapEditor({
   return (
     <>
       <EditorToolbar
-        debugMode={debugMode}
-        previewMode={previewMode}
-        showCompletionNeeds={showCompletionNeeds}
-        showCompletionOptional={showCompletionOptional}
-        showUnlockAfter={showUnlockAfter}
-        onToggleDebugMode={toggleDebugMode}
-        onTogglePreviewMode={togglePreviewMode}
-        onSetShowCompletionNeeds={handleSetShowCompletionNeeds}
-        onSetShowCompletionOptional={handleSetShowCompletionOptional}
-        onSetShowUnlockAfter={handleSetShowUnlockAfter}
         onAddNewNode={addNewNode}
         onOpenSettingsDrawer={handleOpenSettingsDrawer}
         onDownlad={handleDownload}
@@ -831,29 +809,24 @@ export function LearningMapEditor({
             {!saved && <Panel position="bottom-right" title={t.unsavedChanges} onClick={() => { handleSave(); }}>
               <ShieldAlert size={32} color="var(--learningmap-color-coal)" />
             </Panel>}
-            {selectedNodeIds.length > 1 && <MultiNodePanel nodes={nodes.filter(n => selectedNodeIds.includes(n.id))} onUpdate={handleUpdateNodes} />}
+            {selectedNodeIds.length > 1 && <MultiNodePanel onUpdate={handleUpdateNodes} />}
           </ReactFlow>
         </div>
         <EditorDrawer
-          node={nodes.find(n => n.id === selectedNodeId)}
-          isOpen={drawerOpen}
+          isOpen={true}
           onClose={closeDrawer}
           onUpdate={handleUpdateNode}
           onDelete={handleDeleteNode}
           language={effectiveLanguage}
         />
         <EdgeDrawer
-          edge={selectedEdge}
-          isOpen={edgeDrawerOpen}
           onClose={closeDrawer}
           onUpdate={handleUpdateEdge}
           onDelete={handleDeleteEdge}
           language={effectiveLanguage}
         />
         <SettingsDrawer
-          isOpen={settingsDrawerOpen}
           onClose={closeDrawer}
-          settings={settings}
           onUpdate={setSettings}
           language={effectiveLanguage}
         />
@@ -891,13 +864,10 @@ export function LearningMapEditor({
           </div>
         </dialog>
         <ShareDialog
-          open={shareDialogOpen}
           onClose={() => setShareDialogOpen(false)}
-          shareLink={shareLink}
           language={effectiveLanguage}
         />
         <LoadExternalDialog
-          open={loadExternalDialogOpen}
           onClose={() => {
             setLoadExternalDialogOpen(false);
             setPendingExternalId(null);

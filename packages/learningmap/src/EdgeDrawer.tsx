@@ -3,10 +3,9 @@ import { X, Trash2, Save } from "lucide-react";
 import { Edge } from "@xyflow/react";
 import { EditorDrawerEdgeContent } from "./EditorDrawerEdgeContent";
 import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
 
 interface EdgeDrawerProps {
-  edge: Edge | null;
-  isOpen: boolean;
   onClose: () => void;
   onUpdate: (edge: Edge) => void;
   onDelete: () => void;
@@ -14,14 +13,16 @@ interface EdgeDrawerProps {
 }
 
 export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
-  edge: selectedEdge,
-  isOpen: edgeDrawerOpen,
   onClose: closeDrawer,
   onUpdate: updateEdge,
   onDelete: deleteEdge,
   language = "en",
 }) => {
   const t = getTranslations(language);
+  
+  // Get edge and drawer state from store
+  const selectedEdge = useEditorStore(state => state.selectedEdge);
+  const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
   
   if (!selectedEdge || !edgeDrawerOpen) return null;
   return (

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { X, Trash2, Save } from "lucide-react";
-import { Node, useReactFlow } from "@xyflow/react";
+import { Node } from "@xyflow/react";
 import { EditorDrawerTaskContent } from "./EditorDrawerTaskContent";
 import { EditorDrawerTopicContent } from "./EditorDrawerTopicContent";
 import { EditorDrawerImageContent } from "./EditorDrawerImageContent";
 import { EditorDrawerTextContent } from "./EditorDrawerTextContent";
 import { Completion, NodeData } from "./types";
 import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
 
 interface EditorDrawerProps {
-  node: Node<NodeData> | null;
   isOpen: boolean;
   onClose: () => void;
   onUpdate: (node: Node<NodeData>) => void;
@@ -18,7 +18,6 @@ interface EditorDrawerProps {
 }
 
 export const EditorDrawer: React.FC<EditorDrawerProps> = ({
-  node,
   isOpen,
   onClose,
   onUpdate,
@@ -26,9 +25,13 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
   language = "en",
 }) => {
   const t = getTranslations(language);
+  
+  // Get node and all nodes from store
+  const selectedNodeId = useEditorStore(state => state.selectedNodeId);
+  const nodes = useEditorStore(state => state.nodes);
+  const node = nodes.find(n => n.id === selectedNodeId) || null;
+  
   const [localNode, setLocalNode] = useState<Node<NodeData> | null>(node);
-  const { getNodes } = useReactFlow();
-  const allNodes = getNodes();
 
   useEffect(() => {
     setLocalNode(node);
@@ -37,7 +40,7 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
   if (!isOpen || !node || !localNode) return null;
 
   // Filter out the current node from selectable options
-  const nodeOptions = allNodes.filter(n => n.id !== node.id && n.type === "task" || n.type === "topic");
+  const nodeOptions = nodes.filter(n => n.id !== node.id && (n.type === "task" || n.type === "topic"));
 
   // Helper for dropdowns
   const renderNodeSelect = (value: string, onChange: (id: string) => void) => (

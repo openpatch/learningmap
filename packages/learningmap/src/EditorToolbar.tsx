@@ -4,18 +4,9 @@ import "@szhsin/react-menu/dist/index.css";
 import '@szhsin/react-menu/dist/transitions/zoom.css';
 import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2, RotateCcw } from "lucide-react";
 import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
 
 interface EditorToolbarProps {
-  debugMode: boolean;
-  previewMode: boolean;
-  showCompletionNeeds: boolean;
-  showCompletionOptional: boolean;
-  showUnlockAfter: boolean;
-  onToggleDebugMode: () => void;
-  onTogglePreviewMode: () => void;
-  onSetShowCompletionNeeds: (checked: boolean) => void;
-  onSetShowCompletionOptional: (checked: boolean) => void;
-  onSetShowUnlockAfter: (checked: boolean) => void;
   onAddNewNode: (type: "task" | "topic" | "image" | "text") => void;
   onOpenSettingsDrawer: () => void;
   onDownlad: () => void;
@@ -26,16 +17,6 @@ interface EditorToolbarProps {
 }
 
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
-  debugMode,
-  previewMode,
-  showCompletionNeeds,
-  showCompletionOptional,
-  showUnlockAfter,
-  onTogglePreviewMode,
-  onToggleDebugMode,
-  onSetShowCompletionNeeds,
-  onSetShowCompletionOptional,
-  onSetShowUnlockAfter,
   onAddNewNode,
   onOpenSettingsDrawer,
   onDownlad,
@@ -45,6 +26,26 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   language = "en",
 }) => {
   const t = getTranslations(language);
+  
+  // Get state directly from store
+  const debugMode = useEditorStore(state => state.debugMode);
+  const previewMode = useEditorStore(state => state.previewMode);
+  const showCompletionNeeds = useEditorStore(state => state.showCompletionNeeds);
+  const showCompletionOptional = useEditorStore(state => state.showCompletionOptional);
+  const showUnlockAfter = useEditorStore(state => state.showUnlockAfter);
+  
+  // Get actions directly from store
+  const setDebugMode = useEditorStore(state => state.setDebugMode);
+  const setPreviewMode = useEditorStore(state => state.setPreviewMode);
+  const setShowCompletionNeeds = useEditorStore(state => state.setShowCompletionNeeds);
+  const setShowCompletionOptional = useEditorStore(state => state.setShowCompletionOptional);
+  const setShowUnlockAfter = useEditorStore(state => state.setShowUnlockAfter);
+
+  const onToggleDebugMode = () => setDebugMode(!debugMode);
+  const onTogglePreviewMode = () => setPreviewMode(!previewMode);
+  const onSetShowCompletionNeeds = (checked: boolean) => setShowCompletionNeeds(checked);
+  const onSetShowCompletionOptional = (checked: boolean) => setShowCompletionOptional(checked);
+  const onSetShowUnlockAfter = (checked: boolean) => setShowUnlockAfter(checked);
 
   return (
     <div className="editor-toolbar">

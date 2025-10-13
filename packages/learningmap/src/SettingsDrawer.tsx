@@ -4,23 +4,25 @@ import { Settings } from "./types";
 import { ColorSelector } from "./ColorSelector";
 import { getTranslations } from "./translations";
 import { useReactFlow } from "@xyflow/react";
+import { useEditorStore } from "./editorStore";
 
 interface SettingsDrawerProps {
-  isOpen: boolean;
   onClose: () => void;
-  settings: Settings;
   onUpdate: (s: Settings) => void;
   language?: string;
 }
 
 export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
-  isOpen,
   onClose,
-  settings,
   onUpdate,
   language = "en",
 }) => {
   const t = getTranslations(language);
+  
+  // Get state from store
+  const isOpen = useEditorStore(state => state.settingsDrawerOpen);
+  const settings = useEditorStore(state => state.settings);
+  
   const [localSettings, setLocalSettings] = useState<Settings>(settings);
   const { getViewport } = useReactFlow();
 

@@ -2,13 +2,19 @@ import { Node, Panel } from "@xyflow/react";
 import { NodeData } from "./types";
 import { FC } from "react";
 import { AlignCenterVertical, AlignCenterHorizontal, AlignEndHorizontal, AlignEndVertical, AlignStartVertical, AlignStartHorizontal, RulerDimensionLine, AlignVerticalDistributeCenter, AlignHorizontalDistributeCenter } from "lucide-react";
+import { useEditorStore } from "./editorStore";
 
 interface Props {
-  nodes: Node<NodeData>[];
   onUpdate: (nodes: Node<NodeData>[]) => void;
 }
 
-export const MultiNodePanel: FC<Props> = ({ nodes, onUpdate }) => {
+export const MultiNodePanel: FC<Props> = ({ onUpdate }) => {
+  // Get selected nodes from store
+  const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
+  const allNodes = useEditorStore(state => state.nodes);
+  const nodes = allNodes.filter(n => selectedNodeIds.includes(n.id));
+  
+  if (nodes.length < 2) return null;
 
   const alignLeftVertical = () => {
     if (nodes.length < 2) return;
