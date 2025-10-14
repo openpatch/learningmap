@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LearningMap } from '@learningmap/learningmap';
 import type { RoadmapState } from '@learningmap/learningmap';
@@ -12,6 +12,7 @@ function Learn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [newMapUrl, setNewMapUrl] = useState('');
+  const updateTimeoutRef = useRef<number | null>(null);
   
   const {
     addLearningMap,
@@ -64,11 +65,17 @@ function Learn() {
       });
   }, [jsonId, getLearningMap, addLearningMap]);
   
-  const handleStateChange = (state: RoadmapState) => {
+  const handleStateChange = useCallback((state: RoadmapState) => {
     if (jsonId) {
-      updateState(jsonId, state);
+      // Debounce state updates to prevent infinite loops
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+      updateTimeoutRef.current = setTimeout(() => {
+        updateState(jsonId, state);
+      }, 500);
     }
-  };
+  }, [jsonId, updateState]);
   
   const handleAddMap = () => {
     // Parse URL to extract json ID
@@ -120,6 +127,7 @@ function Learn() {
       );
     }
     
+    
     return (
       <div className="learn-container">
         <div className="learn-header">
@@ -129,6 +137,7 @@ function Learn() {
           <h1>{learningMap.roadmapData.settings?.title || 'Learning Map'}</h1>
         </div>
         <LearningMap
+          key={jsonId}
           roadmapData={learningMap.roadmapData}
           initialState={learningMap.state}
           onChange={handleStateChange}

@@ -124,7 +124,7 @@ export function LearningMap({
         root.dispatchEvent(new CustomEvent("change", { detail: minimalState }));
       }
     }
-  }, [nodes, onChange]);
+  }, [nodes, getViewport, getRoadmapState]);
 
   const defaultEdgeOptions = {
     animated: false,
