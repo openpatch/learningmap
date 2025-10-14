@@ -96,7 +96,7 @@ export interface Translations {
 
   // Placeholders
   placeholderNodeLabel: string;
-  placerholderTitleLabel: string; // only used in SettingsDrawer
+  placeholderTitleLabel: string; // only used in SettingsDrawer
   placeholderShortSummary: string;
   placeholderDetailedDescription: string;
   placeholderVideoURL: string;
@@ -296,7 +296,7 @@ const en: Translations = {
 
   // Placeholders
   placeholderNodeLabel: "Node label",
-  placerholderTitleLabel: "Lerningmap label", // only used in SettingsDrawer
+  placeholderTitleLabel: "Lerningmap label", // only used in SettingsDrawer
   placeholderShortSummary: "Short summary",
   placeholderDetailedDescription: "Detailed description",
   placeholderVideoURL: "YouTube or video URL",
@@ -503,7 +503,7 @@ const de: Translations = {
 
   // Placeholders
   placeholderNodeLabel: "Knotenbezeichnung",
-  placerholderTitleLabel: "Lernkartenbezeichnung", // only used in SettingsDrawer
+  placeholderTitleLabel: "Lernkartenbezeichnung", // only used in SettingsDrawer
   placeholderShortSummary: "Kurze Zusammenfassung",
   placeholderDetailedDescription: "Detaillierte Beschreibung",
   placeholderVideoURL: "YouTube oder Video-URL",
