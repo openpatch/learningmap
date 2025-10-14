@@ -118,7 +118,6 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
         nodeTypes={nodeTypes}
         selectionOnDrag={false}
         edgeTypes={edgeTypes}
-        fitView
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={defaultEdgeOptions}
         nodesDraggable={true}
