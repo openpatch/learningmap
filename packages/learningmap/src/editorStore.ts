@@ -318,8 +318,8 @@ export const useEditorStore = create<EditorState>()(
         // UI state setters
         setPreviewMode: (previewMode) => set({ previewMode }),
         setDebugMode: (debugMode) => {
-          get().updateDebugEdges();
           set({ debugMode });
+          get().updateDebugEdges();
         },
         setShowGrid: (showGrid) => set({ showGrid }),
         setHelpOpen: (helpOpen) => set({ helpOpen }),
@@ -345,16 +345,16 @@ export const useEditorStore = create<EditorState>()(
         setShareLink: (shareLink) => set({ shareLink }),
         setPendingExternalId: (pendingExternalId) => set({ pendingExternalId }),
         setShowCompletionNeeds: (showCompletionNeeds) => {
-          get().updateDebugEdges();
           set({ showCompletionNeeds });
+          get().updateDebugEdges();
         },
         setShowCompletionOptional: (showCompletionOptional) => {
-          get().updateDebugEdges();
           set({ showCompletionOptional });
+          get().updateDebugEdges();
         },
         setShowUnlockAfter: (showUnlockAfter) => {
-          get().updateDebugEdges();
           set({ showUnlockAfter });
+          get().updateDebugEdges();
         },
 
         // Bulk operations
