@@ -16,14 +16,14 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   // Get state from store
   const isOpen = useEditorStore(state => state.settingsDrawerOpen);
   const settings = useEditorStore(state => state.settings);
-  
+
   // Get actions from store
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
   const setSettings = useEditorStore(state => state.setSettings);
-  
+
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
-  
+
   const [localSettings, setLocalSettings] = useState<Settings>(settings);
   const { getViewport } = useReactFlow();
 
@@ -32,7 +32,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   }, [settings]);
 
   const onClose = () => setSettingsDrawerOpen(false);
-  
+
   const onUpdate = (s: Settings) => {
     setSettings(s);
   };
@@ -74,7 +74,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               type="text"
               value={localSettings?.title || ""}
               onChange={(e) => setLocalSettings(settings => ({ ...settings, title: e.target.value }))}
-              placeholder={t.placeholderNodeLabel}
+              placeholder={t.placeholderTitleLabel}
             />
           </div>
           <div className="form-group">
@@ -94,7 +94,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               onChange={color => setLocalSettings(settings => ({ ...settings, background: { ...settings.background, color } }))}
             />
           </div>
-          
+
           <div className="form-group">
             <label>{t.initialViewport}</label>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' }}>

@@ -33,6 +33,9 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
   const showGrid = useEditorStore(state => state.showGrid);
   const setShowGrid = useEditorStore(state => state.setShowGrid);
   const deleteNode = useEditorStore(state => state.deleteNode);
+  const drawerOpen = useEditorStore(state => state.drawerOpen);
+  const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
+  const settingsDrawerOpen = useEditorStore(state => state.settingsDrawerOpen);
 
   const language = settings?.language || "en";
   const t = getTranslations(language);
@@ -148,6 +151,9 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (drawerOpen || edgeDrawerOpen || settingsDrawerOpen) {
+        return; // Ignore shortcuts when any drawer is open
+      }
       if (e.ctrlKey || e.metaKey) {
         if (e.key === '1') {
           e.preventDefault();
@@ -227,7 +233,7 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
     };
   }, [onAddNode, onDeleteSelected, onSave, undo, redo, helpOpen, setHelpOpen, onTogglePreview, onToggleDebug,
     onZoomIn, onZoomOut, onResetZoom, onFitView, onZoomToSelection, onToggleGrid,
-    onResetMap, onCut, onCopy, onPaste, onSelectAll]);
+    onResetMap, onCut, onCopy, onPaste, onSelectAll, drawerOpen, edgeDrawerOpen, settingsDrawerOpen]);
 
   return null;
 };

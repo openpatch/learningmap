@@ -96,6 +96,7 @@ export interface Translations {
 
   // Placeholders
   placeholderNodeLabel: string;
+  placerholderTitleLabel: string; // only used in SettingsDrawer
   placeholderShortSummary: string;
   placeholderDetailedDescription: string;
   placeholderVideoURL: string;
@@ -295,6 +296,7 @@ const en: Translations = {
 
   // Placeholders
   placeholderNodeLabel: "Node label",
+  placerholderTitleLabel: "Lerningmap label", // only used in SettingsDrawer
   placeholderShortSummary: "Short summary",
   placeholderDetailedDescription: "Detailed description",
   placeholderVideoURL: "YouTube or video URL",
@@ -316,8 +318,10 @@ const en: Translations = {
   failedToLoadFile:
     "Failed to load the file. Please make sure it is a valid roadmap JSON file.",
   failedToExportSVG: "Failed to export SVG: ",
-  loadExternalWarning: "Loading an external learningmap will replace your existing content. You can back up your current learningmap first by using one of the options below.",
-  loadExternalBackupPrompt: "Would you like to back up your current learningmap before loading the external one?",
+  loadExternalWarning:
+    "Loading an external learningmap will replace your existing content. You can back up your current learningmap first by using one of the options below.",
+  loadExternalBackupPrompt:
+    "Would you like to back up your current learningmap before loading the external one?",
   emptyMapCannotBeShared: "An empty learningmap cannot be shared.",
   uploadFailed: "Upload failed. Please try again!",
   loadFailed: "Failed to load. Please check the URL.",
@@ -499,6 +503,7 @@ const de: Translations = {
 
   // Placeholders
   placeholderNodeLabel: "Knotenbezeichnung",
+  placerholderTitleLabel: "Lernkartenbezeichnung", // only used in SettingsDrawer
   placeholderShortSummary: "Kurze Zusammenfassung",
   placeholderDetailedDescription: "Detaillierte Beschreibung",
   placeholderVideoURL: "YouTube oder Video-URL",
@@ -521,10 +526,13 @@ const de: Translations = {
   failedToLoadFile:
     "Datei konnte nicht geladen werden. Bitte stellen Sie sicher, dass es sich um eine gültige Roadmap-JSON-Datei handelt.",
   failedToExportSVG: "SVG-Export fehlgeschlagen: ",
-  loadExternalWarning: "Das Laden einer externen Learningmap ersetzt Ihren aktuellen Inhalt. Sie können Ihre aktuelle Learningmap zuerst sichern, indem Sie eine der folgenden Optionen verwenden.",
-  loadExternalBackupPrompt: "Möchten Sie Ihre aktuelle Learningmap sichern, bevor Sie die externe laden?",
+  loadExternalWarning:
+    "Das Laden einer externen Learningmap ersetzt Ihren aktuellen Inhalt. Sie können Ihre aktuelle Learningmap zuerst sichern, indem Sie eine der folgenden Optionen verwenden.",
+  loadExternalBackupPrompt:
+    "Möchten Sie Ihre aktuelle Learningmap sichern, bevor Sie die externe laden?",
   emptyMapCannotBeShared: "Eine leere Learningmap kann nicht geteilt werden.",
-  uploadFailed: "Beim Upload ist was schief gelaufen. Bitte versuche es erneut!",
+  uploadFailed:
+    "Beim Upload ist was schief gelaufen. Bitte versuche es erneut!",
   loadFailed: "Beim Laden ist etwas schief gegangen. Bitte überprüfe die URL.",
 
   // Share dialog
