@@ -81,9 +81,9 @@ export function LearningMap({
   useEffect(() => {
     loadRoadmapData(parsedRoadmap, initialState);
     setViewport({
-      x: initialState?.x || 0,
-      y: initialState?.y || 0,
-      zoom: initialState?.zoom || 1,
+      x: initialState?.x || settings?.viewport?.x || 0,
+      y: initialState?.y || settings?.viewport?.y || 0,
+      zoom: initialState?.zoom || settings?.viewport?.zoom || 1,
     });
   }, [roadmapData, initialState]);
 

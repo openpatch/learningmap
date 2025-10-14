@@ -184,6 +184,13 @@ export interface Translations {
   languageEnglish: string;
   languageGerman: string;
 
+  // Viewport settings
+  initialViewport: string;
+  viewportX: string;
+  viewportY: string;
+  viewportZoom: string;
+  useCurrentViewport: string;
+
   // Welcome message
   welcomeTitle: string;
   welcomeSubtitle: string;
@@ -379,6 +386,13 @@ const en: Translations = {
   languageLabel: "Language",
   languageEnglish: "English",
   languageGerman: "German",
+
+  // Viewport settings
+  initialViewport: "Initial Viewport",
+  viewportX: "X Position",
+  viewportY: "Y Position",
+  viewportZoom: "Zoom",
+  useCurrentViewport: "Use Current Viewport",
 
   // Welcome message
   welcomeTitle: "Learningmap",
@@ -577,6 +591,13 @@ const de: Translations = {
   languageLabel: "Sprache",
   languageEnglish: "Englisch",
   languageGerman: "Deutsch",
+
+  // Viewport settings
+  initialViewport: "Initialer Ansichtsbereich",
+  viewportX: "X-Position",
+  viewportY: "Y-Position",
+  viewportZoom: "Zoom",
+  useCurrentViewport: "Aktuellen Ansichtsbereich verwenden",
 
   // Welcome message
   welcomeTitle: "Learningmap",
