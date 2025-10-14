@@ -5,7 +5,7 @@ import '@szhsin/react-menu/dist/transitions/zoom.css';
 import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2, RotateCcw } from "lucide-react";
 import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
-import { Node } from "@xyflow/react";
+import { Node, useReactFlow } from "@xyflow/react";
 import { NodeData } from "./types";
 import { useJsonStore } from "./useJsonStore";
 import { useFileOperations } from "./useFileOperations";
@@ -17,6 +17,8 @@ interface EditorToolbarProps {
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   defaultLanguage = "en",
 }) => {
+  const { screenToFlowPosition } = useReactFlow();
+
   // Get state directly from store
   const settings = useEditorStore(state => state.settings);
   const debugMode = useEditorStore(state => state.debugMode);
@@ -48,7 +50,8 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const onSetShowUnlockAfter = (checked: boolean) => setShowUnlockAfter(checked);
 
   const onAddNewNode = (type: "task" | "topic" | "image" | "text") => {
-    const position = { x: Math.random() * 500, y: Math.random() * 500 };
+    // Position new nodes at the center of the current viewport
+    const position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
     const newNode: Node<NodeData> = {
       id: `node-${Date.now()}`,
       type,
