@@ -3,6 +3,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  font-family: "Concert One", sans-serif;
 }
 
 .learn-header {
@@ -17,7 +18,7 @@
 .learn-header h1 {
   margin: 0;
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .back-button {
@@ -28,6 +29,7 @@
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s;
+  font-family: "Concert One", sans-serif;
 }
 
 .back-button:hover {
@@ -42,6 +44,7 @@
   justify-content: center;
   height: 100vh;
   gap: 1rem;
+  font-family: "Concert One", sans-serif;
 }
 
 .learn-spinner {
@@ -60,6 +63,7 @@
 
 .learn-error h2 {
   color: #dc3545;
+  font-weight: 400;
 }
 
 .learn-error button {
@@ -70,6 +74,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
+  font-family: "Concert One", sans-serif;
 }
 
 .learn-error button:hover {
@@ -81,6 +86,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  font-family: "Concert One", sans-serif;
 }
 
 .learn-list-header {
@@ -93,7 +99,7 @@
 .learn-list-header h1 {
   margin: 0;
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .editor-link {
@@ -104,8 +110,9 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 400;
   transition: background 0.2s;
+  font-family: "Concert One", sans-serif;
 }
 
 .editor-link:hover {
@@ -122,7 +129,7 @@
 .add-map-section h2 {
   margin: 0 0 1rem 0;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .add-map-form {
@@ -136,6 +143,7 @@
   border: 1px solid #dee2e6;
   border-radius: 4px;
   font-size: 1rem;
+  font-family: "Concert One", sans-serif;
 }
 
 .add-map-form button {
@@ -146,8 +154,9 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 400;
   transition: background 0.2s;
+  font-family: "Concert One", sans-serif;
 }
 
 .add-map-form button:hover {
@@ -201,7 +210,7 @@
 .map-card-header h3 {
   margin: 0;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 400;
   flex: 1;
   word-break: break-word;
 }
@@ -220,6 +229,7 @@
   justify-content: center;
   border-radius: 4px;
   transition: all 0.2s;
+  font-family: "Concert One", sans-serif;
 }
 
 .remove-button:hover {
@@ -275,8 +285,9 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 400;
   transition: background 0.2s;
+  font-family: "Concert One", sans-serif;
 }
 
 .continue-button:hover {
