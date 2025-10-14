@@ -44,6 +44,18 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     onClose();
   };
 
+  const handleUseCurrentViewport = () => {
+    const viewport = getViewport();
+    setLocalSettings(settings => ({
+      ...settings,
+      viewport: {
+        x: Math.round(viewport.x),
+        y: Math.round(viewport.y),
+        zoom: parseFloat(viewport.zoom.toFixed(2)),
+      }
+    }));
+  };
+
   return (
     <>
       <div className="drawer-overlay" onClick={onClose} />
@@ -81,6 +93,59 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               value={localSettings?.background?.color || "#ffffff"}
               onChange={color => setLocalSettings(settings => ({ ...settings, background: { ...settings.background, color } }))}
             />
+          </div>
+          
+          <div className="form-group">
+            <label>{t.initialViewport}</label>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.875rem', color: '#666' }}>{t.viewportX}</label>
+                <input
+                  type="number"
+                  value={localSettings?.viewport?.x ?? 0}
+                  onChange={(e) => setLocalSettings(settings => ({
+                    ...settings,
+                    viewport: { ...settings.viewport, x: parseFloat(e.target.value) || 0, y: settings.viewport?.y ?? 0, zoom: settings.viewport?.zoom ?? 1 }
+                  }))}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.875rem', color: '#666' }}>{t.viewportY}</label>
+                <input
+                  type="number"
+                  value={localSettings?.viewport?.y ?? 0}
+                  onChange={(e) => setLocalSettings(settings => ({
+                    ...settings,
+                    viewport: { ...settings.viewport, y: parseFloat(e.target.value) || 0, x: settings.viewport?.x ?? 0, zoom: settings.viewport?.zoom ?? 1 }
+                  }))}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.875rem', color: '#666' }}>{t.viewportZoom}</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  max="10"
+                  value={localSettings?.viewport?.zoom ?? 1}
+                  onChange={(e) => setLocalSettings(settings => ({
+                    ...settings,
+                    viewport: { ...settings.viewport, zoom: parseFloat(e.target.value) || 1, x: settings.viewport?.x ?? 0, y: settings.viewport?.y ?? 0 }
+                  }))}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+            <button
+              onClick={handleUseCurrentViewport}
+              className="secondary-button"
+              style={{ marginTop: '8px', width: '100%' }}
+              type="button"
+            >
+              {t.useCurrentViewport}
+            </button>
           </div>
         </div>
 

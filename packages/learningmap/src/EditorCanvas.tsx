@@ -1,5 +1,5 @@
-import { useCallback, memo } from "react";
-import { ReactFlow, Controls, Background, ControlButton, OnSelectionChangeFunc, Node, Edge } from "@xyflow/react";
+import { useCallback, memo, useEffect } from "react";
+import { ReactFlow, Controls, Background, ControlButton, OnSelectionChangeFunc, Node, Edge, useReactFlow } from "@xyflow/react";
 import { Info, Redo, Undo } from "lucide-react";
 import { useEditorStore, useTemporalStore } from "./editorStore";
 import { TaskNode } from "./nodes/TaskNode";
@@ -45,8 +45,21 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
 
+  const { setViewport } = useReactFlow();
+
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
+
+  // Apply viewport from settings on mount or when settings change
+  useEffect(() => {
+    if (settings?.viewport) {
+      setViewport({
+        x: settings.viewport.x,
+        y: settings.viewport.y,
+        zoom: settings.viewport.zoom,
+      });
+    }
+  }, [settings?.viewport, setViewport]);
 
   // Temporal store for undo/redo
   const { undo, redo, canUndo, canRedo } = useTemporalStore((state) => ({
