@@ -1,4 +1,4 @@
-import { useCallback, memo, useEffect } from "react";
+import { useCallback, memo, useEffect, useRef } from "react";
 import { ReactFlow, Controls, Background, ControlButton, OnSelectionChangeFunc, Node, Edge, useReactFlow } from "@xyflow/react";
 import { Info, Redo, Undo } from "lucide-react";
 import { useEditorStore, useTemporalStore } from "./editorStore";
@@ -44,8 +44,10 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
+  const setLastMousePosition = useEditorStore(state => state.setLastMousePosition);
 
-  const { setViewport } = useReactFlow();
+  const { setViewport, screenToFlowPosition } = useReactFlow();
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
@@ -90,6 +92,12 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
     [setSelectedNodeIds]
   );
 
+  // Track mouse position for keyboard shortcuts
+  const handleMouseMove = useCallback((event: React.MouseEvent) => {
+    const position = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+    setLastMousePosition(position);
+  }, [screenToFlowPosition, setLastMousePosition]);
+
   const defaultEdgeOptions = {
     animated: false,
     style: {
@@ -101,10 +109,12 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
 
   return (
     <div
+      ref={canvasRef}
       className="editor-canvas"
       style={{
         backgroundColor: settings?.background?.color || "#ffffff",
       }}
+      onMouseMove={handleMouseMove}
     >
       <ReactFlow
         nodes={nodes}
