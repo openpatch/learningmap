@@ -5,6 +5,7 @@ import type { RoadmapState } from '@learningmap/learningmap';
 import '@learningmap/learningmap/index.css';
 import { useLearnerStore } from './learnerStore';
 import './Learn.css';
+import logo from './logo.svg';
 
 function Learn() {
   const navigate = useNavigate();
@@ -130,11 +131,16 @@ function Learn() {
     
     return (
       <div className="learn-container">
-        <div className="learn-header">
-          <button onClick={() => navigate('/learn')} className="back-button">
-            ← Back to Learning Maps
-          </button>
-          <h1>{learningMap.roadmapData.settings?.title || 'Learning Map'}</h1>
+        <div className="learn-toolbar">
+          <div className="toolbar-left">
+            <img src={logo} alt="Logo" className="toolbar-logo" />
+            <h1 className="toolbar-title">Learningmap</h1>
+          </div>
+          <div className="toolbar-right">
+            <button onClick={() => navigate('/learn')} className="toolbar-button">
+              My Learningmaps
+            </button>
+          </div>
         </div>
         <LearningMap
           key={jsonId}
@@ -151,40 +157,41 @@ function Learn() {
   
   return (
     <div className="learn-list-container">
-      <div className="learn-list-header">
-        <h1>My Learning Maps</h1>
-        <button onClick={() => navigate('/')} className="editor-link">
-          Go to Editor
-        </button>
+      <div className="learn-toolbar">
+        <div className="toolbar-left">
+          <img src={logo} alt="Logo" className="toolbar-logo" />
+          <h1 className="toolbar-title">Learningmap</h1>
+        </div>
       </div>
       
-      <div className="add-map-section">
-        <h2>Add a New Learning Map</h2>
-        <div className="add-map-form">
-          <input
-            type="text"
-            placeholder="Paste learning map URL (e.g., https://learningmap.app/learn/#json=...)"
-            value={newMapUrl}
-            onChange={(e) => setNewMapUrl(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleAddMap();
-              }
-            }}
-          />
-          <button onClick={handleAddMap}>Add Map</button>
+      <div className="learn-list-content">
+        <div className="add-map-section">
+          <h2>Add a New Learning Map</h2>
+          <div className="add-map-form">
+            <input
+              type="text"
+              placeholder="Paste learning map URL (e.g., https://learningmap.app/learn/#json=...)"
+              value={newMapUrl}
+              onChange={(e) => setNewMapUrl(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleAddMap();
+                }
+              }}
+            />
+            <button onClick={handleAddMap}>Add Map</button>
+          </div>
+          {error && <p className="error-message">{error}</p>}
         </div>
-        {error && <p className="error-message">{error}</p>}
-      </div>
-      
-      {allMaps.length === 0 ? (
-        <div className="empty-state">
-          <p>You haven't added any learning maps yet.</p>
-          <p>Paste a learning map URL above to get started!</p>
-        </div>
-      ) : (
-        <div className="maps-grid">
-          {allMaps.map((map) => {
+        
+        {allMaps.length === 0 ? (
+          <div className="empty-state">
+            <p>You haven't added any learning maps yet.</p>
+            <p>Paste a learning map URL above to get started!</p>
+          </div>
+        ) : (
+          <div className="maps-grid">
+            {allMaps.map((map) => {
             const completed = Object.values(map.state?.nodes || {}).filter(
               (node) => node.state === 'completed' || node.state === 'mastered'
             ).length;
@@ -237,6 +244,7 @@ function Learn() {
           })}
         </div>
       )}
+      </div>
     </div>
   );
 }
