@@ -1,4 +1,6 @@
 .learn-container {
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   font-family: "Concert One", sans-serif;
@@ -6,6 +8,7 @@
 
 /* Toolbar matching EditorToolbar design */
 .learn-toolbar {
+  width: 100%;
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   padding: 12px 24px;
@@ -112,6 +115,8 @@
 
 /* List view styles */
 .learn-list-container {
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   font-family: "Concert One", sans-serif;
@@ -122,9 +127,9 @@
   width: 100%;
   margin: 0 auto;
   padding: 2rem;
-  box-sizing: border-box;
   flex: 1;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .add-map-section {
