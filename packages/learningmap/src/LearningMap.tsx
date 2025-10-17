@@ -68,7 +68,7 @@ export function LearningMap({
   const updateNodesStates = useViewerStore(state => state.updateNodesStates);
   const updateNodeState = useViewerStore(state => state.updateNodeState);
   
-  const { fitView, getViewport, setViewport } = useReactFlow();
+  const { fitView, getViewport } = useReactFlow();
 
   // Use language from settings if available, otherwise use prop
   const effectiveLanguage = settings?.language || language;
@@ -78,14 +78,40 @@ export function LearningMap({
 
   const parsedRoadmap = parseRoadmapData(roadmapData);
 
+  // Calculate translateExtent to ensure at least one node is always visible
+  const calculateTranslateExtent = useCallback(() => {
+    if (nodes.length === 0) return [[-Infinity, -Infinity], [Infinity, Infinity]] as [[number, number], [number, number]];
+    
+    const padding = 200; // Add padding so nodes aren't at the very edge
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    
+    nodes.forEach(node => {
+      if (node.position) {
+        // Estimate node size (approximate, could be refined)
+        const nodeWidth = node.width || 200;
+        const nodeHeight = node.height || 100;
+        
+        minX = Math.min(minX, node.position.x - padding);
+        minY = Math.min(minY, node.position.y - padding);
+        maxX = Math.max(maxX, node.position.x + nodeWidth + padding);
+        maxY = Math.max(maxY, node.position.y + nodeHeight + padding);
+      }
+    });
+    
+    return [[minX, minY], [maxX, maxY]] as [[number, number], [number, number]];
+  }, [nodes]);
+
   useEffect(() => {
     loadRoadmapData(parsedRoadmap, initialState);
-    setViewport({
-      x: initialState?.x || settings?.viewport?.x || 0,
-      y: initialState?.y || settings?.viewport?.y || 0,
-      zoom: initialState?.zoom || settings?.viewport?.zoom || 1,
-    });
-  }, [roadmapData, initialState]);
+    
+    // Only use fitView if there's no saved state
+    if (!initialState) {
+      // Use setTimeout to ensure nodes are rendered before fitView
+      setTimeout(() => {
+        fitView({ duration: 0, padding: 0.2 });
+      }, 0);
+    }
+  }, [roadmapData, initialState, loadRoadmapData, fitView]);
 
   const onNodeClick = useCallback((_: any, node: Node, focus: boolean = false) => {
     if (!isInteractableNode(node)) return;
@@ -124,7 +150,7 @@ export function LearningMap({
         root.dispatchEvent(new CustomEvent("change", { detail: minimalState }));
       }
     }
-  }, [nodes, onChange]);
+  }, [nodes, getViewport, getRoadmapState]);
 
   const defaultEdgeOptions = {
     animated: false,
@@ -134,6 +160,15 @@ export function LearningMap({
     },
     type: "default",
   };
+
+  // Determine default viewport (only used if no saved state exists)
+  const defaultViewport = {
+    x: initialState?.x || settings?.viewport?.x || 0,
+    y: initialState?.y || settings?.viewport?.y || 0,
+    zoom: initialState?.zoom || settings?.viewport?.zoom || 1,
+  };
+
+  const translateExtent = calculateTranslateExtent();
 
   return (
     <div
@@ -159,7 +194,8 @@ export function LearningMap({
         onNodeClick={onNodeClick}
         onNodesChange={onNodesChange}
         nodeTypes={nodeTypes}
-        fitView
+        defaultViewport={defaultViewport}
+        translateExtent={translateExtent}
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={defaultEdgeOptions}
         nodesDraggable={false}
