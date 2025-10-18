@@ -192,7 +192,7 @@ export interface Translations {
   viewportZoom: string;
   useCurrentViewport: string;
 
-  // Storage ID settings
+  // ID settings
   storageId: string;
   generateRandomId: string;
   storageIdHint: string;
@@ -403,8 +403,8 @@ const en: Translations = {
   viewportZoom: "Zoom",
   useCurrentViewport: "Use Current Viewport",
 
-  // Storage ID settings
-  storageId: "Storage ID",
+  // ID settings
+  storageId: "ID",
   generateRandomId: "Generate Random ID",
   storageIdHint: "Learning maps with the same ID will share the same state when a student is working on it.",
 
@@ -617,8 +617,8 @@ const de: Translations = {
   viewportZoom: "Zoom",
   useCurrentViewport: "Aktuellen Ansichtsbereich verwenden",
 
-  // Storage ID settings
-  storageId: "Speicher-ID",
+  // ID settings
+  storageId: "ID",
   generateRandomId: "Zufällige ID generieren",
   storageIdHint: "Lernkarten mit der gleichen ID teilen sich den gleichen Zustand, wenn ein Schüler daran arbeitet.",
 
