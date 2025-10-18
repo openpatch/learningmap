@@ -38,11 +38,44 @@ function Learn() {
   useEffect(() => {
     if (!jsonId) return;
     
+    // First, fetch the roadmap data to check if it has an id
     const existingMap = getLearningMap(jsonId);
     
     if (existingMap) {
-      // Already have the data, just update last accessed
-      addLearningMap(jsonId, existingMap.roadmapData);
+      // Check if the roadmap has a storage ID and handle potential conflicts
+      const storageId = existingMap.roadmapData.settings?.id;
+      if (storageId && storageId !== jsonId) {
+        // There's a custom storage ID - check if a different map exists with that ID
+        const mapWithStorageId = getLearningMap(storageId);
+        if (mapWithStorageId && mapWithStorageId.roadmapData !== existingMap.roadmapData) {
+          // Ask user if they want to replace
+          const shouldReplace = window.confirm(
+            `A learning map with the storage ID "${storageId}" already exists. Would you like to replace it with this map? Your progress will not be removed.`
+          );
+          if (shouldReplace) {
+            // Keep the existing state but update the roadmap data
+            const existingState = mapWithStorageId.state;
+            addLearningMap(storageId, existingMap.roadmapData);
+            if (existingState) {
+              updateState(storageId, existingState);
+            }
+            // Remove the old jsonId entry to avoid duplicates
+            if (jsonId !== storageId) {
+              removeLearningMap(jsonId);
+            }
+          }
+        } else {
+          // No conflict, just update
+          addLearningMap(storageId, existingMap.roadmapData);
+          // Remove the old jsonId entry if different
+          if (jsonId !== storageId) {
+            removeLearningMap(jsonId);
+          }
+        }
+      } else {
+        // No custom storage ID, just use jsonId
+        addLearningMap(jsonId, existingMap.roadmapData);
+      }
       return;
     }
     
@@ -57,26 +90,54 @@ function Learn() {
       .then((r) => r.text())
       .then((text) => {
         const json = JSON.parse(text);
-        addLearningMap(jsonId, json);
+        const storageId = json.settings?.id;
+        
+        if (storageId && storageId !== jsonId) {
+          // Check if a map with this storage ID already exists
+          const existingMapWithStorageId = getLearningMap(storageId);
+          if (existingMapWithStorageId) {
+            // Ask user if they want to replace
+            const shouldReplace = window.confirm(
+              `A learning map with the storage ID "${storageId}" already exists. Would you like to replace it with this map? Your progress will not be removed.`
+            );
+            if (shouldReplace) {
+              // Keep the existing state but update the roadmap data
+              const existingState = existingMapWithStorageId.state;
+              addLearningMap(storageId, json);
+              if (existingState) {
+                updateState(storageId, existingState);
+              }
+            } else {
+              // User chose not to replace, just use jsonId as key
+              addLearningMap(jsonId, json);
+            }
+          } else {
+            // No conflict, use storage ID
+            addLearningMap(storageId, json);
+          }
+        } else {
+          // No custom storage ID, use jsonId
+          addLearningMap(jsonId, json);
+        }
         setLoading(false);
       })
       .catch(() => {
         setError('Failed to load learning map. Please check the URL and try again.');
         setLoading(false);
       });
-  }, [jsonId, getLearningMap, addLearningMap]);
+  }, [jsonId, getLearningMap, addLearningMap, updateState, removeLearningMap]);
   
-  const handleStateChange = useCallback((state: RoadmapState) => {
-    if (jsonId) {
+  const handleStateChange = useCallback((state: RoadmapState, key: string) => {
+    if (key) {
       // Debounce state updates to prevent infinite loops
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
       }
       updateTimeoutRef.current = setTimeout(() => {
-        updateState(jsonId, state);
+        updateState(key, state);
       }, 500);
     }
-  }, [jsonId, updateState]);
+  }, [updateState]);
   
   const handleAddMap = () => {
     // Parse URL to extract json ID
@@ -98,7 +159,23 @@ function Learn() {
   
   // If there's a json ID, show the learning map
   if (jsonId) {
-    const learningMap = getLearningMap(jsonId);
+    // First try to get by storage ID if present, otherwise use jsonId
+    let learningMap = getLearningMap(jsonId);
+    
+    // If not found by jsonId, check if there's a storage ID in any map
+    if (!learningMap) {
+      const allMaps = getAllLearningMaps();
+      const mapWithJsonId = allMaps.find(m => m.id === jsonId);
+      if (mapWithJsonId) {
+        learningMap = mapWithJsonId;
+      }
+    }
+    
+    // Try to determine the storage key (either custom id or jsonId)
+    const storageKey = learningMap?.roadmapData?.settings?.id || jsonId;
+    if (storageKey !== jsonId) {
+      learningMap = getLearningMap(storageKey);
+    }
     
     if (loading) {
       return (
@@ -143,10 +220,10 @@ function Learn() {
           </div>
         </div>
         <LearningMap
-          key={jsonId}
+          key={storageKey}
           roadmapData={learningMap.roadmapData}
           initialState={learningMap.state}
-          onChange={handleStateChange}
+          onChange={(state) => handleStateChange(state, storageKey)}
         />
       </div>
     );

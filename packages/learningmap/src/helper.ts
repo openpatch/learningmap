@@ -106,3 +106,21 @@ export const parseRoadmapData = (
     edges: (userRoadmapData as any).edges || defaultRoadmapData.edges,
   };
 };
+
+/**
+ * Generates a random ID similar to the format used by json.openpatch.org
+ * Example format: iIhK7sHqL-EMWp9OM5_-q
+ */
+export const generateRandomId = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  const segments = [9, 11, 1]; // Generate segments of 9, 11, and 1 characters
+  return segments
+    .map(length => {
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    })
+    .join('-');
+};

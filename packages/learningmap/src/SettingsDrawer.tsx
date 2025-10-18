@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { X, Save } from "lucide-react";
+import { X, Save, RefreshCw } from "lucide-react";
 import { Settings } from "./types";
 import { ColorSelector } from "./ColorSelector";
 import { getTranslations } from "./translations";
 import { useReactFlow } from "@xyflow/react";
 import { useEditorStore } from "./editorStore";
+import { generateRandomId } from "./helper";
 
 interface SettingsDrawerProps {
   defaultLanguage?: string;
@@ -87,6 +88,32 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               <option value="de">{t.languageGerman}</option>
             </select>
           </div>
+          
+          <div className="form-group">
+            <label>{t.storageId}</label>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+              <input
+                type="text"
+                value={localSettings?.id || ""}
+                onChange={(e) => setLocalSettings(settings => ({ ...settings, id: e.target.value }))}
+                placeholder="Optional"
+                style={{ flex: 1 }}
+              />
+              <button
+                onClick={() => setLocalSettings(settings => ({ ...settings, id: generateRandomId() }))}
+                className="secondary-button"
+                type="button"
+                style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                title={t.generateRandomId}
+              >
+                <RefreshCw size={16} />
+              </button>
+            </div>
+            <p style={{ fontSize: '0.875rem', color: '#666', margin: 0, fontStyle: 'italic' }}>
+              ℹ️ {t.storageIdHint}
+            </p>
+          </div>
+          
           <div className="form-group">
             <ColorSelector
               label={t.backgroundColor}
