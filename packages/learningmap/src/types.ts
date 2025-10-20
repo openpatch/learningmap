@@ -48,6 +48,7 @@ export interface BackgroundConfig {
 
 export interface Settings {
   title?: string;
+  id?: string;
   background?: BackgroundConfig;
   language?: string;
   viewport?: {

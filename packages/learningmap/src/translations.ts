@@ -192,6 +192,11 @@ export interface Translations {
   viewportZoom: string;
   useCurrentViewport: string;
 
+  // ID settings
+  storageId: string;
+  generateRandomId: string;
+  storageIdHint: string;
+
   // Welcome message
   welcomeTitle: string;
   welcomeSubtitle: string;
@@ -397,6 +402,11 @@ const en: Translations = {
   viewportY: "Y Position",
   viewportZoom: "Zoom",
   useCurrentViewport: "Use Current Viewport",
+
+  // ID settings
+  storageId: "ID",
+  generateRandomId: "Generate Random ID",
+  storageIdHint: "Learning maps with the same ID will share the same state when a student is working on it.",
 
   // Welcome message
   welcomeTitle: "Learningmap",
@@ -606,6 +616,11 @@ const de: Translations = {
   viewportY: "Y-Position",
   viewportZoom: "Zoom",
   useCurrentViewport: "Aktuellen Ansichtsbereich verwenden",
+
+  // ID settings
+  storageId: "ID",
+  generateRandomId: "Zufällige ID generieren",
+  storageIdHint: "Lernkarten mit der gleichen ID teilen sich den gleichen Zustand, wenn ein Schüler daran arbeitet.",
 
   // Welcome message
   welcomeTitle: "Learningmap",
