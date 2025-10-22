@@ -49,7 +49,7 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
   };
 
   const onDelete = () => {
-    if (node && confirm(t.resetMapWarning)) {
+    if (node) {
       deleteNode(node.id);
       onClose();
     }

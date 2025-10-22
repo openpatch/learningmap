@@ -88,7 +88,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               <option value="de">{t.languageGerman}</option>
             </select>
           </div>
-          
+
           <div className="form-group">
             <label>{t.storageId}</label>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
@@ -103,7 +103,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                 onClick={() => setLocalSettings(settings => ({ ...settings, id: generateRandomId() }))}
                 className="secondary-button"
                 type="button"
-                style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                style={{ padding: '8px 12px', width: "auto", display: 'flex', alignItems: 'center', gap: '4px' }}
                 title={t.generateRandomId}
               >
                 <RefreshCw size={16} />
@@ -113,7 +113,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               ℹ️ {t.storageIdHint}
             </p>
           </div>
-          
+
           <div className="form-group">
             <ColorSelector
               label={t.backgroundColor}

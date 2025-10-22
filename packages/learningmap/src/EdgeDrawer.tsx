@@ -16,32 +16,32 @@ export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
   const selectedEdge = useEditorStore(state => state.selectedEdge);
   const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
   const settings = useEditorStore(state => state.settings);
-  
+
   // Get actions from store
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const updateEdge = useEditorStore(state => state.updateEdge);
   const deleteEdge = useEditorStore(state => state.deleteEdge);
-  
+
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
-  
+
   const closeDrawer = () => {
     setEdgeDrawerOpen(false);
     setSelectedEdge(null);
   };
-  
+
   const onUpdate = (edge: Edge) => {
     updateEdge(edge.id, edge);
   };
-  
+
   const onDelete = () => {
-    if (selectedEdge && confirm(t.resetMapWarning)) {
+    if (selectedEdge) {
       deleteEdge(selectedEdge.id);
       closeDrawer();
     }
   };
-  
+
   if (!selectedEdge || !edgeDrawerOpen) return null;
   return (
     <div>
