@@ -5,7 +5,8 @@ import { useEditorStore } from "./editorStore";
 import { useJsonStore } from "./useJsonStore";
 
 export function ShareDialog() {
-  const [copied, setCopied] = useState(false);
+  const [copiedEdit, setCopiedEdit] = useState(false);
+  const [copiedLearn, setCopiedLearn] = useState(false);
 
   // Get state from store
   const open = useEditorStore(state => state.shareDialogOpen);
@@ -20,11 +21,25 @@ export function ShareDialog() {
 
   if (!open) return null;
 
-  const handleCopyLink = async () => {
+  // Generate both edit and learn links
+  const editLink = shareLink;
+  const learnLink = shareLink.replace(/(#json=.+)/, '/learn$1');
+
+  const handleCopyEditLink = async () => {
     try {
-      await navigator.clipboard.writeText(shareLink);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(editLink);
+      setCopiedEdit(true);
+      setTimeout(() => setCopiedEdit(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy link:", err);
+    }
+  };
+
+  const handleCopyLearnLink = async () => {
+    try {
+      await navigator.clipboard.writeText(learnLink);
+      setCopiedLearn(true);
+      setTimeout(() => setCopiedLearn(false), 2000);
     } catch (err) {
       console.error("Failed to copy link:", err);
     }
@@ -41,46 +56,93 @@ export function ShareDialog() {
           </button>
         </header>
         <div className="drawer-content">
-          <p style={{ marginBottom: 16 }}>{t.shareLink}</p>
-          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-            <input
-              type="text"
-              value={shareLink}
-              readOnly
+          <div style={{ marginBottom: 24 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Edit Link</h3>
+            <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>Share this link to allow others to edit the map</p>
+            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+              <input
+                type="text"
+                value={editLink}
+                readOnly
+                style={{
+                  flex: 1,
+                  padding: "8px 12px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: 4,
+                  fontSize: 14,
+                  fontFamily: "monospace",
+                }}
+                onClick={(e) => e.currentTarget.select()}
+              />
+            </div>
+            <button
+              onClick={handleCopyEditLink}
+              className="drawer-button"
               style={{
-                flex: 1,
-                padding: "8px 12px",
-                border: "1px solid #d1d5db",
-                borderRadius: 4,
-                fontSize: 14,
-                fontFamily: "monospace",
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
               }}
-              onClick={(e) => e.currentTarget.select()}
-            />
+            >
+              {copiedEdit ? (
+                <>
+                  <Check size={16} />
+                  {t.linkCopied}
+                </>
+              ) : (
+                <>
+                  <Link2 size={16} />
+                  Copy Edit Link
+                </>
+              )}
+            </button>
           </div>
-          <button
-            onClick={handleCopyLink}
-            className="drawer-button"
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-          >
-            {copied ? (
-              <>
-                <Check size={16} />
-                {t.linkCopied}
-              </>
-            ) : (
-              <>
-                <Link2 size={16} />
-                {t.copyLink}
-              </>
-            )}
-          </button>
+
+          <div>
+            <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Learn Link</h3>
+            <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>Share this link for others to learn from the map</p>
+            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+              <input
+                type="text"
+                value={learnLink}
+                readOnly
+                style={{
+                  flex: 1,
+                  padding: "8px 12px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: 4,
+                  fontSize: 14,
+                  fontFamily: "monospace",
+                }}
+                onClick={(e) => e.currentTarget.select()}
+              />
+            </div>
+            <button
+              onClick={handleCopyLearnLink}
+              className="drawer-button"
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+              }}
+            >
+              {copiedLearn ? (
+                <>
+                  <Check size={16} />
+                  {t.linkCopied}
+                </>
+              ) : (
+                <>
+                  <Link2 size={16} />
+                  Copy Learn Link
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </>

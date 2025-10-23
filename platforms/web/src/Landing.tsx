@@ -12,18 +12,24 @@ function Landing() {
       title: 'Getting Started with Programming',
       description: 'A comprehensive guide to learning programming fundamentals, from variables to functions.',
       thumbnail: '📚',
+      editUrl: '/create',
+      learnUrl: '/learn',
     },
     {
       id: 'example-2',
       title: 'Web Development Basics',
       description: 'Learn HTML, CSS, and JavaScript to build your first website step by step.',
       thumbnail: '🌐',
+      editUrl: '/create',
+      learnUrl: '/learn',
     },
     {
       id: 'example-3',
       title: 'Data Science Journey',
       description: 'Explore data analysis, visualization, and machine learning concepts progressively.',
       thumbnail: '📊',
+      editUrl: '/create',
+      learnUrl: '/learn',
     },
   ];
 
@@ -89,7 +95,20 @@ function Landing() {
               <h3 className="card-title">{map.title}</h3>
               <p className="card-description">{map.description}</p>
               <div className="card-footer">
-                <span className="card-badge">Featured LearningMap</span>
+                <button 
+                  onClick={() => navigate(map.editUrl)} 
+                  className="card-button card-button-edit"
+                  aria-label={`Edit ${map.title}`}
+                >
+                  Edit
+                </button>
+                <button 
+                  onClick={() => navigate(map.learnUrl)} 
+                  className="card-button card-button-learn"
+                  aria-label={`Learn ${map.title}`}
+                >
+                  Learn
+                </button>
               </div>
             </div>
           ))}

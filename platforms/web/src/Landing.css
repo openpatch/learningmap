@@ -1,3 +1,12 @@
+/* Import Concert One font */
+@font-face {
+  font-family: 'Concert One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/concert_one_latin.woff2) format('woff2');
+}
+
 .landing-container {
   min-height: 100vh;
   display: flex;
@@ -38,6 +47,7 @@
   font-size: 1.5rem;
   font-weight: 600;
   color: #333;
+  font-family: 'Concert One', cursive;
 }
 
 .nav-links {
@@ -80,6 +90,7 @@
   color: #1a1a1a;
   line-height: 1.2;
   margin-bottom: 1rem;
+  font-family: 'Concert One', cursive;
 }
 
 .hero-subtitle {
@@ -156,6 +167,7 @@
   font-size: 2rem;
   color: #1a1a1a;
   margin-bottom: 1rem;
+  font-family: 'Concert One', cursive;
 }
 
 .use-case-content p {
@@ -176,6 +188,7 @@
   color: #1a1a1a;
   text-align: center;
   margin-bottom: 0.5rem;
+  font-family: 'Concert One', cursive;
 }
 
 .featured-subtitle {
@@ -222,6 +235,7 @@
   font-size: 1.3rem;
   color: #1a1a1a;
   margin-bottom: 0.75rem;
+  font-family: 'Concert One', cursive;
 }
 
 .card-description {
@@ -234,9 +248,52 @@
 
 .card-footer {
   display: flex;
+  gap: 0.5rem;
   justify-content: center;
   padding-top: 1rem;
   border-top: 1px solid #f0f0f0;
+}
+
+.card-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.card-button-edit {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.card-button-edit:hover {
+  background-color: #357abd;
+  transform: translateY(-1px);
+}
+
+.card-button-edit:focus {
+  outline: 2px solid #4a90e2;
+  outline-offset: 2px;
+}
+
+.card-button-learn {
+  background-color: white;
+  color: #4a90e2;
+  border: 2px solid #4a90e2;
+}
+
+.card-button-learn:hover {
+  background-color: #f0f7ff;
+  transform: translateY(-1px);
+}
+
+.card-button-learn:focus {
+  outline: 2px solid #4a90e2;
+  outline-offset: 2px;
 }
 
 .card-badge {
