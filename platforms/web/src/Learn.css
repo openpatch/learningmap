@@ -182,6 +182,56 @@
   margin-bottom: 0;
 }
 
+.add-map-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: var(--learningmap-color-quicksilver, #a4a4a4);
+}
+
+.add-map-divider::before,
+.add-map-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.add-map-divider span {
+  padding: 0 1rem;
+  font-size: 0.9rem;
+}
+
+.add-map-upload {
+  display: flex;
+  justify-content: center;
+}
+
+.upload-button {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  color: var(--learningmap-color-openpatch, #007864);
+  border: 2px solid var(--learningmap-color-openpatch, #007864);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 400;
+  transition: all 0.2s;
+  font-family: "Concert One", sans-serif;
+  display: inline-block;
+}
+
+.upload-button:hover {
+  background: var(--learningmap-color-freshmint, #b5e3d8);
+  border-color: var(--learningmap-color-dark-forest, #004c45);
+  color: var(--learningmap-color-dark-forest, #004c45);
+}
+
+.upload-button:focus {
+  outline: 2px solid var(--learningmap-color-openpatch, #007864);
+  outline-offset: 2px;
+}
+
 .empty-state {
   text-align: center;
   padding: 3rem;

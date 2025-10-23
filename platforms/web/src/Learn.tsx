@@ -150,6 +150,55 @@ function Learn() {
       setError('Invalid learning map URL. Please paste a valid URL with #json=...');
     }
   };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setError(null);
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const json = JSON.parse(content);
+        
+        // Generate a unique ID for this uploaded map
+        const uploadId = `upload-${Date.now()}`;
+        const storageId = json.settings?.id || uploadId;
+        
+        // Check if a map with this storage ID already exists
+        const existingMap = getLearningMap(storageId);
+        if (existingMap) {
+          const shouldReplace = window.confirm(
+            `A learning map with this ID already exists. Would you like to replace it? Your progress will not be removed.`
+          );
+          if (shouldReplace) {
+            const existingState = existingMap.state;
+            addLearningMap(storageId, json);
+            if (existingState) {
+              updateState(storageId, existingState);
+            }
+            navigate(`/learn#json=${storageId}`);
+          }
+        } else {
+          addLearningMap(storageId, json);
+          navigate(`/learn#json=${storageId}`);
+        }
+      } catch (err) {
+        setError('Invalid file format. Please upload a valid LearningMap JSON file.');
+      }
+    };
+    
+    reader.onerror = () => {
+      setError('Failed to read the file. Please try again.');
+    };
+    
+    reader.readAsText(file);
+    
+    // Reset the input so the same file can be uploaded again if needed
+    event.target.value = '';
+  };
   
   const handleRemoveMap = (id: string) => {
     if (window.confirm('Are you sure you want to remove this learning map?')) {
@@ -257,6 +306,21 @@ function Learn() {
               }}
             />
             <button onClick={handleAddMap}>Add Map</button>
+          </div>
+          <div className="add-map-divider">
+            <span>or</span>
+          </div>
+          <div className="add-map-upload">
+            <label htmlFor="file-upload" className="upload-button">
+              Upload Map File
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              accept=".json,application/json"
+              onChange={handleFileUpload}
+              style={{ display: 'none' }}
+            />
           </div>
           {error && <p className="error-message">{error}</p>}
         </div>
