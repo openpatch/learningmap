@@ -1032,6 +1032,7 @@ dialog.help[open] {
 
 .panel-footer button {
   flex: 1;
+  justify-content: center;
 }
 
 .panel-footer-centered {
@@ -1039,5 +1040,5 @@ dialog.help[open] {
 }
 
 .panel-footer-centered button {
-  flex: 0 0 auto;
+  flex: 1;
 }
