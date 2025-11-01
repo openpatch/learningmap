@@ -372,7 +372,8 @@ export const useEditorStore = create<EditorState>()(
             draggable: true,
             className: n.data.color ? n.data.color : n.className,
             // Ensure zIndex is set based on node type if not already present
-            zIndex: n.zIndex !== undefined ? n.zIndex : getZIndexForNodeType(n.type),
+            zIndex:
+              n.zIndex !== undefined ? n.zIndex : getZIndexForNodeType(n.type),
             data: { ...n.data },
           }));
 
@@ -406,7 +407,10 @@ export const useEditorStore = create<EditorState>()(
               position: n.position,
               width: n.width,
               height: n.height,
-              zIndex: n.zIndex,
+              zIndex:
+                n.zIndex !== undefined
+                  ? n.zIndex
+                  : getZIndexForNodeType(n.type),
               data: n.data,
             })),
             edges: state.edges
