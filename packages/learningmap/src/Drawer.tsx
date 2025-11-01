@@ -115,17 +115,22 @@ export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, lang
               <ul>
                 {node.data?.resources.map((r: Resource, idx: number) => {
                   if (r.type === "book") {
+                    // Format: 📚 Label (Name, Location)
+                    // If name is empty, no comma should be visible
+                    const bookDetails = [];
+                    if (r.bookName) bookDetails.push(r.bookName);
+                    if (r.bookLocation) bookDetails.push(r.bookLocation);
+                    const detailsText = bookDetails.length > 0 ? ` (${bookDetails.join(', ')})` : '';
+                    
                     return (
                       <li key={idx}>
-                        <strong>{r.label}</strong>
-                        {r.bookName && <div style={{ fontSize: "0.9em", color: "#6b7280" }}>📚 {r.bookName}</div>}
-                        {r.bookLocation && <div style={{ fontSize: "0.9em", color: "#6b7280" }}>📍 {r.bookLocation}</div>}
+                        📚 <strong>{r.label}</strong>{detailsText}
                       </li>
                     );
                   }
                   return (
                     <li key={idx}>
-                      {r.url ? (
+                      🌐 {r.url ? (
                         <a href={r.url} target="_blank" rel="noopener noreferrer">{r.label}</a>
                       ) : (
                         <span>{r.label}</span>
