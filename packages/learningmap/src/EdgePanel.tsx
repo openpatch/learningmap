@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { X, Trash2, Copy } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 import { Edge, Panel } from "@xyflow/react";
 import { EditorDrawerEdgeContent } from "./EditorDrawerEdgeContent";
 import { getTranslations } from "./translations";
@@ -23,7 +23,6 @@ export const EdgePanel: React.FC<EdgePanelProps> = ({
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const updateEdge = useEditorStore(state => state.updateEdge);
   const deleteEdge = useEditorStore(state => state.deleteEdge);
-  const setEdges = useEditorStore(state => state.setEdges);
 
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
@@ -49,25 +48,6 @@ export const EdgePanel: React.FC<EdgePanelProps> = ({
       deleteEdge(selectedEdge.id);
       closePanel();
     }
-  };
-
-  const onCopy = () => {
-    if (!selectedEdge) return;
-    
-    // Generate a new unique ID for the copied edge
-    const timestamp = Date.now();
-    const newEdgeId = `${selectedEdge.source}-${selectedEdge.target}-${timestamp}`;
-    
-    const copiedEdge: Edge = {
-      ...selectedEdge,
-      id: newEdgeId,
-      selected: false,
-    };
-    
-    setEdges([...edges, copiedEdge]);
-    
-    // Select the new edge
-    setSelectedEdge(copiedEdge);
   };
 
   if (!selectedEdge || !edgeDrawerOpen) return null;
@@ -99,10 +79,7 @@ export const EdgePanel: React.FC<EdgePanelProps> = ({
           }}
           language={language}
         />
-        <div className="panel-footer">
-          <button onClick={onCopy} className="secondary-button">
-            <Copy size={16} /> {t.copyNode}
-          </button>
+        <div className="panel-footer panel-footer-centered">
           <button onClick={onDelete} className="danger-button">
             <Trash2 size={16} /> {t.deleteEdge}
           </button>

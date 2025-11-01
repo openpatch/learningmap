@@ -1033,3 +1033,11 @@ dialog.help[open] {
 .panel-footer button {
   flex: 1;
 }
+
+.panel-footer-centered {
+  justify-content: center;
+}
+
+.panel-footer-centered button {
+  flex: 0 0 auto;
+}
