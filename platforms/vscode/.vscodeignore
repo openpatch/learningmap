@@ -6,3 +6,5 @@ src/**
 tsconfig.json
 node_modules/**
 *.map
+example.learningmap
+DEVELOPMENT.md

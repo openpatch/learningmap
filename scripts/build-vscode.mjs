@@ -55,18 +55,6 @@ const webviewOptions = {
   },
 };
 
-// Build CSS separately
-const cssOptions = {
-  ...commonOptions,
-  entryPoints: [
-    path.join(__dirname, "../packages/learningmap/dist/index.css"),
-  ],
-  outfile: path.join(__dirname, "../platforms/vscode/dist/webview.css"),
-  loader: {
-    ".css": "copy",
-  },
-};
-
 async function build() {
   try {
     if (isWatch) {

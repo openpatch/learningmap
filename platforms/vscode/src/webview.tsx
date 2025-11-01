@@ -3,8 +3,15 @@ import { createRoot } from 'react-dom/client';
 import { LearningMapEditor, useEditorStore, RoadmapData } from '@learningmap/learningmap';
 import '@learningmap/learningmap/index.css';
 
-// VS Code API
-declare const acquireVsCodeApi: any;
+// VS Code API type
+interface VSCodeApi {
+  postMessage(message: any): void;
+  setState(state: any): void;
+  getState(): any;
+}
+
+// VS Code API - this is provided by VS Code in webview context
+declare function acquireVsCodeApi(): VSCodeApi;
 const vscode = acquireVsCodeApi();
 
 interface VSCodeMessage {

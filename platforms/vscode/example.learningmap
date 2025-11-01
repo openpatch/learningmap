@@ -1,0 +1,46 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "type": "topic",
+      "position": {
+        "x": 250,
+        "y": 100
+      },
+      "data": {
+        "state": "unlocked",
+        "label": "Getting Started",
+        "description": "Learn the basics of creating learningmaps"
+      }
+    },
+    {
+      "id": "2",
+      "type": "topic",
+      "position": {
+        "x": 250,
+        "y": 250
+      },
+      "data": {
+        "state": "locked",
+        "label": "Advanced Topics",
+        "description": "Deep dive into advanced features"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1-2",
+      "source": "1",
+      "target": "2"
+    }
+  ],
+  "settings": {
+    "title": "Sample Learningmap",
+    "background": {
+      "color": "#ffffff"
+    }
+  },
+  "version": 1,
+  "type": "learningmap",
+  "source": "vscode-extension"
+}
