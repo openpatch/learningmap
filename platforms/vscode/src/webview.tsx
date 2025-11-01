@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { LearningMapEditor, useEditorStore, RoadmapData } from '@learningmap/learningmap';
 import '@learningmap/learningmap/index.css';
@@ -18,7 +18,8 @@ interface VSCodeMessage {
  */
 function WebviewEditor() {
   const [isReady, setIsReady] = useState(false);
-  const [initialData, setInitialData] = useState<string | null>(null);
+  const isLoadingFromFile = useRef(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Get store methods
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
@@ -30,6 +31,9 @@ function WebviewEditor() {
       const message = event.data;
       switch (message.type) {
         case 'update':
+          // Set flag to prevent saving during load
+          isLoadingFromFile.current = true;
+          
           // Load the content from the file
           try {
             if (message.content) {
@@ -56,6 +60,11 @@ function WebviewEditor() {
               type: 'learningmap',
             } as RoadmapData);
           }
+          
+          // Clear the flag after a short delay to allow store to settle
+          setTimeout(() => {
+            isLoadingFromFile.current = false;
+          }, 100);
           break;
       }
     };
@@ -68,25 +77,42 @@ function WebviewEditor() {
 
     return () => {
       window.removeEventListener('message', messageHandler);
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
     };
   }, [loadRoadmapData]);
 
-  // Auto-save changes to the document
+  // Auto-save changes to the document (debounced)
   useEffect(() => {
     if (!isReady) return;
 
     // Subscribe to store changes
-    const unsubscribe = useEditorStore.subscribe((state) => {
-      // Save the current roadmap data back to VS Code
-      const data = getRoadmapData();
-      vscode.postMessage({
-        type: 'save',
-        content: data,
-      });
+    const unsubscribe = useEditorStore.subscribe(() => {
+      // Don't save if we're loading from file
+      if (isLoadingFromFile.current) {
+        return;
+      }
+
+      // Debounce saves to avoid too many updates
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+
+      saveTimeoutRef.current = setTimeout(() => {
+        const data = getRoadmapData();
+        vscode.postMessage({
+          type: 'save',
+          content: data,
+        });
+      }, 500); // Wait 500ms after last change before saving
     });
 
     return () => {
       unsubscribe();
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
     };
   }, [isReady, getRoadmapData]);
 

@@ -7,6 +7,19 @@
   "author": "Mike Barkmin",
   "license": "MIT",
   "private": true,
+  "icon": "icon.svg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openpatch/learningmap.git",
+    "directory": "platforms/vscode"
+  },
+  "keywords": [
+    "learningmap",
+    "education",
+    "learning",
+    "roadmap",
+    "visual-editor"
+  ],
   "engines": {
     "vscode": "^1.80.0"
   },

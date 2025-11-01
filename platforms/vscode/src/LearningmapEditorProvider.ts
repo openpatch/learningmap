@@ -23,29 +23,42 @@ export class LearningmapEditorProvider implements vscode.CustomTextEditorProvide
     };
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
+    // Track if we're currently updating from external changes
+    let isUpdatingFromDocument = false;
+
     // Hook up event handlers
     const updateWebview = () => {
+      isUpdatingFromDocument = true;
       webviewPanel.webview.postMessage({
         type: 'update',
         content: document.getText(),
       });
+      // Reset flag after a short delay
+      setTimeout(() => {
+        isUpdatingFromDocument = false;
+      }, 100);
     };
 
     // Send initial content
     updateWebview();
 
-    // Listen for changes in the document
+    // Listen for changes in the document (from external sources)
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
-      if (e.document.uri.toString() === document.uri.toString()) {
-        updateWebview();
+      if (e.document.uri.toString() === document.uri.toString() && e.contentChanges.length > 0) {
+        // Only update if change was from external source (not from us)
+        if (!isUpdatingFromDocument) {
+          updateWebview();
+        }
       }
     });
 
     // Listen for messages from the webview
-    webviewPanel.webview.onDidReceiveMessage(e => {
+    webviewPanel.webview.onDidReceiveMessage(async e => {
       switch (e.type) {
         case 'save':
-          this.saveDocument(document, e.content);
+          if (!isUpdatingFromDocument) {
+            await this.saveDocument(document, e.content);
+          }
           return;
         case 'ready':
           // Webview is ready, send initial content
