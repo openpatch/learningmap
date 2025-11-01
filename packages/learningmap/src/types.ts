@@ -39,6 +39,7 @@ export interface NodeData {
 
 export interface ImageNodeData {
   data?: string; // base64 encoded image
+  caption?: string; // Caption with markdown support for links
 }
 
 export interface TextNodeData {

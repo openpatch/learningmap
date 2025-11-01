@@ -34,6 +34,15 @@ export function EditorDrawerImageContent({ localNode, handleFieldChange, languag
           onChange={handleFileChange}
         />
       </div>
+      <div className="form-group">
+        <label>{t.caption}</label>
+        <input
+          type="text"
+          value={localNode.data.caption || ""}
+          onChange={(e) => handleFieldChange("caption", e.target.value)}
+          placeholder={t.placeholderImageCaption}
+        />
+      </div>
       {localNode.data.data && (
         <div style={{ marginTop: 16 }}>
           <label>Preview:</label>

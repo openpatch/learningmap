@@ -1,6 +1,7 @@
 import { Handle, Node, NodeResizer, Position } from "@xyflow/react";
 import { NodeData } from "../types";
 import { CircleCheck } from "lucide-react";
+import { getFontSizeValue } from "../fontSizes";
 
 export const TaskNode = ({ data, selected, isConnectable, ...props }: Node<NodeData>) => {
   return (
@@ -8,7 +9,7 @@ export const TaskNode = ({ data, selected, isConnectable, ...props }: Node<NodeD
       {isConnectable && <NodeResizer isVisible={selected} />}
       <CircleCheck className="icon" />
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", textAlign: "center" }}>
-        <div style={{ fontWeight: 600, fontSize: data.fontSize ? `${data.fontSize}px` : "14px" }}>
+        <div style={{ fontWeight: 600, fontSize: `${getFontSizeValue(data.fontSize)}px` }}>
           {data.label || "Untitled"}
         </div>
         {data.summary && (

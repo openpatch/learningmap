@@ -9,6 +9,7 @@ import { Node, useReactFlow } from "@xyflow/react";
 import { NodeData } from "./types";
 import { useJsonStore } from "./useJsonStore";
 import { useFileOperations } from "./useFileOperations";
+import { getZIndexForNodeType } from "./zIndexHelper";
 
 interface EditorToolbarProps {
   defaultLanguage?: string;
@@ -56,6 +57,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
       id: `node-${Date.now()}`,
       type,
       position,
+      zIndex: getZIndexForNodeType(type),
       data: {
         label: type === "task" ? t.newTask : type === "topic" ? t.newTopic : type,
         state: "unlocked",

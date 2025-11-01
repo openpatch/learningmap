@@ -16,6 +16,7 @@ import {
   Connection,
 } from "@xyflow/react";
 import { NodeData, RoadmapData, Settings } from "./types";
+import { getZIndexForNodeType } from "./zIndexHelper";
 
 // Note: This is a global store for the editor. Typically only one editor instance is active at a time.
 // If you need multiple independent editor instances, consider creating store instances per component or using context.
@@ -370,6 +371,8 @@ export const useEditorStore = create<EditorState>()(
             ...n,
             draggable: true,
             className: n.data.color ? n.data.color : n.className,
+            // Ensure zIndex is set based on node type if not already present
+            zIndex: n.zIndex !== undefined ? n.zIndex : getZIndexForNodeType(n.type),
             data: { ...n.data },
           }));
 
