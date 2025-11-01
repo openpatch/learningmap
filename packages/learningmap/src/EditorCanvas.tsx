@@ -87,6 +87,7 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
 
   const handleSelectionChange: OnSelectionChangeFunc = useCallback(
     ({ nodes: selectedNodes }) => {
+      // Only select nodes, not edges (as per requirement #6)
       setSelectedNodeIds(selectedNodes.map(n => n.id));
     },
     [setSelectedNodeIds]
@@ -133,6 +134,7 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
         nodesDraggable={true}
         elevateNodesOnSelect={false}
         nodesConnectable={true}
+        selectNodesOnDrag={false}
         colorMode="light"
       >
         {showGrid && <Background />}

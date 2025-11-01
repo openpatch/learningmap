@@ -15,6 +15,7 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
   // Get store state
   const helpOpen = useEditorStore(state => state.helpOpen);
   const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
+  const selectedEdge = useEditorStore(state => state.selectedEdge);
   const nodes = useEditorStore(state => state.nodes);
   const lastMousePosition = useEditorStore(state => state.lastMousePosition);
   const settings = useEditorStore(state => state.settings);
@@ -33,6 +34,9 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
   const showGrid = useEditorStore(state => state.showGrid);
   const setShowGrid = useEditorStore(state => state.setShowGrid);
   const deleteNode = useEditorStore(state => state.deleteNode);
+  const deleteEdge = useEditorStore(state => state.deleteEdge);
+  const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
+  const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
   const drawerOpen = useEditorStore(state => state.drawerOpen);
   const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
   const settingsDrawerOpen = useEditorStore(state => state.settingsDrawerOpen);
@@ -61,6 +65,15 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
   };
 
   const onDeleteSelected = () => {
+    // Delete selected edge if any
+    if (selectedEdge) {
+      deleteEdge(selectedEdge.id);
+      setSelectedEdge(null);
+      setEdgeDrawerOpen(false);
+      return;
+    }
+    
+    // Otherwise delete selected nodes
     if (selectedNodeIds.length > 0) {
       // Delete all selected nodes
       selectedNodeIds.forEach(nodeId => {

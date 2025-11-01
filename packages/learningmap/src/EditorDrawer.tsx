@@ -60,11 +60,38 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
   // Filter out the current node from selectable options
   const nodeOptions = nodes.filter(n => n.id !== node.id && (n.type === "task" || n.type === "topic"));
 
+  // Get edges connected to this node
+  const edges = useEditorStore.getState().edges;
+  const connectedNodeIds = new Set<string>();
+  edges.forEach(edge => {
+    if (edge.source === node.id) {
+      connectedNodeIds.add(edge.target);
+    }
+    if (edge.target === node.id) {
+      connectedNodeIds.add(edge.source);
+    }
+  });
+
+  // Sort node options: connected nodes first, then alphabetically by label
+  const sortedNodeOptions = [...nodeOptions].sort((a, b) => {
+    const aConnected = connectedNodeIds.has(a.id);
+    const bConnected = connectedNodeIds.has(b.id);
+    
+    // Connected nodes come first
+    if (aConnected && !bConnected) return -1;
+    if (!aConnected && bConnected) return 1;
+    
+    // Otherwise sort alphabetically by label
+    const aLabel = (a.data.label || a.id).toLowerCase();
+    const bLabel = (b.data.label || b.id).toLowerCase();
+    return aLabel.localeCompare(bLabel);
+  });
+
   // Helper for dropdowns
   const renderNodeSelect = (value: string, onChange: (id: string) => void) => (
     <select value={value} onChange={e => onChange(e.target.value)}>
       <option value="">{t.selectNode}</option>
-      {nodeOptions.map(n => (
+      {sortedNodeOptions.map(n => (
         <option key={n.id} value={n.id}>
           {n.data.label || n.id}
         </option>
@@ -149,7 +176,7 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
 
   const addResource = () => {
     if (!localNode) return;
-    const resources = [...(localNode.data.resources || []), { label: "", url: "" }];
+    const resources = [...(localNode.data.resources || []), { label: "", type: "url", url: "" }];
     handleFieldChange("resources", resources);
   };
 

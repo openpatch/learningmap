@@ -4,6 +4,8 @@ import { X, Lock, CheckCircle } from "lucide-react";
 import { Video } from "./Video";
 import StarCircle from "./icons/StarCircle";
 import { getTranslations } from "./translations";
+import { marked } from "marked";
+import { useMemo } from "react";
 
 interface DrawerProps {
   open: boolean;
@@ -57,6 +59,12 @@ function getCompletionOptional(node: Node<NodeData>, nodes: Node<NodeData>[]): N
 export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, language = "en" }: DrawerProps) {
   const t = getTranslations(language);
 
+  // Parse markdown description
+  const descriptionHtml = useMemo(() => {
+    if (!node.data?.description) return '';
+    return marked.parse(node.data.description, { async: false }) as string;
+  }, [node.data?.description]);
+
   if (!open) return null;
 
   const locked = node.data?.state === 'locked' || false;
@@ -95,7 +103,7 @@ export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, lang
           </button>
         </header>
         <div className="drawer-content">
-          {node.data?.description && <div className="drawer-description" style={{ marginBottom: 16 }}>{node.data?.description}</div>}
+          {node.data?.description && <div className="drawer-description" style={{ marginBottom: 16 }} dangerouslySetInnerHTML={{ __html: descriptionHtml }} />}
           {node.data?.video && <div className="drawer-video" style={{ marginBottom: 16 }}>
             <Video url={node.data?.video} />
           </div>}
@@ -103,9 +111,26 @@ export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, lang
             <div className="drawer-resources" style={{ marginBottom: 16 }}>
               <div style={{ fontWeight: 600, marginBottom: 8 }}>{t.resourcesLabel}</div>
               <ul>
-                {node.data?.resources.map((r: any) => (
-                  <li key={r.url}><a href={r.url} target="_blank" rel="noopener noreferrer">{r.label}</a></li>
-                ))}
+                {node.data?.resources.map((r: any, idx: number) => {
+                  if (r.type === "book") {
+                    return (
+                      <li key={idx}>
+                        <strong>{r.label}</strong>
+                        {r.bookName && <div style={{ fontSize: "0.9em", color: "#6b7280" }}>📚 {r.bookName}</div>}
+                        {r.bookLocation && <div style={{ fontSize: "0.9em", color: "#6b7280" }}>📍 {r.bookLocation}</div>}
+                      </li>
+                    );
+                  }
+                  return (
+                    <li key={idx}>
+                      {r.url ? (
+                        <a href={r.url} target="_blank" rel="noopener noreferrer">{r.label}</a>
+                      ) : (
+                        <span>{r.label}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

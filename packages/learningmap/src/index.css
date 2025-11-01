@@ -233,6 +233,75 @@ header.drawer-header {
   padding: 24px;
 }
 
+.drawer-description {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.drawer-description h1,
+.drawer-description h2,
+.drawer-description h3,
+.drawer-description h4,
+.drawer-description h5,
+.drawer-description h6 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.drawer-description h1 { font-size: 1.5em; }
+.drawer-description h2 { font-size: 1.25em; }
+.drawer-description h3 { font-size: 1.1em; }
+
+.drawer-description p {
+  margin-bottom: 1em;
+}
+
+.drawer-description ul,
+.drawer-description ol {
+  margin-bottom: 1em;
+  padding-left: 2em;
+}
+
+.drawer-description li {
+  margin-bottom: 0.25em;
+}
+
+.drawer-description code {
+  background-color: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: monospace;
+}
+
+.drawer-description pre {
+  background-color: #f3f4f6;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin-bottom: 1em;
+}
+
+.drawer-description pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.drawer-description a {
+  color: var(--learningmap-color-openpatch);
+  text-decoration: underline;
+}
+
+.drawer-description blockquote {
+  border-left: 4px solid #d1d5db;
+  padding-left: 1em;
+  margin-left: 0;
+  margin-bottom: 1em;
+  color: #6b7280;
+}
+
 .drawer-footer {
   padding: 24px;
   display: flex;
@@ -462,8 +531,9 @@ header.drawer-header {
   border: 2px solid white;
 }
 
-.react-flow__edge.selected {
-  outline: 1px solid var(--learningmap-color-openpatch);
+.react-flow__edge.selected path {
+  stroke: var(--learningmap-color-openpatch) !important;
+  stroke-width: 3 !important;
 }
 
 .react-flow__node.selected {
