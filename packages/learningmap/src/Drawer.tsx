@@ -62,12 +62,12 @@ export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, lang
 
   // Parse markdown description and sanitize HTML
   const descriptionHtml = useMemo(() => {
-    if (!node.data?.description) return '';
+    if (!node || !node.data?.description) return '';
     const rawHtml = marked.parse(node.data.description, { async: false });
     return DOMPurify.sanitize(rawHtml);
-  }, [node.data?.description]);
+  }, [node, node?.data?.description]);
 
-  if (!open) return null;
+  if (!open || !node) return null;
 
   const locked = node.data?.state === 'locked' || false;
   const unlocked = node.data?.state === 'unlocked' || false;
