@@ -17,6 +17,8 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   // Get state from store
   const isOpen = useEditorStore(state => state.settingsDrawerOpen);
   const settings = useEditorStore(state => state.settings);
+  const edges = useEditorStore(state => state.edges);
+  const setEdges = useEditorStore(state => state.setEdges);
 
   // Get actions from store
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
@@ -55,6 +57,22 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         zoom: parseFloat(viewport.zoom.toFixed(2)),
       }
     }));
+  };
+
+  const handleUpdateAllEdges = () => {
+    const defaultType = localSettings?.defaultEdgeType || "default";
+    const defaultColor = localSettings?.defaultEdgeColor || "#94a3b8";
+    
+    const updatedEdges = edges.map(edge => ({
+      ...edge,
+      type: defaultType,
+      style: {
+        ...edge.style,
+        stroke: defaultColor,
+      }
+    }));
+    
+    setEdges(updatedEdges);
   };
 
   return (
@@ -172,6 +190,39 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               type="button"
             >
               {t.useCurrentViewport}
+            </button>
+          </div>
+
+          <div className="form-group">
+            <label>Default Edge Type</label>
+            <select
+              value={localSettings?.defaultEdgeType || "default"}
+              onChange={(e) => setLocalSettings(settings => ({ ...settings, defaultEdgeType: e.target.value }))}
+            >
+              <option value="default">Default</option>
+              <option value="straight">Straight</option>
+              <option value="step">Step</option>
+              <option value="smoothstep">Smooth Step</option>
+              <option value="simplebezier">Simple Bezier</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <ColorSelector
+              label="Default Edge Color"
+              value={localSettings?.defaultEdgeColor || "#94a3b8"}
+              onChange={color => setLocalSettings(settings => ({ ...settings, defaultEdgeColor: color }))}
+            />
+          </div>
+
+          <div className="form-group">
+            <button
+              onClick={handleUpdateAllEdges}
+              className="secondary-button"
+              style={{ width: '100%' }}
+              type="button"
+            >
+              Update All Edges to Default Settings
             </button>
           </div>
         </div>

@@ -94,6 +94,17 @@ export function EditorDrawerTaskContent({
         />
       </div>
       <div className="form-group">
+        <label>Font Size (px)</label>
+        <input
+          type="number"
+          value={localNode.data.fontSize || 14}
+          onChange={(e) => handleFieldChange("fontSize", parseInt(e.target.value) || 14)}
+          placeholder="14"
+          min="8"
+          max="72"
+        />
+      </div>
+      <div className="form-group">
         <label>{t.summary}</label>
         <input
           type="text"

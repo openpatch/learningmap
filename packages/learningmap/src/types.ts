@@ -33,6 +33,7 @@ export interface NodeData {
   video?: string;
   resources?: Resource[];
   summary?: string;
+  fontSize?: number;
   [key: string]: any;
 }
 
@@ -64,6 +65,8 @@ export interface Settings {
     y: number;
     zoom: number;
   };
+  defaultEdgeType?: string;
+  defaultEdgeColor?: string;
 }
 
 export interface EdgeConfig {

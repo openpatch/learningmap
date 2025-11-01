@@ -7,16 +7,16 @@ export const TopicNode = ({ data, selected, isConnectable }: Node<NodeData>) => 
     <>
       {isConnectable && <NodeResizer isVisible={selected} />}
       {data.state === "mastered" && <StarCircle className="icon" />}
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <div style={{ fontWeight: 600, fontSize: "14px" }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", textAlign: "center" }}>
+        <div style={{ fontWeight: 600, fontSize: data.fontSize ? `${data.fontSize}px` : "14px" }}>
           {data.label || "Untitled"}
         </div>
+        {data.summary && (
+          <div style={{ fontSize: "12px", color: "#4b5563", marginTop: "4px" }}>
+            {data.summary}
+          </div>
+        )}
       </div>
-      {data.summary && (
-        <div style={{ fontSize: "12px", color: "#4b5563", marginTop: "4px" }}>
-          {data.summary}
-        </div>
-      )}
 
       {["Bottom", "Top", "Left", "Right"].map((pos) => (
         <Handle
