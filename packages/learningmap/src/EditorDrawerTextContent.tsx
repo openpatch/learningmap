@@ -14,7 +14,7 @@ export function EditorDrawerTextContent({ localNode, handleFieldChange, language
   const t = getTranslations(language);
   
   return (
-    <div className="drawer-content">
+    <div className="panel-content">
       <div className="form-group">
         <label>{t.text}</label>
         <input

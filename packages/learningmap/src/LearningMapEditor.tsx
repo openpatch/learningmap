@@ -1,10 +1,7 @@
 import {
   ReactFlowProvider,
 } from "@xyflow/react";
-import { EditorDrawer } from "./EditorDrawer";
-import { EdgeDrawer } from "./EdgeDrawer";
 import { RoadmapData } from "./types";
-import { SettingsDrawer } from "./SettingsDrawer";
 import { EditorToolbar } from "./EditorToolbar";
 import { LearningMap } from "./LearningMap";
 import { useEditorStore } from "./editorStore";
@@ -77,11 +74,6 @@ export function LearningMapEditor({
 
         {/* Main canvas */}
         <EditorCanvas defaultLanguage={language} />
-
-        {/* Drawers */}
-        <EditorDrawer defaultLanguage={language} />
-        <EdgeDrawer defaultLanguage={language} />
-        <SettingsDrawer defaultLanguage={language} />
 
         {/* Dialogs */}
         <EditorDialogs defaultLanguage={language} jsonStore={jsonStore} />

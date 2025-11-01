@@ -25,7 +25,7 @@ export function EditorDrawerImageContent({ localNode, handleFieldChange, languag
   };
 
   return (
-    <div className="drawer-content">
+    <div className="panel-content">
       <div className="form-group">
         <label>{t.image} (JPG, PNG, SVG)</label>
         <input

@@ -16,7 +16,7 @@ export function EditorDrawerEdgeContent({
   const t = getTranslations(language);
   
   return (
-    <div className="drawer-content">
+    <div className="panel-content">
       <div className="form-group">
         <ColorSelector
           label={t.edgeColor}

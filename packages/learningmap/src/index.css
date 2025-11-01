@@ -982,3 +982,54 @@ dialog.help[open] {
     padding: 10px 20px;
   }
 }
+
+/* Editor Panel Styles */
+.editor-panel {
+  pointer-events: all;
+}
+
+.panel-inner {
+  width: 450px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background: var(--color-nav, white);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.panel-footer {
+  padding: 16px 20px;
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.panel-footer button {
+  flex: 1;
+}

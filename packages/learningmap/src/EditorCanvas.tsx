@@ -8,6 +8,9 @@ import { ImageNode } from "./nodes/ImageNode";
 import { TextNode } from "./nodes/TextNode";
 import FloatingEdge from "./FloatingEdge";
 import { MultiNodePanel } from "./MultiNodePanel";
+import { EditorPanel } from "./EditorPanel";
+import { EdgePanel } from "./EdgePanel";
+import { SettingsPanel } from "./SettingsPanel";
 import { getTranslations } from "./translations";
 import { NodeData } from "./types";
 
@@ -150,6 +153,9 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
           </ControlButton>
         </Controls>
         {selectedNodeIds.length > 1 && <MultiNodePanel />}
+        <EditorPanel defaultLanguage={defaultLanguage} />
+        <EdgePanel defaultLanguage={defaultLanguage} />
+        <SettingsPanel defaultLanguage={defaultLanguage} />
       </ReactFlow>
     </div>
   );
