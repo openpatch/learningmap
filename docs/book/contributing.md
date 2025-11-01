@@ -47,7 +47,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
    ```
 6. **Create a changeset**:
    ```bash
-   pnpm changeset
+   pnpm exec changeset
    ```
    Follow the prompts to describe your changes
 7. **Commit your changes** with a clear commit message

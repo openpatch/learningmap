@@ -111,7 +111,7 @@ All PRs must pass these checks.
 This project uses [Changesets](https://github.com/changesets/changesets) for version management:
 
 1. Make your changes
-2. Run `pnpm changeset` to create a changeset
+2. Run `pnpm exec changeset` to create a changeset
 3. Follow the prompts to describe your changes
 4. Commit the changeset file with your PR
 
