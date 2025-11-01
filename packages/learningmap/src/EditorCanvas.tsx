@@ -8,6 +8,9 @@ import { ImageNode } from "./nodes/ImageNode";
 import { TextNode } from "./nodes/TextNode";
 import FloatingEdge from "./FloatingEdge";
 import { MultiNodePanel } from "./MultiNodePanel";
+import { EditorPanel } from "./EditorPanel";
+import { EdgePanel } from "./EdgePanel";
+import { SettingsPanel } from "./SettingsPanel";
 import { getTranslations } from "./translations";
 import { NodeData } from "./types";
 
@@ -43,6 +46,7 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
+  const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
   const setLastMousePosition = useEditorStore(state => state.setLastMousePosition);
 
@@ -76,21 +80,29 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
     setDrawerOpen(true);
     setSelectedEdge(null);
     setEdgeDrawerOpen(false);
-  }, [setSelectedNodeId, setDrawerOpen, setSelectedEdge, setEdgeDrawerOpen]);
+    setSettingsDrawerOpen(false);
+  }, [setSelectedNodeId, setDrawerOpen, setSelectedEdge, setEdgeDrawerOpen, setSettingsDrawerOpen]);
 
   const handleEdgeClick = useCallback((_: any, edge: Edge) => {
     setSelectedEdge(edge);
     setEdgeDrawerOpen(true);
     setSelectedNodeId(null);
     setDrawerOpen(false);
-  }, [setSelectedEdge, setEdgeDrawerOpen, setSelectedNodeId, setDrawerOpen]);
+    setSettingsDrawerOpen(false);
+  }, [setSelectedEdge, setEdgeDrawerOpen, setSelectedNodeId, setDrawerOpen, setSettingsDrawerOpen]);
 
   const handleSelectionChange: OnSelectionChangeFunc = useCallback(
     ({ nodes: selectedNodes }) => {
       // Only select nodes, not edges (as per requirement #6)
       setSelectedNodeIds(selectedNodes.map(n => n.id));
+      
+      // Close the node panel if no nodes are selected and it's currently open
+      if (selectedNodes.length === 0) {
+        setDrawerOpen(false);
+        setSelectedNodeId(null);
+      }
     },
-    [setSelectedNodeIds]
+    [setSelectedNodeIds, setDrawerOpen, setSelectedNodeId]
   );
 
   // Track mouse position for keyboard shortcuts
@@ -98,6 +110,15 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
     const position = screenToFlowPosition({ x: event.clientX, y: event.clientY });
     setLastMousePosition(position);
   }, [screenToFlowPosition, setLastMousePosition]);
+
+  // Close panels when clicking on empty canvas
+  const handlePaneClick = useCallback(() => {
+    setDrawerOpen(false);
+    setSelectedNodeId(null);
+    setEdgeDrawerOpen(false);
+    setSelectedEdge(null);
+    setSettingsDrawerOpen(false);
+  }, [setDrawerOpen, setSelectedNodeId, setEdgeDrawerOpen, setSelectedEdge, setSettingsDrawerOpen]);
 
   const defaultEdgeOptions = {
     animated: false,
@@ -121,11 +142,12 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
         nodes={nodes}
         edges={edges}
         onEdgesChange={onEdgesChange}
-        onNodeDoubleClick={handleNodeClick}
-        onEdgeDoubleClick={handleEdgeClick}
+        onNodeClick={handleNodeClick}
+        onEdgeClick={handleEdgeClick}
         onNodesChange={onNodesChange}
         onConnect={onConnect}
         onSelectionChange={handleSelectionChange}
+        onPaneClick={handlePaneClick}
         nodeTypes={nodeTypes}
         selectionOnDrag={false}
         edgeTypes={edgeTypes}
@@ -150,6 +172,9 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
           </ControlButton>
         </Controls>
         {selectedNodeIds.length > 1 && <MultiNodePanel />}
+        <EditorPanel defaultLanguage={defaultLanguage} />
+        <EdgePanel defaultLanguage={defaultLanguage} />
+        <SettingsPanel defaultLanguage={defaultLanguage} />
       </ReactFlow>
     </div>
   );

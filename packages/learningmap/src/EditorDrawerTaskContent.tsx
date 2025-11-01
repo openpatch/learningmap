@@ -60,7 +60,7 @@ export function EditorDrawerTaskContent({
   if (localNode.type === "topic") defaultColor = "yellow";
   const selectedColor = localNode.data?.color || defaultColor;
   return (
-    <div className="drawer-content">
+    <div className="panel-content">
       <div className="form-group">
         <label>{t.nodeColor}</label>
         <div style={{ display: "flex", gap: 12, marginTop: 8 }}>

@@ -110,6 +110,7 @@ export interface Translations {
   deleteNode: string;
   saveChanges: string;
   deleteEdge: string;
+  copyNode: string;
 
   // Messages
   openFileWarning: string;
@@ -325,6 +326,7 @@ const en: Translations = {
   deleteNode: "Delete Node",
   saveChanges: "Save Changes",
   deleteEdge: "Delete Edge",
+  copyNode: "Copy",
 
   // Messages
   openFileWarning: "Opening a file will replace your current map. Continue?",
@@ -547,6 +549,7 @@ const de: Translations = {
   deleteNode: "Knoten löschen",
   saveChanges: "Änderungen speichern",
   deleteEdge: "Kante löschen",
+  copyNode: "Kopieren",
 
   // Messages
   openFileWarning:
