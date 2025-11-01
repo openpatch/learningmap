@@ -46,6 +46,7 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
+  const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
   const setLastMousePosition = useEditorStore(state => state.setLastMousePosition);
 
@@ -79,14 +80,16 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
     setDrawerOpen(true);
     setSelectedEdge(null);
     setEdgeDrawerOpen(false);
-  }, [setSelectedNodeId, setDrawerOpen, setSelectedEdge, setEdgeDrawerOpen]);
+    setSettingsDrawerOpen(false);
+  }, [setSelectedNodeId, setDrawerOpen, setSelectedEdge, setEdgeDrawerOpen, setSettingsDrawerOpen]);
 
   const handleEdgeClick = useCallback((_: any, edge: Edge) => {
     setSelectedEdge(edge);
     setEdgeDrawerOpen(true);
     setSelectedNodeId(null);
     setDrawerOpen(false);
-  }, [setSelectedEdge, setEdgeDrawerOpen, setSelectedNodeId, setDrawerOpen]);
+    setSettingsDrawerOpen(false);
+  }, [setSelectedEdge, setEdgeDrawerOpen, setSelectedNodeId, setDrawerOpen, setSettingsDrawerOpen]);
 
   const handleSelectionChange: OnSelectionChangeFunc = useCallback(
     ({ nodes: selectedNodes }) => {
@@ -114,7 +117,8 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
     setSelectedNodeId(null);
     setEdgeDrawerOpen(false);
     setSelectedEdge(null);
-  }, [setDrawerOpen, setSelectedNodeId, setEdgeDrawerOpen, setSelectedEdge]);
+    setSettingsDrawerOpen(false);
+  }, [setDrawerOpen, setSelectedNodeId, setEdgeDrawerOpen, setSelectedEdge, setSettingsDrawerOpen]);
 
   const defaultEdgeOptions = {
     animated: false,
@@ -138,8 +142,8 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
         nodes={nodes}
         edges={edges}
         onEdgesChange={onEdgesChange}
-        onNodeDoubleClick={handleNodeClick}
-        onEdgeDoubleClick={handleEdgeClick}
+        onNodeClick={handleNodeClick}
+        onEdgeClick={handleEdgeClick}
         onNodesChange={onNodesChange}
         onConnect={onConnect}
         onSelectionChange={handleSelectionChange}

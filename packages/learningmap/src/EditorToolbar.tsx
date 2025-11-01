@@ -36,6 +36,10 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const setShowUnlockAfter = useEditorStore(state => state.setShowUnlockAfter);
   const addNode = useEditorStore(state => state.addNode);
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
+  const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
+  const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
+  const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
+  const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const reset = useEditorStore(state => state.reset);
 
   const [_, postToJsonStore] = useJsonStore();
@@ -66,7 +70,14 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     addNode(newNode);
   };
 
-  const onOpenSettingsDrawer = () => setSettingsDrawerOpen(true);
+  const onOpenSettingsDrawer = () => {
+    setSettingsDrawerOpen(true);
+    // Close other panels
+    setDrawerOpen(false);
+    setEdgeDrawerOpen(false);
+    setSelectedNodeId(null);
+    setSelectedEdge(null);
+  };
 
   const onReset = () => {
     if (confirm(t.resetMapWarning)) {
