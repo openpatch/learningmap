@@ -1,6 +1,6 @@
 import { Node } from "@xyflow/react";
 import { Plus, Trash2 } from "lucide-react";
-import { NodeData } from "./types";
+import { NodeData, Resource } from "./types";
 import { getTranslations } from "./translations";
 
 interface Props {
@@ -131,7 +131,7 @@ export function EditorDrawerTaskContent({
       </div>
       <div className="form-group">
         <label>{t.resources}</label>
-        {(localNode.data.resources || []).map((resource: any, idx: number) => {
+        {(localNode.data.resources || []).map((resource: Resource, idx: number) => {
           const isBook = resource.type === "book";
           return (
             <div key={idx} style={{ marginBottom: "16px", padding: "12px", border: "1px solid #e5e7eb", borderRadius: "6px" }}>

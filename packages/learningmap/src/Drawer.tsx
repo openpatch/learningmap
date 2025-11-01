@@ -1,11 +1,12 @@
 import { Node } from "@xyflow/react";
-import { NodeData } from "./types";
+import { NodeData, Resource } from "./types";
 import { X, Lock, CheckCircle } from "lucide-react";
 import { Video } from "./Video";
 import StarCircle from "./icons/StarCircle";
 import { getTranslations } from "./translations";
 import { marked } from "marked";
 import { useMemo } from "react";
+import DOMPurify from "dompurify";
 
 interface DrawerProps {
   open: boolean;
@@ -59,10 +60,11 @@ function getCompletionOptional(node: Node<NodeData>, nodes: Node<NodeData>[]): N
 export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, language = "en" }: DrawerProps) {
   const t = getTranslations(language);
 
-  // Parse markdown description
+  // Parse markdown description and sanitize HTML
   const descriptionHtml = useMemo(() => {
     if (!node.data?.description) return '';
-    return marked.parse(node.data.description, { async: false }) as string;
+    const rawHtml = marked.parse(node.data.description, { async: false });
+    return DOMPurify.sanitize(rawHtml);
   }, [node.data?.description]);
 
   if (!open) return null;
@@ -111,7 +113,7 @@ export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, lang
             <div className="drawer-resources" style={{ marginBottom: 16 }}>
               <div style={{ fontWeight: 600, marginBottom: 8 }}>{t.resourcesLabel}</div>
               <ul>
-                {node.data?.resources.map((r: any, idx: number) => {
+                {node.data?.resources.map((r: Resource, idx: number) => {
                   if (r.type === "book") {
                     return (
                       <li key={idx}>
