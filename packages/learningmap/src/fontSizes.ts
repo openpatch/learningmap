@@ -11,13 +11,18 @@ export const FONT_SIZE_VALUES: Record<FontSizeOption, number> = {
 
 export const DEFAULT_FONT_SIZE: FontSizeOption = "M";
 
+// Helper function to map numeric value to closest font size option
+function mapNumericToOption(value: number): FontSizeOption {
+  if (value <= 10) return "S";
+  if (value <= 14) return "M";
+  if (value <= 18) return "L";
+  return "XL";
+}
+
 export function getFontSizeValue(size?: number | FontSizeOption): number {
   if (typeof size === "number") {
     // Convert old numeric values to closest size
-    if (size <= 10) return FONT_SIZE_VALUES.S;
-    if (size <= 14) return FONT_SIZE_VALUES.M;
-    if (size <= 18) return FONT_SIZE_VALUES.L;
-    return FONT_SIZE_VALUES.XL;
+    return FONT_SIZE_VALUES[mapNumericToOption(size)];
   }
   if (size && size in FONT_SIZE_VALUES) {
     return FONT_SIZE_VALUES[size as FontSizeOption];
@@ -27,9 +32,5 @@ export function getFontSizeValue(size?: number | FontSizeOption): number {
 
 export function getFontSizeOption(value?: number): FontSizeOption {
   if (!value) return DEFAULT_FONT_SIZE;
-  // Find closest match
-  if (value <= 10) return "S";
-  if (value <= 14) return "M";
-  if (value <= 18) return "L";
-  return "XL";
+  return mapNumericToOption(value);
 }

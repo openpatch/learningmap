@@ -1,26 +1,51 @@
 import { Node, NodeResizer } from "@xyflow/react";
 import { ImageNodeData } from "../types";
 
+// Validate URL to prevent XSS attacks
+function isValidUrl(url: string): boolean {
+  try {
+    const parsedUrl = new URL(url);
+    // Only allow http, https, and mailto protocols
+    return ['http:', 'https:', 'mailto:'].includes(parsedUrl.protocol);
+  } catch {
+    return false;
+  }
+}
+
 // Simple markdown link parser for captions
 function parseMarkdownLinks(text: string): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  
+  // Use matchAll instead of exec to avoid potential infinite loops
+  const matches = Array.from(text.matchAll(linkRegex));
   let lastIndex = 0;
-  let match;
 
-  while ((match = linkRegex.exec(text)) !== null) {
+  matches.forEach((match, index) => {
     // Add text before the link
-    if (match.index > lastIndex) {
+    if (match.index !== undefined && match.index > lastIndex) {
       parts.push(text.substring(lastIndex, match.index));
     }
-    // Add the link
-    parts.push(
-      <a key={match.index} href={match[2]} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
-        {match[1]}
-      </a>
-    );
-    lastIndex = match.index + match[0].length;
-  }
+    
+    // Add the link only if URL is valid
+    const linkText = match[1];
+    const linkUrl = match[2];
+    
+    if (isValidUrl(linkUrl)) {
+      parts.push(
+        <a key={index} href={linkUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
+          {linkText}
+        </a>
+      );
+    } else {
+      // If URL is invalid, just show the text
+      parts.push(`[${linkText}](${linkUrl})`);
+    }
+    
+    if (match.index !== undefined) {
+      lastIndex = match.index + match[0].length;
+    }
+  });
 
   // Add remaining text
   if (lastIndex < text.length) {
