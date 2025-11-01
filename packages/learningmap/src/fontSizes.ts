@@ -11,11 +11,16 @@ export const FONT_SIZE_VALUES: Record<FontSizeOption, number> = {
 
 export const DEFAULT_FONT_SIZE: FontSizeOption = "M";
 
+// Thresholds for mapping numeric values to font size options
+const THRESHOLD_S_TO_M = 10;
+const THRESHOLD_M_TO_L = 14;
+const THRESHOLD_L_TO_XL = 18;
+
 // Helper function to map numeric value to closest font size option
 function mapNumericToOption(value: number): FontSizeOption {
-  if (value <= 10) return "S";
-  if (value <= 14) return "M";
-  if (value <= 18) return "L";
+  if (value <= THRESHOLD_S_TO_M) return "S";
+  if (value <= THRESHOLD_M_TO_L) return "M";
+  if (value <= THRESHOLD_L_TO_XL) return "L";
   return "XL";
 }
 
