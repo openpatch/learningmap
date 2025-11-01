@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Trash2, Save } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 import { Edge, Panel } from "@xyflow/react";
 import { EditorDrawerEdgeContent } from "./EditorDrawerEdgeContent";
 import { getTranslations } from "./translations";
@@ -74,9 +74,6 @@ export const EdgePanel: React.FC<EdgePanelProps> = ({
         <div className="panel-footer">
           <button onClick={onDelete} className="danger-button">
             <Trash2 size={16} /> {t.deleteEdge}
-          </button>
-          <button onClick={closePanel} className="primary-button">
-            <Save size={16} /> {t.saveChanges}
           </button>
         </div>
       </div>

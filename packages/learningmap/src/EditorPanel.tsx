@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { X, Trash2, Save } from "lucide-react";
+import React, { useEffect } from "react";
+import { X, Trash2 } from "lucide-react";
 import { Node, Panel } from "@xyflow/react";
 import { EditorDrawerTaskContent } from "./EditorDrawerTaskContent";
 import { EditorDrawerTopicContent } from "./EditorDrawerTopicContent";
@@ -33,19 +33,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
 
   const node = nodes.find(n => n.id === selectedNodeId) || null;
 
-  const [localNode, setLocalNode] = useState<Node<NodeData> | null>(node);
-
-  useEffect(() => {
-    setLocalNode(node);
-  }, [node]);
-
   const onClose = () => {
     setDrawerOpen(false);
     setSelectedNodeId(null);
-  };
-
-  const onUpdate = (updatedNode: Node<NodeData>) => {
-    updateNode(updatedNode.id, updatedNode);
   };
 
   const onDelete = () => {
@@ -55,7 +45,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
     }
   };
 
-  if (!isOpen || !node || !localNode) return null;
+  if (!isOpen || !node) return null;
 
   // Filter out the current node from selectable options
   const nodeOptions = nodes.filter(n => n.id !== node.id && (n.type === "task" || n.type === "topic"));
@@ -101,96 +91,89 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
 
   // Completion Needs
   const handleCompletionNeedsChange = (idx: number, id: string) => {
-    if (!localNode) return;
-    const needs: Completion["needs"] = [...(localNode.data.completion?.needs || [])];
+    if (!node) return;
+    const needs: Completion["needs"] = [...(node.data.completion?.needs || [])];
     needs[idx] = id;
-    handleFieldChange("completion", { ...(localNode.data.completion || {}), needs });
+    handleFieldChange("completion", { ...(node.data.completion || {}), needs });
   };
   const addCompletionNeed = () => {
-    if (!localNode) return;
-    const needs: Completion["needs"] = [...(localNode.data.completion?.needs || []), ""];
-    handleFieldChange("completion", { ...(localNode.data.completion || {}), needs });
+    if (!node) return;
+    const needs: Completion["needs"] = [...(node.data.completion?.needs || []), ""];
+    handleFieldChange("completion", { ...(node.data.completion || {}), needs });
   };
   const removeCompletionNeed = (idx: number) => {
-    if (!localNode) return;
-    const needs: Completion["needs"] = (localNode.data.completion?.needs || []).filter((_: any, i: number) => i !== idx);
-    handleFieldChange("completion", { ...(localNode.data.completion || {}), needs });
+    if (!node) return;
+    const needs: Completion["needs"] = (node.data.completion?.needs || []).filter((_: any, i: number) => i !== idx);
+    handleFieldChange("completion", { ...(node.data.completion || {}), needs });
   };
 
   // Completion Optional
   const handleCompletionOptionalChange = (idx: number, id: string) => {
-    if (!localNode) return;
-    const optional: Completion["optional"] = [...(localNode.data.completion?.optional || [])];
+    if (!node) return;
+    const optional: Completion["optional"] = [...(node.data.completion?.optional || [])];
     optional[idx] = id;
-    handleFieldChange("completion", { ...(localNode.data.completion || {}), optional });
+    handleFieldChange("completion", { ...(node.data.completion || {}), optional });
   };
   const addCompletionOptional = () => {
-    if (!localNode) return;
-    const optional: Completion["optional"] = [...(localNode.data.completion?.optional || []), ""];
-    handleFieldChange("completion", { ...(localNode.data.completion || {}), optional });
+    if (!node) return;
+    const optional: Completion["optional"] = [...(node.data.completion?.optional || []), ""];
+    handleFieldChange("completion", { ...(node.data.completion || {}), optional });
   };
   const removeCompletionOptional = (idx: number) => {
-    if (!localNode) return;
-    const optional = (localNode.data.completion?.optional || []).filter((_: any, i: number) => i !== idx);
-    handleFieldChange("completion", { ...(localNode.data.completion || {}), optional });
+    if (!node) return;
+    const optional = (node.data.completion?.optional || []).filter((_: any, i: number) => i !== idx);
+    handleFieldChange("completion", { ...(node.data.completion || {}), optional });
   };
 
   // Unlock After
   const handleUnlockAfterChange = (idx: number, id: string) => {
-    if (!localNode) return;
-    const after = [...(localNode.data.unlock?.after || [])];
+    if (!node) return;
+    const after = [...(node.data.unlock?.after || [])];
     after[idx] = id;
-    handleFieldChange("unlock", { ...(localNode.data.unlock || {}), after });
+    handleFieldChange("unlock", { ...(node.data.unlock || {}), after });
   };
   const addUnlockAfter = () => {
-    if (!localNode) return;
-    const after = [...(localNode.data.unlock?.after || []), ""];
-    handleFieldChange("unlock", { ...(localNode.data.unlock || {}), after });
+    if (!node) return;
+    const after = [...(node.data.unlock?.after || []), ""];
+    handleFieldChange("unlock", { ...(node.data.unlock || {}), after });
   };
   const removeUnlockAfter = (idx: number) => {
-    if (!localNode) return;
-    const after = (localNode.data.unlock?.after || []).filter((_: any, i: number) => i !== idx);
-    handleFieldChange("unlock", { ...(localNode.data.unlock || {}), after });
-  };
-
-  const handleSave = () => {
-    if (!localNode) return;
-    onUpdate(localNode);
-    onClose();
+    if (!node) return;
+    const after = (node.data.unlock?.after || []).filter((_: any, i: number) => i !== idx);
+    handleFieldChange("unlock", { ...(node.data.unlock || {}), after });
   };
 
   const handleFieldChange = (field: string, value: any) => {
-    setLocalNode((prev: Node<NodeData> | null) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        data: { ...prev.data, [field]: value },
-        className: field === "color" ? value : prev.className
-      };
-    });
+    if (!node) return;
+    const updatedNode = {
+      ...node,
+      data: { ...node.data, [field]: value },
+      className: field === "color" ? value : node.className
+    };
+    updateNode(node.id, updatedNode);
   };
 
   const handleResourceChange = (index: number, field: string, value: string) => {
-    if (!localNode) return;
-    const resources = [...(localNode.data.resources || [])];
+    if (!node) return;
+    const resources = [...(node.data.resources || [])];
     resources[index] = { ...resources[index], [field]: value };
     handleFieldChange("resources", resources);
   };
 
   const addResource = () => {
-    if (!localNode) return;
-    const resources = [...(localNode.data.resources || []), { label: "", type: "url", url: "" }];
+    if (!node) return;
+    const resources = [...(node.data.resources || []), { label: "", type: "url", url: "" }];
     handleFieldChange("resources", resources);
   };
 
   const removeResource = (index: number) => {
-    if (!localNode) return;
-    const resources = (localNode.data.resources || []).filter((_: any, i: number) => i !== index);
+    if (!node) return;
+    const resources = (node.data.resources || []).filter((_: any, i: number) => i !== index);
     handleFieldChange("resources", resources);
   };
 
   let content;
-  if (localNode.type === "task") {
+  if (node.type === "task") {
     content = (
       <>
         <div className="panel-header">
@@ -200,7 +183,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           </button>
         </div>
         <EditorDrawerTaskContent
-          localNode={localNode}
+          localNode={node}
           handleFieldChange={handleFieldChange}
           handleResourceChange={handleResourceChange}
           addResource={addResource}
@@ -219,7 +202,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
         />
       </>
     );
-  } else if (localNode.type === "topic") {
+  } else if (node.type === "topic") {
     content = (
       <>
         <div className="panel-header">
@@ -229,7 +212,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           </button>
         </div>
         <EditorDrawerTopicContent
-          localNode={localNode}
+          localNode={node}
           handleFieldChange={handleFieldChange}
           handleResourceChange={handleResourceChange}
           addResource={addResource}
@@ -248,7 +231,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
         />
       </>
     );
-  } else if (localNode.type === "image") {
+  } else if (node.type === "image") {
     content = (
       <>
         <div className="panel-header">
@@ -258,13 +241,13 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           </button>
         </div>
         <EditorDrawerImageContent
-          localNode={localNode}
+          localNode={node}
           handleFieldChange={handleFieldChange}
           language={language}
         />
       </>
     );
-  } else if (localNode.type === "text") {
+  } else if (node.type === "text") {
     content = (
       <>
         <div className="panel-header">
@@ -274,7 +257,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           </button>
         </div>
         <EditorDrawerTextContent
-          localNode={localNode}
+          localNode={node}
           handleFieldChange={handleFieldChange}
           language={language}
         />
@@ -289,9 +272,6 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
         <div className="panel-footer">
           <button onClick={onDelete} className="danger-button">
             <Trash2 size={16} /> {t.deleteNode}
-          </button>
-          <button onClick={handleSave} className="primary-button">
-            <Save size={16} /> {t.saveChanges}
           </button>
         </div>
       </div>

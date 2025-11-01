@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { X, Save, RefreshCw } from "lucide-react";
+import React, { useEffect } from "react";
+import { X, Trash2, RefreshCw } from "lucide-react";
 import { Panel, useReactFlow } from "@xyflow/react";
 import { Settings } from "./types";
 import { ColorSelector } from "./ColorSelector";
@@ -27,41 +27,30 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
 
-  const [localSettings, setLocalSettings] = useState<Settings>(settings);
   const { getViewport } = useReactFlow();
-
-  useEffect(() => {
-    setLocalSettings(settings);
-  }, [settings]);
 
   const onClose = () => setSettingsDrawerOpen(false);
 
-  const onUpdate = (s: Settings) => {
-    setSettings(s);
-  };
-
   if (!isOpen) return null;
 
-  const handleSave = () => {
-    onUpdate(localSettings);
-    onClose();
+  const handleFieldChange = (updates: Partial<Settings>) => {
+    setSettings({ ...settings, ...updates });
   };
 
   const handleUseCurrentViewport = () => {
     const viewport = getViewport();
-    setLocalSettings(settings => ({
-      ...settings,
+    handleFieldChange({
       viewport: {
         x: Math.round(viewport.x),
         y: Math.round(viewport.y),
         zoom: parseFloat(viewport.zoom.toFixed(2)),
       }
-    }));
+    });
   };
 
   const handleUpdateAllEdges = () => {
-    const defaultType = localSettings?.defaultEdgeType || "default";
-    const defaultColor = localSettings?.defaultEdgeColor || "#94a3b8";
+    const defaultType = settings?.defaultEdgeType || "default";
+    const defaultColor = settings?.defaultEdgeColor || "#94a3b8";
     
     const updatedEdges = edges.map(edge => ({
       ...edge,
@@ -90,16 +79,16 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <label>{t.labelRequired}</label>
             <input
               type="text"
-              value={localSettings?.title || ""}
-              onChange={(e) => setLocalSettings(settings => ({ ...settings, title: e.target.value }))}
+              value={settings?.title || ""}
+              onChange={(e) => handleFieldChange({ title: e.target.value })}
               placeholder={t.placeholderTitleLabel}
             />
           </div>
           <div className="form-group">
             <label>{t.languageLabel}</label>
             <select
-              value={localSettings?.language || "en"}
-              onChange={(e) => setLocalSettings(settings => ({ ...settings, language: e.target.value }))}
+              value={settings?.language || "en"}
+              onChange={(e) => handleFieldChange({ language: e.target.value })}
             >
               <option value="en">{t.languageEnglish}</option>
               <option value="de">{t.languageGerman}</option>
@@ -111,13 +100,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
               <input
                 type="text"
-                value={localSettings?.id || ""}
-                onChange={(e) => setLocalSettings(settings => ({ ...settings, id: e.target.value }))}
+                value={settings?.id || ""}
+                onChange={(e) => handleFieldChange({ id: e.target.value })}
                 placeholder="Optional"
                 style={{ flex: 1 }}
               />
               <button
-                onClick={() => setLocalSettings(settings => ({ ...settings, id: generateRandomId() }))}
+                onClick={() => handleFieldChange({ id: generateRandomId() })}
                 className="secondary-button"
                 type="button"
                 style={{ padding: '8px 12px', width: "auto", display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -134,8 +123,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <div className="form-group">
             <ColorSelector
               label={t.backgroundColor}
-              value={localSettings?.background?.color || "#ffffff"}
-              onChange={color => setLocalSettings(settings => ({ ...settings, background: { ...settings.background, color } }))}
+              value={settings?.background?.color || "#ffffff"}
+              onChange={color => handleFieldChange({ background: { ...settings.background, color } })}
             />
           </div>
 
@@ -146,11 +135,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 <label style={{ fontSize: '0.875rem', color: '#666' }}>{t.viewportX}</label>
                 <input
                   type="number"
-                  value={localSettings?.viewport?.x ?? 0}
-                  onChange={(e) => setLocalSettings(settings => ({
-                    ...settings,
+                  value={settings?.viewport?.x ?? 0}
+                  onChange={(e) => handleFieldChange({
                     viewport: { ...settings.viewport, x: parseFloat(e.target.value) || 0, y: settings.viewport?.y ?? 0, zoom: settings.viewport?.zoom ?? 1 }
-                  }))}
+                  })}
                   style={{ width: '100%' }}
                 />
               </div>
@@ -158,11 +146,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 <label style={{ fontSize: '0.875rem', color: '#666' }}>{t.viewportY}</label>
                 <input
                   type="number"
-                  value={localSettings?.viewport?.y ?? 0}
-                  onChange={(e) => setLocalSettings(settings => ({
-                    ...settings,
+                  value={settings?.viewport?.y ?? 0}
+                  onChange={(e) => handleFieldChange({
                     viewport: { ...settings.viewport, y: parseFloat(e.target.value) || 0, x: settings.viewport?.x ?? 0, zoom: settings.viewport?.zoom ?? 1 }
-                  }))}
+                  })}
                   style={{ width: '100%' }}
                 />
               </div>
@@ -173,11 +160,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   step="0.1"
                   min="0.1"
                   max="10"
-                  value={localSettings?.viewport?.zoom ?? 1}
-                  onChange={(e) => setLocalSettings(settings => ({
-                    ...settings,
+                  value={settings?.viewport?.zoom ?? 1}
+                  onChange={(e) => handleFieldChange({
                     viewport: { ...settings.viewport, zoom: parseFloat(e.target.value) || 1, x: settings.viewport?.x ?? 0, y: settings.viewport?.y ?? 0 }
-                  }))}
+                  })}
                   style={{ width: '100%' }}
                 />
               </div>
@@ -195,8 +181,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <div className="form-group">
             <label>Default Edge Type</label>
             <select
-              value={localSettings?.defaultEdgeType || "default"}
-              onChange={(e) => setLocalSettings(settings => ({ ...settings, defaultEdgeType: e.target.value }))}
+              value={settings?.defaultEdgeType || "default"}
+              onChange={(e) => handleFieldChange({ defaultEdgeType: e.target.value })}
             >
               <option value="default">Default</option>
               <option value="straight">Straight</option>
@@ -209,8 +195,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <div className="form-group">
             <ColorSelector
               label="Default Edge Color"
-              value={localSettings?.defaultEdgeColor || "#94a3b8"}
-              onChange={color => setLocalSettings(settings => ({ ...settings, defaultEdgeColor: color }))}
+              value={settings?.defaultEdgeColor || "#94a3b8"}
+              onChange={color => handleFieldChange({ defaultEdgeColor: color })}
             />
           </div>
 
@@ -224,12 +210,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               Update All Edges to Default Settings
             </button>
           </div>
-        </div>
-
-        <div className="panel-footer">
-          <button onClick={handleSave} className="primary-button">
-            <Save size={16} /> {t.saveChanges}
-          </button>
         </div>
       </div>
     </Panel>
