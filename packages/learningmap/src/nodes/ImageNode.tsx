@@ -1,14 +1,25 @@
 import { Node, NodeResizer } from "@xyflow/react";
 import { ImageNodeData } from "../types";
 
-// Validate URL to prevent XSS attacks
-function isValidUrl(url: string): boolean {
+// Normalize and validate URL to prevent XSS attacks
+function normalizeAndValidateUrl(url: string): string | null {
+  // Trim whitespace
+  url = url.trim();
+  
+  // If URL doesn't start with a protocol, prepend https://
+  if (!url.match(/^[a-z]+:\/\//i)) {
+    url = 'https://' + url;
+  }
+  
   try {
     const parsedUrl = new URL(url);
     // Only allow http, https, and mailto protocols
-    return ['http:', 'https:', 'mailto:'].includes(parsedUrl.protocol);
+    if (['http:', 'https:', 'mailto:'].includes(parsedUrl.protocol)) {
+      return parsedUrl.href;
+    }
+    return null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -34,9 +45,10 @@ function parseMarkdownLinks(text: string): React.ReactNode[] {
       const linkText = match[1];
       const linkUrl = match[2];
       
-      if (isValidUrl(linkUrl)) {
+      const normalizedUrl = normalizeAndValidateUrl(linkUrl);
+      if (normalizedUrl) {
         parts.push(
-          <a key={index} href={linkUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
+          <a key={index} href={normalizedUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
             {linkText}
           </a>
         );
@@ -47,9 +59,10 @@ function parseMarkdownLinks(text: string): React.ReactNode[] {
     } else if (match[3]) {
       // Bare URL
       const url = match[3];
-      if (isValidUrl(url)) {
+      const normalizedUrl = normalizeAndValidateUrl(url);
+      if (normalizedUrl) {
         parts.push(
-          <a key={index} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
+          <a key={index} href={normalizedUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
             {url}
           </a>
         );
