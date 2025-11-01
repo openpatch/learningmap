@@ -160,11 +160,14 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
   };
 
   const handleFieldChange = (field: string, value: any) => {
-    setLocalNode((prev: Node<NodeData> | null) => ({
-      ...prev!,
-      data: { ...prev!.data, [field]: value },
-      className: field === "color" ? value : prev!.className
-    }));
+    setLocalNode((prev: Node<NodeData> | null) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        data: { ...prev.data, [field]: value },
+        className: field === "color" ? value : prev.className
+      };
+    });
   };
 
   const handleResourceChange = (index: number, field: string, value: string) => {
