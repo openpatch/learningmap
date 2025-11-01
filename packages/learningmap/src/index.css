@@ -385,7 +385,7 @@ header.drawer-header {
 
 .form-group textarea {
   resize: vertical;
-  font-family: inherit;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Buttons */
