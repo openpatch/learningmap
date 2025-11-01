@@ -203,6 +203,16 @@ export interface Translations {
   welcomeOpenFile: string;
   welcomeAddTopic: string;
   welcomeHelp: string;
+
+  // Font size options
+  fontSizeSmall: string;
+  fontSizeMedium: string;
+  fontSizeLarge: string;
+  fontSizeXLarge: string;
+
+  // Image caption
+  caption: string;
+  placeholderImageCaption: string;
 }
 
 const en: Translations = {
@@ -414,6 +424,16 @@ const en: Translations = {
   welcomeOpenFile: "Open File",
   welcomeAddTopic: "Add Topic",
   welcomeHelp: "Help",
+
+  // Font size options
+  fontSizeSmall: "Small",
+  fontSizeMedium: "Medium",
+  fontSizeLarge: "Large",
+  fontSizeXLarge: "Extra Large",
+
+  // Image caption
+  caption: "Caption",
+  placeholderImageCaption: "Add caption (supports [markdown links](url))",
 };
 
 const de: Translations = {
@@ -628,6 +648,16 @@ const de: Translations = {
   welcomeOpenFile: "Datei öffnen",
   welcomeAddTopic: "Thema hinzufügen",
   welcomeHelp: "Hilfe",
+
+  // Font size options
+  fontSizeSmall: "Klein",
+  fontSizeMedium: "Mittel",
+  fontSizeLarge: "Groß",
+  fontSizeXLarge: "Extra Groß",
+
+  // Image caption
+  caption: "Bildunterschrift",
+  placeholderImageCaption: "Bildunterschrift hinzufügen (unterstützt [Markdown-Links](url))",
 };
 
 export const translations: Record<string, Translations> = {

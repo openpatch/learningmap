@@ -2,6 +2,7 @@ import { Node } from "@xyflow/react";
 import { Plus, Trash2 } from "lucide-react";
 import { NodeData, Resource } from "./types";
 import { getTranslations } from "./translations";
+import { FONT_SIZE_VALUES, getFontSizeOption, FontSizeOption } from "./fontSizes";
 
 interface Props {
   localNode: Node<NodeData>;
@@ -94,15 +95,19 @@ export function EditorDrawerTaskContent({
         />
       </div>
       <div className="form-group">
-        <label>Font Size (px)</label>
-        <input
-          type="number"
-          value={localNode.data.fontSize || 14}
-          onChange={(e) => handleFieldChange("fontSize", parseInt(e.target.value) || 14)}
-          placeholder="14"
-          min="8"
-          max="72"
-        />
+        <label>{t.fontSize}</label>
+        <select
+          value={getFontSizeOption(localNode.data.fontSize)}
+          onChange={(e) => {
+            const selectedSize = e.target.value as FontSizeOption;
+            handleFieldChange("fontSize", FONT_SIZE_VALUES[selectedSize]);
+          }}
+        >
+          <option value="S">{t.fontSizeSmall} ({FONT_SIZE_VALUES.S}px)</option>
+          <option value="M">{t.fontSizeMedium} ({FONT_SIZE_VALUES.M}px)</option>
+          <option value="L">{t.fontSizeLarge} ({FONT_SIZE_VALUES.L}px)</option>
+          <option value="XL">{t.fontSizeXLarge} ({FONT_SIZE_VALUES.XL}px)</option>
+        </select>
       </div>
       <div className="form-group">
         <label>{t.summary}</label>

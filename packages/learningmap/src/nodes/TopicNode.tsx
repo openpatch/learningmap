@@ -1,6 +1,7 @@
 import { Handle, Node, NodeResizer, Position } from "@xyflow/react";
 import { NodeData } from "../types";
 import StarCircle from "../icons/StarCircle";
+import { getFontSizeValue } from "../fontSizes";
 
 export const TopicNode = ({ data, selected, isConnectable }: Node<NodeData>) => {
   return (
@@ -8,7 +9,7 @@ export const TopicNode = ({ data, selected, isConnectable }: Node<NodeData>) => 
       {isConnectable && <NodeResizer isVisible={selected} />}
       {data.state === "mastered" && <StarCircle className="icon" />}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", textAlign: "center" }}>
-        <div style={{ fontWeight: 600, fontSize: data.fontSize ? `${data.fontSize}px` : "14px" }}>
+        <div style={{ fontWeight: 600, fontSize: `${getFontSizeValue(data.fontSize)}px` }}>
           {data.label || "Untitled"}
         </div>
         {data.summary && (
