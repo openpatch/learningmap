@@ -38,3 +38,14 @@ If you need a new feature, open an [issue](https://github.com/openpatch/learning
 ::::
 -->
 
+## v0.1.0
+
+::::tabs
+
+:::tab{title="New :rocket:" id="new"}
+
+- Initial release of learningmap!
+
+:::
+
+::::
