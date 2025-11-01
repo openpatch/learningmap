@@ -40,7 +40,8 @@ learningmap/
 │   ├── learningmap/          # Core React component library
 │   └── web-component/        # Web component wrapper
 ├── platforms/
-│   └── web/                  # Web application (learningmap.app)
+│   ├── web/                  # Web application (learningmap.app)
+│   └── vscode/               # VS Code extension
 ├── docs/                     # Documentation (Hyperbook)
 └── scripts/                  # Build and development scripts
 ```
@@ -87,6 +88,23 @@ pnpm docs:dev
 ```
 
 The documentation is built with [Hyperbook](https://hyperbook.openpatch.org) and is located in the `docs/` directory.
+
+### VS Code Extension
+
+To develop the VS Code extension:
+
+1. Build the extension:
+   ```bash
+   pnpm --filter learningmap-vscode build
+   ```
+
+2. Open the `platforms/vscode` directory in VS Code
+
+3. Press F5 to launch the Extension Development Host
+
+4. Open or create a `.learningmap` file to test the editor
+
+See [platforms/vscode/DEVELOPMENT.md](../../platforms/vscode/DEVELOPMENT.md) for more details.
 
 ## Testing Your Changes
 
