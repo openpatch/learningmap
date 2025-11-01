@@ -92,8 +92,14 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
     ({ nodes: selectedNodes }) => {
       // Only select nodes, not edges (as per requirement #6)
       setSelectedNodeIds(selectedNodes.map(n => n.id));
+      
+      // Close the node panel if no nodes are selected and it's currently open
+      if (selectedNodes.length === 0) {
+        setDrawerOpen(false);
+        setSelectedNodeId(null);
+      }
     },
-    [setSelectedNodeIds]
+    [setSelectedNodeIds, setDrawerOpen, setSelectedNodeId]
   );
 
   // Track mouse position for keyboard shortcuts
@@ -101,6 +107,14 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
     const position = screenToFlowPosition({ x: event.clientX, y: event.clientY });
     setLastMousePosition(position);
   }, [screenToFlowPosition, setLastMousePosition]);
+
+  // Close panels when clicking on empty canvas
+  const handlePaneClick = useCallback(() => {
+    setDrawerOpen(false);
+    setSelectedNodeId(null);
+    setEdgeDrawerOpen(false);
+    setSelectedEdge(null);
+  }, [setDrawerOpen, setSelectedNodeId, setEdgeDrawerOpen, setSelectedEdge]);
 
   const defaultEdgeOptions = {
     animated: false,
@@ -129,6 +143,7 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
         onNodesChange={onNodesChange}
         onConnect={onConnect}
         onSelectionChange={handleSelectionChange}
+        onPaneClick={handlePaneClick}
         nodeTypes={nodeTypes}
         selectionOnDrag={false}
         edgeTypes={edgeTypes}

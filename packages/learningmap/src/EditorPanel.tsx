@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { X, Trash2 } from "lucide-react";
+import { X, Trash2, Copy } from "lucide-react";
 import { Node, Panel } from "@xyflow/react";
 import { EditorDrawerTaskContent } from "./EditorDrawerTaskContent";
 import { EditorDrawerTopicContent } from "./EditorDrawerTopicContent";
@@ -21,17 +21,28 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
   const nodes = useEditorStore(state => state.nodes);
   const isOpen = useEditorStore(state => state.drawerOpen);
   const settings = useEditorStore(state => state.settings);
+  const nextNodeId = useEditorStore(state => state.nextNodeId);
 
   // Get actions from store
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
   const updateNode = useEditorStore(state => state.updateNode);
   const deleteNode = useEditorStore(state => state.deleteNode);
+  const addNode = useEditorStore(state => state.addNode);
+  const setNextNodeId = useEditorStore(state => state.setNextNodeId);
 
   const language = settings?.language || defaultLanguage;
   const t = getTranslations(language);
 
   const node = nodes.find(n => n.id === selectedNodeId) || null;
+
+  // Close panel when node gets deselected
+  useEffect(() => {
+    if (isOpen && !node) {
+      setDrawerOpen(false);
+      setSelectedNodeId(null);
+    }
+  }, [node, isOpen, setDrawerOpen, setSelectedNodeId]);
 
   const onClose = () => {
     setDrawerOpen(false);
@@ -43,6 +54,32 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
       deleteNode(node.id);
       onClose();
     }
+  };
+
+  const onCopy = () => {
+    if (!node) return;
+    
+    // Create a copy of the node with a new ID and offset position
+    const newNodeId = `node-${nextNodeId}`;
+    const copiedNode: Node<NodeData> = {
+      ...node,
+      id: newNodeId,
+      position: {
+        x: node.position.x + 20,
+        y: node.position.y + 20,
+      },
+      data: {
+        ...node.data,
+        label: `${node.data.label} (copy)`,
+      },
+      selected: false,
+    };
+    
+    addNode(copiedNode);
+    setNextNodeId(nextNodeId + 1);
+    
+    // Select the new node
+    setSelectedNodeId(newNodeId);
   };
 
   if (!isOpen || !node) return null;
@@ -270,6 +307,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
       <div className="panel-inner">
         {content}
         <div className="panel-footer">
+          <button onClick={onCopy} className="secondary-button">
+            <Copy size={16} /> {t.copyNode}
+          </button>
           <button onClick={onDelete} className="danger-button">
             <Trash2 size={16} /> {t.deleteNode}
           </button>
