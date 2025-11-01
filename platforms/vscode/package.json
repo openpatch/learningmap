@@ -1,0 +1,58 @@
+{
+  "name": "learningmap-vscode",
+  "displayName": "Learningmap Editor",
+  "description": "Visual editor for learningmap files",
+  "version": "0.1.0",
+  "publisher": "openpatch",
+  "author": "Mike Barkmin",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "learningmap.editor",
+        "displayName": "Learningmap Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.learningmap"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "learningmap.new",
+        "title": "New Learningmap",
+        "category": "Learningmap"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node ../../scripts/build-vscode.mjs",
+    "lint": "tsc --noEmit",
+    "watch": "node ../../scripts/build-vscode.mjs --watch",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@learningmap/learningmap": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "^24.7.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "~5.9.3"
+  }
+}
