@@ -1,5 +1,12 @@
 # web
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`8011851`](https://github.com/openpatch/learningmap/commit/8011851793ebac305342a5d25254f62f7e85beb0)]:
+  - @learningmap/learningmap@0.1.0
+
 ## 0.0.1
 
 ### Patch Changes
