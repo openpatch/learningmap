@@ -1,6 +1,6 @@
 import { Node } from "@xyflow/react";
 import { Plus, Trash2 } from "lucide-react";
-import { NodeData } from "./types";
+import { NodeData, Resource } from "./types";
 import { getTranslations } from "./translations";
 
 interface Props {
@@ -94,6 +94,17 @@ export function EditorDrawerTaskContent({
         />
       </div>
       <div className="form-group">
+        <label>Font Size (px)</label>
+        <input
+          type="number"
+          value={localNode.data.fontSize || 14}
+          onChange={(e) => handleFieldChange("fontSize", parseInt(e.target.value) || 14)}
+          placeholder="14"
+          min="8"
+          max="72"
+        />
+      </div>
+      <div className="form-group">
         <label>{t.summary}</label>
         <input
           type="text"
@@ -131,27 +142,59 @@ export function EditorDrawerTaskContent({
       </div>
       <div className="form-group">
         <label>{t.resources}</label>
-        {(localNode.data.resources || []).map((resource: { label: string; url: string }, idx: number) => (
-          <div key={idx} style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-            <input
-              type="text"
-              value={resource.label || ""}
-              onChange={(e) => handleResourceChange(idx, "label", e.target.value)}
-              placeholder={t.placeholderLabel}
-              style={{ flex: 1 }}
-            />
-            <input
-              type="text"
-              value={resource.url || ""}
-              onChange={(e) => handleResourceChange(idx, "url", e.target.value)}
-              placeholder={t.placeholderURL}
-              style={{ flex: 2 }}
-            />
-            <button onClick={() => removeResource(idx)} className="icon-button">
-              <Trash2 size={16} />
-            </button>
-          </div>
-        ))}
+        {(localNode.data.resources || []).map((resource: Resource, idx: number) => {
+          const isBook = resource.type === "book";
+          return (
+            <div key={idx} style={{ marginBottom: "16px", padding: "12px", border: "1px solid #e5e7eb", borderRadius: "6px" }}>
+              <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                <select
+                  value={resource.type || "url"}
+                  onChange={(e) => handleResourceChange(idx, "type", e.target.value)}
+                  style={{ flex: 0.5 }}
+                >
+                  <option value="url">URL</option>
+                  <option value="book">Book</option>
+                </select>
+                <input
+                  type="text"
+                  value={resource.label || ""}
+                  onChange={(e) => handleResourceChange(idx, "label", e.target.value)}
+                  placeholder={t.placeholderLabel}
+                  style={{ flex: 1 }}
+                />
+                <button onClick={() => removeResource(idx)} className="icon-button">
+                  <Trash2 size={16} />
+                </button>
+              </div>
+              {isBook ? (
+                <>
+                  <input
+                    type="text"
+                    value={resource.bookName || ""}
+                    onChange={(e) => handleResourceChange(idx, "bookName", e.target.value)}
+                    placeholder="Book name (e.g., Lambacher Schweitzer GK)"
+                    style={{ width: "100%", marginBottom: "8px" }}
+                  />
+                  <input
+                    type="text"
+                    value={resource.bookLocation || ""}
+                    onChange={(e) => handleResourceChange(idx, "bookLocation", e.target.value)}
+                    placeholder="Location (e.g., S. 223 Nr. 5)"
+                    style={{ width: "100%" }}
+                  />
+                </>
+              ) : (
+                <input
+                  type="text"
+                  value={resource.url || ""}
+                  onChange={(e) => handleResourceChange(idx, "url", e.target.value)}
+                  placeholder={t.placeholderURL}
+                  style={{ width: "100%" }}
+                />
+              )}
+            </div>
+          );
+        })}
         <button onClick={addResource} className="secondary-button">
           <Plus size={16} /> {t.addResource}
         </button>

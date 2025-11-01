@@ -15,6 +15,14 @@ export interface Completion {
   optional?: string[];
 }
 
+export interface Resource {
+  label: string;
+  url?: string;
+  type?: "url" | "book";
+  bookName?: string;
+  bookLocation?: string;
+}
+
 export interface NodeData {
   state: "locked" | "unlocked" | "started" | "completed" | "mastered";
   label: string;
@@ -23,8 +31,9 @@ export interface NodeData {
   unlock?: UnlockCondition;
   completion?: Completion;
   video?: string;
-  resources?: { label: string; url: string }[];
+  resources?: Resource[];
   summary?: string;
+  fontSize?: number;
   [key: string]: any;
 }
 
@@ -56,6 +65,8 @@ export interface Settings {
     y: number;
     zoom: number;
   };
+  defaultEdgeType?: string;
+  defaultEdgeColor?: string;
 }
 
 export interface EdgeConfig {
