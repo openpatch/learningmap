@@ -12,13 +12,15 @@ function isValidUrl(url: string): boolean {
   }
 }
 
-// Simple markdown link parser for captions
+// Simple markdown link parser for captions - supports [text](url) and bare URLs
 function parseMarkdownLinks(text: string): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
-  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
   
-  // Use matchAll instead of exec to avoid potential infinite loops
-  const matches = Array.from(text.matchAll(linkRegex));
+  // Combined regex for markdown links [text](url) and bare URLs
+  // Matches markdown links first, then bare URLs (starting with http:// or https://)
+  const combinedRegex = /\[([^\]]+)\]\(([^)]+)\)|(https?:\/\/[^\s<>"{}|\\^`\[\]]+)/g;
+  
+  const matches = Array.from(text.matchAll(combinedRegex));
   let lastIndex = 0;
 
   matches.forEach((match, index) => {
@@ -27,19 +29,33 @@ function parseMarkdownLinks(text: string): React.ReactNode[] {
       parts.push(text.substring(lastIndex, match.index));
     }
     
-    // Add the link only if URL is valid
-    const linkText = match[1];
-    const linkUrl = match[2];
-    
-    if (isValidUrl(linkUrl)) {
-      parts.push(
-        <a key={index} href={linkUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
-          {linkText}
-        </a>
-      );
-    } else {
-      // If URL is invalid, just show the text
-      parts.push(`[${linkText}](${linkUrl})`);
+    if (match[1] && match[2]) {
+      // Markdown link [text](url)
+      const linkText = match[1];
+      const linkUrl = match[2];
+      
+      if (isValidUrl(linkUrl)) {
+        parts.push(
+          <a key={index} href={linkUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
+            {linkText}
+          </a>
+        );
+      } else {
+        // If URL is invalid, just show the text
+        parts.push(`[${linkText}](${linkUrl})`);
+      }
+    } else if (match[3]) {
+      // Bare URL
+      const url = match[3];
+      if (isValidUrl(url)) {
+        parts.push(
+          <a key={index} href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#3b82f6", textDecoration: "underline" }}>
+            {url}
+          </a>
+        );
+      } else {
+        parts.push(url);
+      }
     }
     
     if (match.index !== undefined) {

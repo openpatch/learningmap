@@ -96,18 +96,31 @@ export function EditorDrawerTaskContent({
       </div>
       <div className="form-group">
         <label>{t.fontSize}</label>
-        <select
-          value={getFontSizeOption(localNode.data.fontSize)}
-          onChange={(e) => {
-            const selectedSize = e.target.value as FontSizeOption;
-            handleFieldChange("fontSize", FONT_SIZE_VALUES[selectedSize]);
-          }}
-        >
-          <option value="S">{t.fontSizeSmall} ({FONT_SIZE_VALUES.S}px)</option>
-          <option value="M">{t.fontSizeMedium} ({FONT_SIZE_VALUES.M}px)</option>
-          <option value="L">{t.fontSizeLarge} ({FONT_SIZE_VALUES.L}px)</option>
-          <option value="XL">{t.fontSizeXLarge} ({FONT_SIZE_VALUES.XL}px)</option>
-        </select>
+        <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+          {(["S", "M", "L", "XL"] as FontSizeOption[]).map((size) => {
+            const isSelected = getFontSizeOption(localNode.data.fontSize) === size;
+            return (
+              <button
+                key={size}
+                type="button"
+                onClick={() => handleFieldChange("fontSize", FONT_SIZE_VALUES[size])}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 6,
+                  border: isSelected ? "2px solid #3b82f6" : "1px solid #d1d5db",
+                  backgroundColor: isSelected ? "#eff6ff" : "#ffffff",
+                  color: isSelected ? "#3b82f6" : "#374151",
+                  cursor: "pointer",
+                  fontWeight: isSelected ? "bold" : "normal",
+                  fontSize: "14px",
+                }}
+              >
+                {size}
+              </button>
+            );
+          })}
+        </div>
       </div>
       <div className="form-group">
         <label>{t.summary}</label>
