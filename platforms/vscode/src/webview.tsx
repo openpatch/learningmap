@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import { LearningMapEditor, useEditorStore, RoadmapData } from '@learningmap/learningmap';
+import { LearningMapEditor, useEditorStore, RoadmapData, KeyBindings } from '@learningmap/learningmap';
 import '@learningmap/learningmap/index.css';
 
 // VS Code API type
@@ -127,7 +127,16 @@ function WebviewEditor() {
     return <div style={{ padding: '20px' }}>Loading editor...</div>;
   }
 
-  return <LearningMapEditor disableSharing={true} disableFileOperations={true} />;
+  // Custom keybindings for VS Code - disable Ctrl+S since VS Code handles save
+  const vscodeKeyBindings: Partial<KeyBindings> = {
+    save: undefined, // Disable save shortcut - VS Code handles this
+  };
+
+  return <LearningMapEditor 
+    disableSharing={true} 
+    disableFileOperations={true} 
+    keyBindings={vscodeKeyBindings}
+  />;
 }
 
 // Mount the React component

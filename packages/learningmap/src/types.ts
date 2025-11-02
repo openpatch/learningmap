@@ -110,3 +110,36 @@ export type HelperLine = {
   color?: string;
   anchorName: string;
 };
+
+export interface KeyBinding {
+  key: string;
+  ctrl?: boolean;
+  shift?: boolean;
+  alt?: boolean;
+  meta?: boolean;
+}
+
+export interface KeyBindings {
+  addTaskNode?: KeyBinding;
+  addTopicNode?: KeyBinding;
+  addImageNode?: KeyBinding;
+  addTextNode?: KeyBinding;
+  save?: KeyBinding;
+  undo?: KeyBinding;
+  redo?: KeyBinding;
+  help?: KeyBinding;
+  togglePreview?: KeyBinding;
+  toggleDebug?: KeyBinding;
+  zoomIn?: KeyBinding;
+  zoomOut?: KeyBinding;
+  resetZoom?: KeyBinding;
+  toggleGrid?: KeyBinding;
+  resetMap?: KeyBinding;
+  cut?: KeyBinding;
+  copy?: KeyBinding;
+  paste?: KeyBinding;
+  selectAll?: KeyBinding;
+  fitView?: KeyBinding;
+  zoomToSelection?: KeyBinding;
+  deleteSelected?: KeyBinding;
+}

@@ -99,6 +99,19 @@ Interactive editor for creating and editing learning maps.
 | `json-store` | `string` | `"https://json.openpatch.org"` | URL for JSON storage service |
 | `disable-sharing` | `boolean` | `false` | Hide the share button (useful in environments without external sharing) |
 | `disable-file-operations` | `boolean` | `false` | Hide open and download buttons (useful when file operations are handled externally) |
+| `key-bindings` | `string` | `undefined` | JSON string of custom keyboard shortcuts (see React docs for KeyBindings type) |
+
+#### Customizing Keyboard Shortcuts
+
+You can customize keyboard shortcuts by passing a JSON string to the `key-bindings` attribute:
+
+```html
+<hyperbook-learningmap-editor
+  key-bindings='{"save": null, "addTaskNode": {"key": "t", "ctrl": true}}'
+></hyperbook-learningmap-editor>
+```
+
+This example disables the save shortcut and changes the "add task" shortcut from `Ctrl+1` to `Ctrl+T`. See the React package documentation for a complete list of available shortcuts and the KeyBindings type definition.
 
 #### Events
 

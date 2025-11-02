@@ -48,6 +48,63 @@ function App() {
 | `jsonStore` | `string` | `"https://json.openpatch.org"` | URL for JSON storage service |
 | `disableSharing` | `boolean` | `false` | Hide the share button (useful in environments without external sharing) |
 | `disableFileOperations` | `boolean` | `false` | Hide open and download buttons (useful when file operations are handled externally) |
+| `keyBindings` | `Partial<KeyBindings>` | `undefined` | Custom keyboard shortcuts (see [Keyboard Shortcuts](#keyboard-shortcuts)) |
+
+#### Keyboard Shortcuts
+
+The editor includes many keyboard shortcuts for efficient editing. You can customize these shortcuts by providing a `keyBindings` prop:
+
+```tsx
+import { LearningMapEditor, KeyBindings } from '@learningmap/learningmap';
+
+const customKeyBindings: Partial<KeyBindings> = {
+  save: undefined, // Disable save shortcut
+  addTaskNode: { key: 't', ctrl: true }, // Change from Ctrl+1 to Ctrl+T
+};
+
+<LearningMapEditor keyBindings={customKeyBindings} />
+```
+
+**Default Keyboard Shortcuts:**
+
+| Action | Default Shortcut | KeyBinding Property |
+|--------|-----------------|-------------------|
+| Add Task Node | `Ctrl+1` | `addTaskNode` |
+| Add Topic Node | `Ctrl+2` | `addTopicNode` |
+| Add Image Node | `Ctrl+3` | `addImageNode` |
+| Add Text Node | `Ctrl+4` | `addTextNode` |
+| Save | `Ctrl+S` | `save` |
+| Undo | `Ctrl+Z` | `undo` |
+| Redo | `Ctrl+Y` | `redo` |
+| Toggle Preview | `Ctrl+P` | `togglePreview` |
+| Toggle Debug | `Ctrl+D` | `toggleDebug` |
+| Zoom In | `Ctrl++` | `zoomIn` |
+| Zoom Out | `Ctrl+-` | `zoomOut` |
+| Reset Zoom | `Ctrl+0` | `resetZoom` |
+| Toggle Grid | `Ctrl+'` | `toggleGrid` |
+| Reset Map | `Ctrl+Delete` | `resetMap` |
+| Cut | `Ctrl+X` | `cut` |
+| Copy | `Ctrl+C` | `copy` |
+| Paste | `Ctrl+V` | `paste` |
+| Select All | `Ctrl+A` | `selectAll` |
+| Fit View | `Shift+!` | `fitView` |
+| Zoom to Selection | `Shift+@` | `zoomToSelection` |
+| Delete Selected | `Delete` | `deleteSelected` |
+| Help | `Ctrl+?` | `help` |
+
+**KeyBinding Type:**
+
+```typescript
+interface KeyBinding {
+  key: string;
+  ctrl?: boolean;
+  shift?: boolean;
+  alt?: boolean;
+  meta?: boolean;
+}
+```
+
+To disable a shortcut, set it to `undefined`. To customize, provide a `KeyBinding` object with the desired key combination.
 
 #### Features
 

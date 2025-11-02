@@ -1,7 +1,7 @@
 import {
   ReactFlowProvider,
 } from "@xyflow/react";
-import { RoadmapData } from "./types";
+import { RoadmapData, KeyBindings } from "./types";
 import { EditorToolbar } from "./EditorToolbar";
 import { LearningMap } from "./LearningMap";
 import { useEditorStore } from "./editorStore";
@@ -17,6 +17,7 @@ export interface LearningMapEditorProps {
   jsonStore?: string;
   disableSharing?: boolean;
   disableFileOperations?: boolean;
+  keyBindings?: Partial<KeyBindings>;
 }
 
 export function LearningMapEditor({
@@ -25,6 +26,7 @@ export function LearningMapEditor({
   jsonStore = "https://json.openpatch.org",
   disableSharing = false,
   disableFileOperations = false,
+  keyBindings,
 }: LearningMapEditorProps) {
   // Only get minimal state needed in this component
   const nodes = useEditorStore(state => state.nodes);
@@ -65,7 +67,7 @@ export function LearningMapEditor({
   return (
     <>
       {/* Keyboard shortcuts handler */}
-      <KeyboardShortcuts jsonStore={jsonStore} />
+      <KeyboardShortcuts jsonStore={jsonStore} keyBindings={keyBindings} />
 
       {/* Toolbar */}
       <EditorToolbar defaultLanguage={language} disableSharing={disableSharing} disableFileOperations={disableFileOperations} />

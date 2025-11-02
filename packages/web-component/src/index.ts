@@ -23,6 +23,7 @@ const LearningmapEditorWC = r2wc(LearningMapEditor, {
     jsonStore: "string",
     disableSharing: "boolean",
     disableFileOperations: "boolean",
+    keyBindings: "json",
     onChange: "function",
   },
   events: {
