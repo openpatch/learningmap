@@ -76,13 +76,31 @@ export function activate(context: vscode.ExtensionContext) {
   // Register command to show source
   context.subscriptions.push(
     vscode.commands.registerCommand('learningmap.showSource', async () => {
-      const activeEditor = vscode.window.activeTextEditor;
-      if (!activeEditor) {
-        vscode.window.showErrorMessage('No active learningmap file');
+      // Try to get the active text editor first
+      let uri = vscode.window.activeTextEditor?.document.uri;
+      
+      // If no active text editor, check visible text editors
+      if (!uri && vscode.window.visibleTextEditors.length > 0) {
+        uri = vscode.window.visibleTextEditors[0].document.uri;
+      }
+      
+      // If still no URI, try to find an open learningmap document
+      if (!uri) {
+        const learningmapDocs = vscode.workspace.textDocuments.filter(
+          doc => doc.uri.path.endsWith('.learningmap')
+        );
+        if (learningmapDocs.length > 0) {
+          uri = learningmapDocs[0].uri;
+        }
+      }
+      
+      // If we still don't have a URI, show an error
+      if (!uri) {
+        vscode.window.showErrorMessage('No learningmap file is currently open');
         return;
       }
-
-      const uri = activeEditor.document.uri;
+      
+      // Verify it's a learningmap file
       if (!uri.path.endsWith('.learningmap')) {
         vscode.window.showErrorMessage('Active file is not a learningmap file');
         return;
