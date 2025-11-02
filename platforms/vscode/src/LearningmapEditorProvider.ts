@@ -6,8 +6,21 @@ import * as vscode from 'vscode';
  */
 export class LearningmapEditorProvider implements vscode.CustomTextEditorProvider {
   private static readonly viewType = 'learningmap.editor';
+  private activeWebviewPanel: vscode.WebviewPanel | undefined;
 
   constructor(private readonly context: vscode.ExtensionContext) {}
+
+  /**
+   * Send a command to the active editor webview
+   */
+  public sendCommandToActiveEditor(command: string): void {
+    if (this.activeWebviewPanel) {
+      this.activeWebviewPanel.webview.postMessage({
+        type: 'command',
+        command: command,
+      });
+    }
+  }
 
   /**
    * Called when our custom editor is opened.
@@ -17,6 +30,23 @@ export class LearningmapEditorProvider implements vscode.CustomTextEditorProvide
     webviewPanel: vscode.WebviewPanel,
     _token: vscode.CancellationToken
   ): Promise<void> {
+    // Track this as the active webview panel
+    this.activeWebviewPanel = webviewPanel;
+    
+    // Clear active panel when disposed
+    webviewPanel.onDidDispose(() => {
+      if (this.activeWebviewPanel === webviewPanel) {
+        this.activeWebviewPanel = undefined;
+      }
+    });
+    
+    // Update active panel on focus
+    webviewPanel.onDidChangeViewState(() => {
+      if (webviewPanel.active) {
+        this.activeWebviewPanel = webviewPanel;
+      }
+    });
+    
     // Setup initial webview content
     webviewPanel.webview.options = {
       enableScripts: true,
