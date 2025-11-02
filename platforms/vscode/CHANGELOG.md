@@ -1,5 +1,11 @@
 # learningmap-studio
 
+## 0.2.1
+
+### Patch Changes
+
+- [`6b0d726`](https://github.com/openpatch/learningmap/commit/6b0d726178df0b85664242032bf5cb97a1d76f30) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Fix release workflow
+
 ## 0.2.0
 
 ### Minor Changes
