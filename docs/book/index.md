@@ -1,5 +1,6 @@
 ---
 name: Introduction
+index: 0
 ---
 
 :::alert{warn}

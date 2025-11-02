@@ -562,3 +562,4 @@ The web component works in all modern browsers that support:
 
 For older browsers, consider using polyfills:
 - [@webcomponents/webcomponentsjs](https://github.com/webcomponents/webcomponentsjs)
+

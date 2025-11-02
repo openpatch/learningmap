@@ -1,5 +1,6 @@
 ---
 name: Changelog
+index: 3
 ---
 
 # Changelog
@@ -37,6 +38,18 @@ If you need a new feature, open an [issue](https://github.com/openpatch/learning
 
 ::::
 -->
+
+## v0.2.0
+
+::::tabs
+
+:::tab{title="New :rocket:" id="new"}
+
+- Make keyboard shortcuts configurable.
+
+:::
+
+::::
 
 ## v0.1.0
 
