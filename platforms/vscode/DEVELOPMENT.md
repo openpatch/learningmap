@@ -30,7 +30,7 @@ The extension consists of two main parts:
 pnpm build
 
 # Or build just the vscode extension
-pnpm --filter learningmap-vscode build
+pnpm --filter learningmap-studio build
 ```
 
 The build process:
@@ -42,7 +42,7 @@ The build process:
 
 ```bash
 # Watch mode for development
-pnpm --filter learningmap-vscode watch
+pnpm --filter learningmap-studio watch
 ```
 
 To test the extension:
