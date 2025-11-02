@@ -96,6 +96,9 @@ Interactive editor for creating and editing learning maps.
 |-----------|------|---------|-------------|
 | `roadmap-data` | `string` | `undefined` | JSON string of roadmap data |
 | `language` | `string` | `"en"` | UI language (`"en"` or `"de"`) |
+| `json-store` | `string` | `"https://json.openpatch.org"` | URL for JSON storage service |
+| `disable-sharing` | `boolean` | `false` | Hide the share button (useful in environments without external sharing) |
+| `disable-file-operations` | `boolean` | `false` | Hide open and download buttons (useful when file operations are handled externally) |
 
 #### Events
 

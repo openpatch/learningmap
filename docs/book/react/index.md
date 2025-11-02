@@ -46,6 +46,8 @@ function App() {
 | `roadmapData` | `string \| RoadmapData` | `undefined` | Initial roadmap data (JSON string or object) |
 | `language` | `string` | `"en"` | UI language (`"en"` or `"de"`) |
 | `jsonStore` | `string` | `"https://json.openpatch.org"` | URL for JSON storage service |
+| `disableSharing` | `boolean` | `false` | Hide the share button (useful in environments without external sharing) |
+| `disableFileOperations` | `boolean` | `false` | Hide open and download buttons (useful when file operations are handled externally) |
 
 #### Features
 
