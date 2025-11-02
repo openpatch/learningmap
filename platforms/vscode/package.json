@@ -53,6 +53,14 @@
         "title": "Show Source",
         "category": "Learningmap"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "learningmap.showSource",
+        "key": "ctrl+k ctrl+s",
+        "mac": "cmd+k cmd+s",
+        "when": "resourceExtname == .learningmap"
+      }
     ]
   },
   "scripts": {
