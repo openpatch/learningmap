@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as crypto from 'crypto';
 
 /**
  * Provider for learningmap custom editor.
@@ -139,5 +138,17 @@ export class LearningmapEditorProvider implements vscode.CustomTextEditorProvide
 }
 
 function getNonce() {
-  return crypto.randomBytes(16).toString('hex');
+  // Generate a cryptographically secure random string
+  // This works in both Node.js and browser environments
+  const array = new Uint32Array(8);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    // Browser or modern Node.js with Web Crypto API
+    crypto.getRandomValues(array);
+  } else {
+    // Fallback for older environments
+    for (let i = 0; i < array.length; i++) {
+      array[i] = Math.floor(Math.random() * 0xffffffff);
+    }
+  }
+  return Array.from(array, num => num.toString(16).padStart(8, '0')).join('');
 }

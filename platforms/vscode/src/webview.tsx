@@ -127,7 +127,7 @@ function WebviewEditor() {
     return <div style={{ padding: '20px' }}>Loading editor...</div>;
   }
 
-  return <LearningMapEditor />;
+  return <LearningMapEditor disableSharing={true} />;
 }
 
 // Mount the React component
