@@ -73,6 +73,26 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // Register command to show source
+  context.subscriptions.push(
+    vscode.commands.registerCommand('learningmap.showSource', async () => {
+      const activeEditor = vscode.window.activeTextEditor;
+      if (!activeEditor) {
+        vscode.window.showErrorMessage('No active learningmap file');
+        return;
+      }
+
+      const uri = activeEditor.document.uri;
+      if (!uri.path.endsWith('.learningmap')) {
+        vscode.window.showErrorMessage('Active file is not a learningmap file');
+        return;
+      }
+
+      // Open the file with the default text editor
+      await vscode.commands.executeCommand('vscode.openWith', uri, 'default');
+    })
+  );
+
   console.log('Learningmap extension is now active');
 }
 

@@ -16,6 +16,7 @@ export interface LearningMapEditorProps {
   language?: string;
   jsonStore?: string;
   disableSharing?: boolean;
+  disableFileOperations?: boolean;
 }
 
 export function LearningMapEditor({
@@ -23,6 +24,7 @@ export function LearningMapEditor({
   language = "en",
   jsonStore = "https://json.openpatch.org",
   disableSharing = false,
+  disableFileOperations = false,
 }: LearningMapEditorProps) {
   // Only get minimal state needed in this component
   const nodes = useEditorStore(state => state.nodes);
@@ -66,7 +68,7 @@ export function LearningMapEditor({
       <KeyboardShortcuts jsonStore={jsonStore} />
 
       {/* Toolbar */}
-      <EditorToolbar defaultLanguage={language} disableSharing={disableSharing} />
+      <EditorToolbar defaultLanguage={language} disableSharing={disableSharing} disableFileOperations={disableFileOperations} />
 
       {/* Preview or Edit mode */}
       {previewMode && <LearningMap roadmapData={getRoadmapData()} language={effectiveLanguage} />}

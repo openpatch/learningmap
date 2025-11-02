@@ -14,11 +14,13 @@ import { getZIndexForNodeType } from "./zIndexHelper";
 interface EditorToolbarProps {
   defaultLanguage?: string;
   disableSharing?: boolean;
+  disableFileOperations?: boolean;
 }
 
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   defaultLanguage = "en",
   disableSharing = false,
+  disableFileOperations = false,
 }) => {
   const { screenToFlowPosition } = useReactFlow();
 
@@ -114,12 +116,16 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
       </div>
       <div className="toolbar-group">
         <Menu menuButton={<MenuButton className="toolbar-button"><MenuI /></MenuButton>}>
-          <MenuItem onClick={openRoadmap}>
-            <FolderOpen size={16} /> <span>{t.open}</span>
-          </MenuItem>
-          <MenuItem onClick={downloadRoadmap}>
-            <Download size={16} /> <span>{t.download}</span>
-          </MenuItem>
+          {!disableFileOperations && (
+            <MenuItem onClick={openRoadmap}>
+              <FolderOpen size={16} /> <span>{t.open}</span>
+            </MenuItem>
+          )}
+          {!disableFileOperations && (
+            <MenuItem onClick={downloadRoadmap}>
+              <Download size={16} /> <span>{t.download}</span>
+            </MenuItem>
+          )}
           {!disableSharing && (
             <MenuItem onClick={postToJsonStore}>
               <Share2 size={16} /> <span>{t.share}</span>

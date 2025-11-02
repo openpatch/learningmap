@@ -47,6 +47,11 @@
         "command": "learningmap.new",
         "title": "New Learningmap",
         "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.showSource",
+        "title": "Show Source",
+        "category": "Learningmap"
       }
     ]
   },
