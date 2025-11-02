@@ -298,7 +298,6 @@
     "build": "node ../../scripts/build-vscode.mjs",
     "lint": "tsc --noEmit",
     "watch": "node ../../scripts/build-vscode.mjs --watch",
-    "vscode:prepublish": "pnpm build",
     "vscode:package": "vsce package",
     "vscode:publish": "vsce publish --packagePath $(find . -iname *.vsix)",
     "ovsx:publish": "ovsx publish $(find . -iname *.vsix)"
