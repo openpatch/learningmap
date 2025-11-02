@@ -4,9 +4,10 @@
       "id": "1",
       "type": "topic",
       "position": {
-        "x": 250,
-        "y": 100
+        "x": 192,
+        "y": 271
       },
+      "zIndex": 30,
       "data": {
         "state": "unlocked",
         "label": "Getting Started",
@@ -17,13 +18,27 @@
       "id": "2",
       "type": "topic",
       "position": {
-        "x": 250,
-        "y": 250
+        "x": 599,
+        "y": 217
       },
+      "zIndex": 30,
       "data": {
         "state": "locked",
         "label": "Advanced Topics",
         "description": "Deep dive into advanced features"
+      }
+    },
+    {
+      "id": "node-1762086584942",
+      "type": "task",
+      "position": {
+        "x": 189,
+        "y": 176
+      },
+      "zIndex": 30,
+      "data": {
+        "label": "New task",
+        "state": "unlocked"
       }
     }
   ],
@@ -42,5 +57,5 @@
   },
   "version": 1,
   "type": "learningmap",
-  "source": "vscode-extension"
+  "source": "https://learningmap.app"
 }

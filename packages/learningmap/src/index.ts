@@ -1,5 +1,3 @@
-import "./index.css";
-
 import LearningMap from "./LearningMap";
 import LearningMapEditor from "./LearningMapEditor";
 

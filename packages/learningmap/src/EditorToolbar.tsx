@@ -1,7 +1,5 @@
 import React from "react";
 import { Menu, MenuButton, MenuDivider, MenuItem, SubMenu } from "@szhsin/react-menu";
-import "@szhsin/react-menu/dist/index.css";
-import '@szhsin/react-menu/dist/transitions/zoom.css';
 import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2, RotateCcw } from "lucide-react";
 import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
