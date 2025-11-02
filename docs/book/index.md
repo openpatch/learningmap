@@ -16,5 +16,5 @@ Go to [learningmap.app](https://learningmap.app) to create your own learning map
 These docs are focused on developers, and structured the following way:
 
 - [Introduction](/introduction): development setup and introduction to the codebase.
-- [@learningmap/learningmap](/react): docs for the react package to help you integrate LearningMap into your own app.
-- [@learningmap/web-component](/web-component): docs for the web component to help you integrate LearningMap into your own web app.
+- [@learningmap/learningmap](/packages/react): docs for the react package to help you integrate LearningMap into your own app.
+- [@learningmap/web-component](/packages/web-component): docs for the web component to help you integrate LearningMap into your own web app.
