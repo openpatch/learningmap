@@ -298,7 +298,9 @@
     "build": "node ../../scripts/build-vscode.mjs",
     "lint": "tsc --noEmit",
     "watch": "node ../../scripts/build-vscode.mjs --watch",
-    "package": "vsce package"
+    "package": "vsce package",
+    "vscode:publish": "vsce publish --packagePath $(find . -iname *.vsix)",
+    "ovsx:publish": "ovsx publish $(find . -iname *.vsix)"
   },
   "dependencies": {
     "@learningmap/learningmap": "workspace:*",
@@ -306,11 +308,12 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@types/vscode": "^1.80.0",
     "@types/node": "^24.7.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
+    "@types/vscode": "^1.80.0",
     "@vscode/vsce": "^3.2.1",
+    "ovsx": "^0.10.6",
     "typescript": "~5.9.3"
   },
   "vsce": {

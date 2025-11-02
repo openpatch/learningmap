@@ -39,3 +39,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish VS Code extension
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          pnpm --filter "learningmap-studio" vscode:publish
+          pnpm --filter "learningmap-studio" ovsx:publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+          OVSX_PAT: ${{ secrets.OVSX_TOKEN }}
