@@ -9,6 +9,13 @@ explore learning pathways. It is developed by
 - **Repository:** https://github.com/openpath/learningmap
 - **Community**: https://matrix.to/#/#openpatch:matrix.org
 
+## Platforms
+
+- **Web App**: Create and share learningmaps at [learningmap.app](https://learningmap.app)
+- **VS Code Extension**: Edit `.learningmap` files locally in VS Code (see [platforms/vscode](platforms/vscode))
+- **React Component**: Integrate learningmap into your own React app (see [packages/learningmap](packages/learningmap))
+- **Web Component**: Use learningmap in any web application (see [packages/web-component](packages/web-component))
+
 ## Documentation
 
 If you want to work on the documentation, run the

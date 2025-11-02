@@ -86,5 +86,19 @@ export const buildPackage = async (path) => {
     throw new Error(`ESM Build failed for ${packageName} \n ${e}`);
   });
 
+  // bundle index.css
+  await build({
+    entryPoints: [`${path}/src/index.css`],
+    outfile: `${path}/dist/index.css`,
+    minify: true,
+    bundle: true,
+    loader: {
+      ".svg": "dataurl",
+      ".woff2": "dataurl",
+    },
+  }).catch((e) => {
+    throw new Error(`ESM Build failed for ${packageName} \n ${e}`);
+  });
+
   console.log(`build ${chalk.green("success")} - ${packageName}`);
 };

@@ -1,0 +1,61 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "type": "topic",
+      "position": {
+        "x": 192,
+        "y": 271
+      },
+      "zIndex": 30,
+      "data": {
+        "state": "unlocked",
+        "label": "Getting Started",
+        "description": "Learn the basics of creating learningmaps"
+      }
+    },
+    {
+      "id": "2",
+      "type": "topic",
+      "position": {
+        "x": 599,
+        "y": 217
+      },
+      "zIndex": 30,
+      "data": {
+        "state": "locked",
+        "label": "Advanced Topics",
+        "description": "Deep dive into advanced features"
+      }
+    },
+    {
+      "id": "node-1762086584942",
+      "type": "task",
+      "position": {
+        "x": 189,
+        "y": 176
+      },
+      "zIndex": 30,
+      "data": {
+        "label": "New task",
+        "state": "unlocked"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1-2",
+      "source": "1",
+      "target": "2"
+    }
+  ],
+  "settings": {
+    "title": "Sample Learningmap",
+    "background": {
+      "color": "#ffffff"
+    }
+  },
+  "version": 1,
+  "type": "learningmap",
+  "source": "https://learningmap.app"
+}

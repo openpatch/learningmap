@@ -20,6 +20,10 @@ const LearningmapEditorWC = r2wc(LearningMapEditor, {
   props: {
     roadmapData: "string",
     language: "string",
+    jsonStore: "string",
+    disableSharing: "boolean",
+    disableFileOperations: "boolean",
+    keyBindings: "json",
     onChange: "function",
   },
   events: {

@@ -1,0 +1,320 @@
+{
+  "name": "learningmap-studio",
+  "displayName": "Learningmap Studio",
+  "description": "Visual editor for learningmap files",
+  "version": "0.1.0",
+  "publisher": "openpatch",
+  "author": "Mike Barkmin",
+  "license": "MIT",
+  "private": true,
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openpatch/learningmap.git",
+    "directory": "platforms/vscode"
+  },
+  "keywords": [
+    "learningmap",
+    "education",
+    "learning",
+    "roadmap",
+    "visual-editor"
+  ],
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "browser": "./dist/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "learningmap.editor",
+        "displayName": "Learningmap Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.learningmap"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "learningmap.new",
+        "title": "New Learningmap",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.showSource",
+        "title": "Show Source",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.addTaskNode",
+        "title": "Add Task Node",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.addTopicNode",
+        "title": "Add Topic Node",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.addImageNode",
+        "title": "Add Image Node",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.addTextNode",
+        "title": "Add Text Node",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.undo",
+        "title": "Undo",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.redo",
+        "title": "Redo",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.togglePreview",
+        "title": "Toggle Preview Mode",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.toggleDebug",
+        "title": "Toggle Debug Mode",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.zoomIn",
+        "title": "Zoom In",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.zoomOut",
+        "title": "Zoom Out",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.resetZoom",
+        "title": "Reset Zoom",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.toggleGrid",
+        "title": "Toggle Grid",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.resetMap",
+        "title": "Reset Map",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.cut",
+        "title": "Cut",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.copy",
+        "title": "Copy",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.paste",
+        "title": "Paste",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.selectAll",
+        "title": "Select All",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.fitView",
+        "title": "Fit View",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.zoomToSelection",
+        "title": "Zoom to Selection",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.deleteSelected",
+        "title": "Delete Selected",
+        "category": "Learningmap"
+      },
+      {
+        "command": "learningmap.help",
+        "title": "Show Help",
+        "category": "Learningmap"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "learningmap.showSource",
+        "key": "ctrl+k ctrl+s",
+        "mac": "cmd+k cmd+s",
+        "when": "resourceExtname == .learningmap"
+      },
+      {
+        "command": "learningmap.addTaskNode",
+        "key": "ctrl+1",
+        "mac": "cmd+1",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.addTopicNode",
+        "key": "ctrl+2",
+        "mac": "cmd+2",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.addImageNode",
+        "key": "ctrl+3",
+        "mac": "cmd+3",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.addTextNode",
+        "key": "ctrl+4",
+        "mac": "cmd+4",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.undo",
+        "key": "ctrl+z",
+        "mac": "cmd+z",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.redo",
+        "key": "ctrl+y",
+        "mac": "cmd+y",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.togglePreview",
+        "key": "ctrl+p",
+        "mac": "cmd+p",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.toggleDebug",
+        "key": "ctrl+d",
+        "mac": "cmd+d",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.zoomIn",
+        "key": "ctrl+=",
+        "mac": "cmd+=",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.zoomOut",
+        "key": "ctrl+-",
+        "mac": "cmd+-",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.resetZoom",
+        "key": "ctrl+0",
+        "mac": "cmd+0",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.toggleGrid",
+        "key": "ctrl+'",
+        "mac": "cmd+'",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.resetMap",
+        "key": "ctrl+delete",
+        "mac": "cmd+delete",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.cut",
+        "key": "ctrl+x",
+        "mac": "cmd+x",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.copy",
+        "key": "ctrl+c",
+        "mac": "cmd+c",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.paste",
+        "key": "ctrl+v",
+        "mac": "cmd+v",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.selectAll",
+        "key": "ctrl+a",
+        "mac": "cmd+a",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.fitView",
+        "key": "shift+1",
+        "mac": "shift+1",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.zoomToSelection",
+        "key": "shift+2",
+        "mac": "shift+2",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.deleteSelected",
+        "key": "delete",
+        "mac": "delete",
+        "when": "activeCustomEditorId == learningmap.editor"
+      },
+      {
+        "command": "learningmap.help",
+        "key": "ctrl+shift+/",
+        "mac": "cmd+shift+/",
+        "when": "activeCustomEditorId == learningmap.editor"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node ../../scripts/build-vscode.mjs",
+    "lint": "tsc --noEmit",
+    "watch": "node ../../scripts/build-vscode.mjs --watch",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@learningmap/learningmap": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "^24.7.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "~5.9.3"
+  },
+  "vsce": {
+    "dependencies": false,
+    "skipDuplicate": true
+  }
+}

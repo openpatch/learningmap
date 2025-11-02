@@ -2,14 +2,58 @@ import { useEffect } from "react";
 import { useReactFlow } from "@xyflow/react";
 import { useEditorStore, useTemporalStore } from "./editorStore";
 import { Node } from "@xyflow/react";
-import { NodeData } from "./types";
+import { NodeData, KeyBindings, KeyBinding } from "./types";
 import { getTranslations } from "./translations";
 
 interface KeyboardShortcutsProps {
   jsonStore?: string;
+  keyBindings?: Partial<KeyBindings>;
 }
 
-export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: KeyboardShortcutsProps) => {
+// Default keybindings
+const defaultKeyBindings: KeyBindings = {
+  addTaskNode: { key: '1', ctrl: true },
+  addTopicNode: { key: '2', ctrl: true },
+  addImageNode: { key: '3', ctrl: true },
+  addTextNode: { key: '4', ctrl: true },
+  save: { key: 's', ctrl: true },
+  undo: { key: 'z', ctrl: true },
+  redo: { key: 'y', ctrl: true },
+  help: { key: '?', ctrl: true },
+  togglePreview: { key: 'p', ctrl: true },
+  toggleDebug: { key: 'd', ctrl: true },
+  zoomIn: { key: '+', ctrl: true },
+  zoomOut: { key: '-', ctrl: true },
+  resetZoom: { key: '0', ctrl: true },
+  toggleGrid: { key: "'", ctrl: true },
+  resetMap: { key: 'Delete', ctrl: true },
+  cut: { key: 'x', ctrl: true },
+  copy: { key: 'c', ctrl: true },
+  paste: { key: 'v', ctrl: true },
+  selectAll: { key: 'a', ctrl: true },
+  fitView: { key: '!', shift: true },
+  zoomToSelection: { key: '@', shift: true },
+  deleteSelected: { key: 'Delete' },
+};
+
+const matchesKeyBinding = (e: KeyboardEvent, binding: KeyBinding | undefined): boolean => {
+  if (!binding) return false;
+  
+  const keyMatches = e.key.toLowerCase() === binding.key.toLowerCase();
+  const ctrlMatches = binding.ctrl ? (e.ctrlKey || e.metaKey) : !(e.ctrlKey || e.metaKey);
+  const shiftMatches = binding.shift ? e.shiftKey : !e.shiftKey;
+  const altMatches = binding.alt ? e.altKey : !e.altKey;
+  
+  return keyMatches && ctrlMatches && shiftMatches && altMatches;
+};
+
+export const KeyboardShortcuts = ({ 
+  jsonStore = "https://json.openpatch.org",
+  keyBindings: customKeyBindings = {}
+}: KeyboardShortcutsProps) => {
+  // Merge custom keybindings with defaults
+  const keyBindings = { ...defaultKeyBindings, ...customKeyBindings };
+  
   const { zoomIn, zoomOut, setCenter, fitView, screenToFlowPosition } = useReactFlow();
 
   // Get store state
@@ -167,74 +211,72 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
       if (drawerOpen || edgeDrawerOpen || settingsDrawerOpen) {
         return; // Ignore shortcuts when any drawer is open
       }
-      if (e.ctrlKey || e.metaKey) {
-        if (e.key === '1') {
-          e.preventDefault();
-          onAddNode("task");
-        } else if (e.key === '2') {
-          e.preventDefault();
-          onAddNode("topic");
-        } else if (e.key === '3') {
-          e.preventDefault();
-          onAddNode("image");
-        } else if (e.key === '4') {
-          e.preventDefault();
-          onAddNode("text");
-        } else if (e.key === 's') {
-          e.preventDefault();
-          onSave();
-        } else if (e.key === 'z' && !e.shiftKey) {
-          e.preventDefault();
-          undo();
-        } else if ((e.key === 'y') || (e.key === 'z' && e.shiftKey)) {
-          e.preventDefault();
-          redo();
-        } else if ((e.key === '?' || (e.shiftKey && e.key === '/'))) {
-          e.preventDefault();
-          setHelpOpen(!helpOpen);
-        } else if (e.key.toLowerCase() === 'p' && !e.shiftKey) {
-          e.preventDefault();
-          onTogglePreview();
-        } else if (e.key.toLowerCase() === 'd' && !e.shiftKey) {
-          e.preventDefault();
-          onToggleDebug();
-        } else if (e.key === '+' || e.key === '=') {
-          e.preventDefault();
-          onZoomIn();
-        } else if (e.key === '-') {
-          e.preventDefault();
-          onZoomOut();
-        } else if (e.key === '0') {
-          e.preventDefault();
-          onResetZoom();
-        } else if (e.key === "'") {
-          e.preventDefault();
-          onToggleGrid();
-        } else if (e.key === 'Delete') {
-          e.preventDefault();
-          onResetMap();
-        } else if (e.key.toLowerCase() === 'x') {
-          e.preventDefault();
-          onCut();
-        } else if (e.key.toLowerCase() === 'c') {
-          e.preventDefault();
-          onCopy();
-        } else if (e.key.toLowerCase() === 'v') {
-          e.preventDefault();
-          onPaste();
-        } else if (e.key.toLowerCase() === 'a') {
-          e.preventDefault();
-          onSelectAll();
-        }
-      } else if (e.shiftKey) {
-        if (e.key === '!') {
-          e.preventDefault();
-          onFitView();
-        } else if (e.key === '@') {
-          e.preventDefault();
-          onZoomToSelection();
-        }
-      } else if (e.key === 'Delete') {
+      
+      // Check each keybinding
+      if (matchesKeyBinding(e, keyBindings.addTaskNode)) {
+        e.preventDefault();
+        onAddNode("task");
+      } else if (matchesKeyBinding(e, keyBindings.addTopicNode)) {
+        e.preventDefault();
+        onAddNode("topic");
+      } else if (matchesKeyBinding(e, keyBindings.addImageNode)) {
+        e.preventDefault();
+        onAddNode("image");
+      } else if (matchesKeyBinding(e, keyBindings.addTextNode)) {
+        e.preventDefault();
+        onAddNode("text");
+      } else if (matchesKeyBinding(e, keyBindings.save)) {
+        e.preventDefault();
+        onSave();
+      } else if (matchesKeyBinding(e, keyBindings.undo)) {
+        e.preventDefault();
+        undo();
+      } else if (matchesKeyBinding(e, keyBindings.redo)) {
+        e.preventDefault();
+        redo();
+      } else if (matchesKeyBinding(e, keyBindings.help)) {
+        e.preventDefault();
+        setHelpOpen(!helpOpen);
+      } else if (matchesKeyBinding(e, keyBindings.togglePreview)) {
+        e.preventDefault();
+        onTogglePreview();
+      } else if (matchesKeyBinding(e, keyBindings.toggleDebug)) {
+        e.preventDefault();
+        onToggleDebug();
+      } else if (matchesKeyBinding(e, keyBindings.zoomIn)) {
+        e.preventDefault();
+        onZoomIn();
+      } else if (matchesKeyBinding(e, keyBindings.zoomOut)) {
+        e.preventDefault();
+        onZoomOut();
+      } else if (matchesKeyBinding(e, keyBindings.resetZoom)) {
+        e.preventDefault();
+        onResetZoom();
+      } else if (matchesKeyBinding(e, keyBindings.toggleGrid)) {
+        e.preventDefault();
+        onToggleGrid();
+      } else if (matchesKeyBinding(e, keyBindings.resetMap)) {
+        e.preventDefault();
+        onResetMap();
+      } else if (matchesKeyBinding(e, keyBindings.cut)) {
+        e.preventDefault();
+        onCut();
+      } else if (matchesKeyBinding(e, keyBindings.copy)) {
+        e.preventDefault();
+        onCopy();
+      } else if (matchesKeyBinding(e, keyBindings.paste)) {
+        e.preventDefault();
+        onPaste();
+      } else if (matchesKeyBinding(e, keyBindings.selectAll)) {
+        e.preventDefault();
+        onSelectAll();
+      } else if (matchesKeyBinding(e, keyBindings.fitView)) {
+        e.preventDefault();
+        onFitView();
+      } else if (matchesKeyBinding(e, keyBindings.zoomToSelection)) {
+        e.preventDefault();
+        onZoomToSelection();
+      } else if (matchesKeyBinding(e, keyBindings.deleteSelected)) {
         e.preventDefault();
         onDeleteSelected();
       }
@@ -246,7 +288,7 @@ export const KeyboardShortcuts = ({ jsonStore = "https://json.openpatch.org" }: 
     };
   }, [onAddNode, onDeleteSelected, onSave, undo, redo, helpOpen, setHelpOpen, onTogglePreview, onToggleDebug,
     onZoomIn, onZoomOut, onResetZoom, onFitView, onZoomToSelection, onToggleGrid,
-    onResetMap, onCut, onCopy, onPaste, onSelectAll, drawerOpen, edgeDrawerOpen, settingsDrawerOpen]);
+    onResetMap, onCut, onCopy, onPaste, onSelectAll, drawerOpen, edgeDrawerOpen, settingsDrawerOpen, keyBindings]);
 
   return null;
 };

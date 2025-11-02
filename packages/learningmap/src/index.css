@@ -1,3 +1,4 @@
+@import "@szhsin/react-menu/dist/index.css";
 @import "@xyflow/react/dist/style.css";
 
 :root {
@@ -254,9 +255,17 @@ header.drawer-header {
   line-height: 1.25;
 }
 
-.drawer-description h1 { font-size: 1.5em; }
-.drawer-description h2 { font-size: 1.25em; }
-.drawer-description h3 { font-size: 1.1em; }
+.drawer-description h1 {
+  font-size: 1.5em;
+}
+
+.drawer-description h2 {
+  font-size: 1.25em;
+}
+
+.drawer-description h3 {
+  font-size: 1.1em;
+}
 
 .drawer-description p {
   margin-bottom: 1em;
