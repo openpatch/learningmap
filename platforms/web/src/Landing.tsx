@@ -6,6 +6,7 @@ function Landing() {
   const navigate = useNavigate();
 
   // Featured learning maps with example JSON IDs
+  /*
   const featuredMaps = [
     {
       id: 'example-1',
@@ -32,6 +33,7 @@ function Landing() {
       learnUrl: '/learn',
     },
   ];
+  */
 
   return (
     <div className="landing-container">
