@@ -96,7 +96,7 @@ export function EditorDrawerImageContent({ localNode, handleFieldChange, languag
         };
         reader.readAsDataURL(file);
       } else {
-        // Compress JPEG and PNG images
+        // Compress JPEG, PNG, and WebP images
         const compressedDataUrl = await compressImage(file);
         handleFieldChange("data", compressedDataUrl);
       }
@@ -116,10 +116,10 @@ export function EditorDrawerImageContent({ localNode, handleFieldChange, languag
   return (
     <div className="panel-content">
       <div className="form-group">
-        <label>{t.image} (JPG, PNG, SVG)</label>
+        <label>{t.image} (JPG, PNG, WebP, SVG)</label>
         <input
           type="file"
-          accept="image/png,image/jpeg,image/svg+xml"
+          accept="image/png,image/jpeg,image/webp,image/svg+xml"
           onChange={handleFileChange}
         />
       </div>
