@@ -2,7 +2,7 @@
   "name": "learningmap-studio",
   "displayName": "Learningmap Studio",
   "description": "Visual editor for learningmap files",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publisher": "openpatch",
   "author": "Mike Barkmin",
   "license": "MIT",
