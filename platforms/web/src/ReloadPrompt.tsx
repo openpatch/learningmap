@@ -31,16 +31,18 @@ function ReloadPrompt() {
 
   return (
     <div className="ReloadPrompt-container">
-      { (offlineReady || needRefresh)
-        && <div className="ReloadPrompt-toast">
-            <div className="ReloadPrompt-message">
-              { offlineReady
-                ? <span>App ready to work offline</span>
-                : <span>New content available, click on reload button to update.</span>
-              }
-            </div>
-            { needRefresh && <button className="ReloadPrompt-toast-button" onClick={() => updateServiceWorker(true)}>Reload</button> }
-            <button className="ReloadPrompt-toast-button" onClick={() => close()}>Close</button>
+      {(offlineReady || needRefresh)
+        && <div className="ReloadPrompt-toast info">
+          <div className="ReloadPrompt-message">
+            {offlineReady
+              ? <span>App ready to work offline</span>
+              : <span>New content available, click on reload button to update.</span>
+            }
+          </div>
+          <div className="ReloadPrompt-buttons">
+            {needRefresh && <button className="ReloadPrompt-toast-button" onClick={() => updateServiceWorker(true)}>Reload</button>}
+            <button className="ReloadPrompt-toast-button close" onClick={() => close()}>Close</button>
+          </div>
         </div>
       }
     </div>
