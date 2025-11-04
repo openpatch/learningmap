@@ -36,14 +36,26 @@ export const useJsonStore = () => {
       },
       body: JSON.stringify(roadmapData),
     })
-      .then((r) => r.json())
+      .then((r) => {
+        if (r.status === 413) {
+          alert(t.uploadFileTooLarge);
+          throw new Error("Payload too large");
+        }
+        if (!r.ok) {
+          throw new Error(`HTTP error! status: ${r.status}`);
+        }
+        return r.json();
+      })
       .then((json) => {
         const link = window.location.origin + "#json=" + json.id;
         setShareLink(link);
         setShareDialogOpen(true);
       })
-      .catch(() => {
-        alert(t.uploadFailed);
+      .catch((error) => {
+        // Don't show generic error if we already showed the 413 error
+        if (error.message !== "Payload too large") {
+          alert(t.uploadFailed);
+        }
       });
   }, [getRoadmapData, jsonStore, t, setShareLink, setShareDialogOpen]);
 

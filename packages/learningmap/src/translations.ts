@@ -121,6 +121,7 @@ export interface Translations {
   loadExternalBackupPrompt: string;
   emptyMapCannotBeShared: string;
   uploadFailed: string;
+  uploadFileTooLarge: string;
   loadFailed: string;
 
   // Share dialog
@@ -341,6 +342,7 @@ const en: Translations = {
     "Would you like to back up your current learningmap before loading the external one?",
   emptyMapCannotBeShared: "An empty learningmap cannot be shared.",
   uploadFailed: "Upload failed. Please try again!",
+  uploadFileTooLarge: "Sharing bigger files is not allowed. You can still download your learningmap and share it via other means.",
   loadFailed: "Failed to load. Please check the URL.",
 
   // Share dialog
@@ -566,6 +568,7 @@ const de: Translations = {
   emptyMapCannotBeShared: "Eine leere Learningmap kann nicht geteilt werden.",
   uploadFailed:
     "Beim Upload ist was schief gelaufen. Bitte versuche es erneut!",
+  uploadFileTooLarge: "Das Teilen größerer Dateien ist nicht erlaubt. Du kannst deine Learningmap weiterhin herunterladen und über andere Wege teilen.",
   loadFailed: "Beim Laden ist etwas schief gegangen. Bitte überprüfe die URL.",
 
   // Share dialog
