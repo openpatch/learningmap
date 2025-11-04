@@ -1,0 +1,68 @@
+.ReloadPrompt-container {
+    padding: 0;
+    margin: 0;
+    width: 0;
+    height: 0;
+}
+
+.ReloadPrompt-toast {
+    position: fixed;
+    transition: all 0.3s ease;
+    right: 0;
+    bottom: 0;
+    margin: 32px;
+    padding: 12px;
+    border: 1px solid #8885;
+    border-radius: 8px;
+    z-index: 1;
+    text-align: left;
+    box-shadow: 3px 4px 5px 0 #8885;
+}
+
+.ReloadPrompt-toast.info {
+    background-color: #F0FFFF;
+    border-color: #4682B4;
+    color: #4682B4;
+
+    button {
+        transition: all 0.3s ease;
+        background-color: #4682B4;
+        color: #F0FFFF;
+    }
+
+    button:hover {
+        background-color: #315f7d;
+        border-color: #315f7d;
+    }
+
+    button.close {
+        background-color: transparent;
+        color: #4682B4;
+        border: 1px solid #4682B4;
+    }
+
+    button.close:hover {
+        background-color: #315f7d;
+        color: #F0FFFF;
+        border-color: #315f7d;
+    }
+}
+
+.ReloadPrompt-message {
+    margin-bottom: 8px;
+}
+
+.ReloadPrompt-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.ReloadPrompt-toast-button {
+    border: 1px solid #8885;
+    outline: none;
+    margin-right: 5px;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+}

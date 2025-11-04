@@ -2,3 +2,7 @@ packages:
   - packages/*
   - platforms/*
   - '!**/test/**'
+
+onlyBuiltDependencies:
+  - '@vscode/vsce-sign'
+  - keytar

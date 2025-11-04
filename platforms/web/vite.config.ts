@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['logo.svg', 'concert_one_latin.woff2'],
       manifest: {
         name: 'Learningmap - Interactive Visual Maps for Teaching and Learning',
