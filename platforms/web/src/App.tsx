@@ -4,6 +4,7 @@ import { LearningMapEditor } from '@learningmap/learningmap';
 import "@learningmap/learningmap/index.css";
 import Learn from './Learn';
 import Landing from './Landing';
+import ReloadPrompt from './ReloadPrompt';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/create" element={<LearningMapEditor jsonStore="https://json.openpatch.org" />} />
         <Route path="/learn" element={<Learn />} />
       </Routes>
+      <ReloadPrompt />
     </BrowserRouter>
   )
 }
