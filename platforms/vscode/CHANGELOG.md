@@ -1,5 +1,12 @@
 # learningmap-studio
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [[`474286f`](https://github.com/openpatch/learningmap/commit/474286ff474d305e692bfb4308599c57a37c029d)]:
+  - @learningmap/learningmap@0.2.1
+
 ## 0.2.1
 
 ### Patch Changes
