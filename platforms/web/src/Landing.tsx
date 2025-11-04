@@ -64,9 +64,11 @@ function Landing() {
           <button onClick={() => navigate('/create')} className="cta-primary">
             Create a LearningMap
           </button>
+          {/*
           <button onClick={() => navigate('/learn')} className="cta-secondary">
             Explore LearningMaps
           </button>
+          */}
         </div>
       </section>
 
