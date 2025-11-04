@@ -38,11 +38,7 @@ export const useJsonStore = () => {
     })
       .then((r) => r.json())
       .then((json) => {
-        const link =
-          window.location.origin +
-          window.location.pathname +
-          "#json=" +
-          json.id;
+        const link = window.location.origin + "#json=" + json.id;
         setShareLink(link);
         setShareDialogOpen(true);
       })

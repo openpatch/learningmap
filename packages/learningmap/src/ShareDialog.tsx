@@ -22,7 +22,7 @@ export function ShareDialog() {
   if (!open) return null;
 
   // Generate both edit and learn links
-  const editLink = shareLink;
+  const editLink = shareLink.replace(/(#json=.+)/, '/create$1');
   const learnLink = shareLink.replace(/(#json=.+)/, '/learn$1');
 
   const handleCopyEditLink = async () => {

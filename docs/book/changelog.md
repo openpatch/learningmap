@@ -39,6 +39,18 @@ If you need a new feature, open an [issue](https://github.com/openpatch/learning
 ::::
 -->
 
+## v0.2.1
+
+::::tabs
+
+:::tab{title="Fixed :bug:" id="fixed"}
+
+- Fix share link.
+
+:::
+
+::::
+
 ## v0.2.0
 
 ::::tabs
