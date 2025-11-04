@@ -73,14 +73,14 @@ function Landing() {
         <div className="use-case-content">
           <h2>Perfect for Teachers and Students</h2>
           <p>
-            Teachers can build custom LearningMaps and share them instantly with their class. 
-            Students can edit or study the same map, with every change kept locally in their 
+            Teachers can build custom LearningMaps and share them instantly with their class.
+            Students can edit or study the same map, with every change kept locally in their
             own browser. No accounts required, no data collected—just pure learning.
           </p>
         </div>
       </section>
 
-      {/* Featured LearningMaps */}
+      {/* Featured LearningMaps
       <section className="featured-section">
         <h2 className="featured-title">Featured LearningMaps</h2>
         <p className="featured-subtitle">
@@ -114,11 +114,12 @@ function Landing() {
           ))}
         </div>
       </section>
+      */}
 
       {/* Local Storage Note */}
       <section className="info-banner">
         <div className="info-content">
-          <strong>🔒 Privacy First:</strong> All maps are saved locally in your browser, 
+          <strong>🔒 Privacy First:</strong> All maps are saved locally in your browser,
           ensuring complete privacy and offline access. Your data never leaves your device.
         </div>
       </section>
