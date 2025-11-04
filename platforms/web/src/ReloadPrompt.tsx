@@ -2,6 +2,8 @@ import './ReloadPrompt.css'
 
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
+const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000 // Check for updates every hour
+
 function ReloadPrompt() {
   const {
     offlineReady: [offlineReady, setOfflineReady],
@@ -9,13 +11,12 @@ function ReloadPrompt() {
     updateServiceWorker,
   } = useRegisterSW({
     onRegistered(r) {
-      // eslint-disable-next-line prefer-template
-      console.log('SW Registered: ' + r)
+      console.log(`SW Registered: ${r}`)
       // Implement periodic SW updates (check every hour)
       if (r) {
         setInterval(() => {
           r.update()
-        }, 60 * 60 * 1000)
+        }, UPDATE_CHECK_INTERVAL_MS)
       }
     },
     onRegisterError(error) {
