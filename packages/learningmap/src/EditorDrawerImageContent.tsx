@@ -8,29 +8,118 @@ interface Props {
   language?: string;
 }
 
+/**
+ * Compress an image file using the Canvas API.
+ * Resizes the image to fit within maxWidth x maxHeight while maintaining aspect ratio.
+ * PNG images are converted to JPEG for better compression.
+ * 
+ * @param file - The image file to compress
+ * @param maxWidth - Maximum width in pixels (default: 1920)
+ * @param maxHeight - Maximum height in pixels (default: 1920)
+ * @param quality - JPEG compression quality from 0 to 1 (default: 0.85)
+ * @returns Promise that resolves to a base64 data URL of the compressed image
+ * @throws Error if image loading or canvas operations fail
+ */
+async function compressImage(file: File, maxWidth: number = 1920, maxHeight: number = 1920, quality: number = 0.85): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const img = new Image();
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Calculate new dimensions while maintaining aspect ratio
+        if (width > maxWidth || height > maxHeight) {
+          const aspectRatio = width / height;
+          if (width > height) {
+            width = maxWidth;
+            height = maxWidth / aspectRatio;
+          } else {
+            height = maxHeight;
+            width = maxHeight * aspectRatio;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'));
+          return;
+        }
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert all raster images to JPEG for consistent compression
+        // JPEG provides good quality at significantly smaller file sizes
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        
+        resolve(dataUrl);
+      };
+      
+      img.onerror = () => {
+        reject(new Error('Failed to load image'));
+      };
+      
+      img.src = e.target?.result as string;
+    };
+    
+    reader.onerror = () => {
+      reject(new Error('Failed to read file'));
+    };
+    
+    reader.readAsDataURL(file);
+  });
+}
+
 export function EditorDrawerImageContent({ localNode, handleFieldChange, language = "en" }: Props) {
   const t = getTranslations(language);
   
-  // Convert file to base64 and update node data
+  // Convert file to base64 with compression
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        handleFieldChange("data", reader.result);
+    
+    try {
+      // For SVG files, don't compress (they're already vector graphics)
+      if (file.type === 'image/svg+xml') {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string") {
+            handleFieldChange("data", reader.result);
+          }
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // Compress JPEG, PNG, and WebP images
+        const compressedDataUrl = await compressImage(file);
+        handleFieldChange("data", compressedDataUrl);
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Failed to process image:", error);
+      // Fallback to original file if compression fails
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          handleFieldChange("data", reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
     <div className="panel-content">
       <div className="form-group">
-        <label>{t.image} (JPG, PNG, SVG)</label>
+        <label>{t.image} (JPG, PNG, WebP, SVG)</label>
         <input
           type="file"
-          accept="image/png,image/jpeg,image/svg+xml"
+          accept="image/png,image/jpeg,image/webp,image/svg+xml"
           onChange={handleFileChange}
         />
       </div>

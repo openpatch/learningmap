@@ -39,6 +39,28 @@ If you need a new feature, open an [issue](https://github.com/openpatch/learning
 ::::
 -->
 
+## v0.2.2
+
+::::tabs
+
+:::tab{title="New :rocket:" id="new"}
+
+- Add browser-based image compression for uploaded images to reduce file size by 70-90%
+- Add support for WebP image format (JPG, PNG, WebP, and SVG now supported)
+
+:::
+
+:::tab{title="Improved :+1:" id="improved"}
+
+- Automatically resize images to max 1920x1920px while maintaining aspect ratio
+- Convert raster images to JPEG format for optimal compression
+- Detect HTTP 413 (Payload Too Large) errors and show user-friendly message
+- Add translations for file size error in English and German
+
+:::
+
+::::
+
 ## v0.2.1
 
 ::::tabs
