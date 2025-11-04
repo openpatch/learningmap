@@ -8,7 +8,18 @@ interface Props {
   language?: string;
 }
 
-// Compress image using Canvas API
+/**
+ * Compress an image file using the Canvas API.
+ * Resizes the image to fit within maxWidth x maxHeight while maintaining aspect ratio.
+ * PNG images are converted to JPEG for better compression.
+ * 
+ * @param file - The image file to compress
+ * @param maxWidth - Maximum width in pixels (default: 1920)
+ * @param maxHeight - Maximum height in pixels (default: 1920)
+ * @param quality - JPEG compression quality from 0 to 1 (default: 0.85)
+ * @returns Promise that resolves to a base64 data URL of the compressed image
+ * @throws Error if image loading or canvas operations fail
+ */
 async function compressImage(file: File, maxWidth: number = 1920, maxHeight: number = 1920, quality: number = 0.85): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -44,10 +55,9 @@ async function compressImage(file: File, maxWidth: number = 1920, maxHeight: num
         
         ctx.drawImage(img, 0, 0, width, height);
         
-        // For PNG files, try to compress as JPEG if it results in smaller size
-        // For JPEG files, always use JPEG format
-        const mimeType = file.type === 'image/png' ? 'image/jpeg' : file.type;
-        const dataUrl = canvas.toDataURL(mimeType, quality);
+        // Convert all raster images to JPEG for consistent compression
+        // JPEG provides good quality at significantly smaller file sizes
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
         
         resolve(dataUrl);
       };
