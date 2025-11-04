@@ -1,5 +1,16 @@
 # @hyperbook/web-component-learningmap
 
+## 0.2.2
+
+### Patch Changes
+
+- [#45](https://github.com/openpatch/learningmap/pull/45) [`7f6a991`](https://github.com/openpatch/learningmap/commit/7f6a991066c84ddbd0f2c1088301a461cdb3c2d0) Thanks [@copilot-swe-agent](https://github.com/apps/copilot-swe-agent)! - Add browser-based image compression and 413 error handling
+  - Compress uploaded images automatically using Canvas API (resize to max 1920x1920px, convert to JPEG at 0.85 quality)
+  - Add support for JPG, PNG, WebP, and SVG file formats
+  - Detect HTTP 413 (Payload Too Large) responses and show user-friendly error message
+  - Add translations for file size error in English and German
+  - Typical file size reduction: 70-90% for raster images
+
 ## 0.2.1
 
 ### Patch Changes
