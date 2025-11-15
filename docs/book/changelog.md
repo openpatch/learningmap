@@ -39,6 +39,31 @@ If you need a new feature, open an [issue](https://github.com/openpatch/learning
 ::::
 -->
 
+## v0.2.4
+
+::::tabs
+
+:::tab{title="Fixed :bug:" id="fixed"}
+
+- Improve node dragging performance by throttling undo history updates
+:::
+
+::::
+
+## v0.2.3
+
+::::tabs
+
+:::tab{title="Improved :+1:" id="improved"}
+
+- Significantly improved node dragging performance by optimizing undo history updates
+- Reduced lag when dragging nodes, especially noticeable in the VSCode platform
+- Optimized temporal middleware throttling from 1000ms to 500ms with better batching strategy
+
+:::
+
+::::
+
 ## v0.2.2
 
 ::::tabs

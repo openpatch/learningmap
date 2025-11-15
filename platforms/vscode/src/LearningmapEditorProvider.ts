@@ -82,6 +82,25 @@ export class LearningmapEditorProvider implements vscode.CustomTextEditorProvide
       }
     });
 
+    // Handle document save event
+    const saveDocumentSubscription = vscode.workspace.onWillSaveTextDocument(async e => {
+      if (e.document.uri.toString() === document.uri.toString()) {
+        // Wait for the save event to complete
+        e.waitUntil(new Promise<void>((resolve) => {
+          // Send save command to webview
+          webviewPanel.webview.postMessage({
+            type: 'command',
+            command: 'save',
+          });
+          
+          // Wait a bit for the webview to respond
+          setTimeout(() => {
+            resolve();
+          }, 100);
+        }));
+      }
+    });
+
     // Listen for messages from the webview
     webviewPanel.webview.onDidReceiveMessage(async e => {
       switch (e.type) {
@@ -100,6 +119,7 @@ export class LearningmapEditorProvider implements vscode.CustomTextEditorProvide
     // Clean up
     webviewPanel.onDidDispose(() => {
       changeDocumentSubscription.dispose();
+      saveDocumentSubscription.dispose();
     });
   }
 

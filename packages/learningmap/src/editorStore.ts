@@ -447,14 +447,15 @@ export const useEditorStore = create<EditorState>()(
         },
       }),
       {
+        // Temporal middleware options - throttle undo history to improve drag performance
         equality: (oldState, newState) => isDeepEqual(oldState, newState),
         handleSet: (handleSet) =>
           throttle<typeof handleSet>(
-            1000,
+            500,
             (state) => {
               handleSet(state);
             },
-            { noLeading: true, noTrailing: false },
+            { noLeading: false, noTrailing: true },
           ),
         partialize: (state): any => {
           const { nodes, edges, settings } = state;

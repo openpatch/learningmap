@@ -27,8 +27,6 @@ interface VSCodeMessage {
 function WebviewEditor() {
   const [isReady, setIsReady] = useState(false);
   const isLoadingFromFile = useRef(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const commandTriggerRef = useRef<string | null>(null);
   
   // Get store methods
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
@@ -90,6 +88,17 @@ function WebviewEditor() {
     return shiftCommands.includes(command);
   };
 
+  // Handle explicit save command
+  const handleSave = () => {
+    if (!isLoadingFromFile.current) {
+      const data = getRoadmapData();
+      vscode.postMessage({
+        type: 'save',
+        content: data,
+      });
+    }
+  };
+
   // Handle messages from extension
   useEffect(() => {
     const messageHandler = (event: MessageEvent<VSCodeMessage>) => {
@@ -98,7 +107,11 @@ function WebviewEditor() {
         case 'command':
           // Handle command from VS Code
           if (message.command) {
-            handleVSCodeCommand(message.command);
+            if (message.command === 'save') {
+              handleSave();
+            } else {
+              handleVSCodeCommand(message.command);
+            }
           }
           break;
         case 'update':
@@ -148,44 +161,8 @@ function WebviewEditor() {
 
     return () => {
       window.removeEventListener('message', messageHandler);
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
     };
-  }, [loadRoadmapData]);
-
-  // Auto-save changes to the document (debounced)
-  useEffect(() => {
-    if (!isReady) return;
-
-    // Subscribe to store changes
-    const unsubscribe = useEditorStore.subscribe(() => {
-      // Don't save if we're loading from file
-      if (isLoadingFromFile.current) {
-        return;
-      }
-
-      // Debounce saves to avoid too many updates
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-
-      saveTimeoutRef.current = setTimeout(() => {
-        const data = getRoadmapData();
-        vscode.postMessage({
-          type: 'save',
-          content: data,
-        });
-      }, 500); // Wait 500ms after last change before saving
-    });
-
-    return () => {
-      unsubscribe();
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [isReady, getRoadmapData]);
+  }, [loadRoadmapData, getRoadmapData]);
 
   if (!isReady) {
     return <div style={{ padding: '20px' }}>Loading editor...</div>;
