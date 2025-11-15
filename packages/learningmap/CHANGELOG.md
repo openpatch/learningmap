@@ -1,5 +1,11 @@
 # @hyperbook/web-component-learningmap
 
+## 0.2.3
+
+### Patch Changes
+
+- [`3927c35`](https://github.com/openpatch/learningmap/commit/3927c35749477c2e67be916b7beef473f1a59339) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Improve node dragging performance by throttling undo history updates
+
 ## 0.2.2
 
 ### Patch Changes
