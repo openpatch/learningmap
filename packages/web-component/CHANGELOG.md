@@ -1,5 +1,12 @@
 # @hyperbook/web-component-learningmap
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [[`4c3857c`](https://github.com/openpatch/learningmap/commit/4c3857c9674524c5b097ee0ecb5657210f9e5476)]:
+  - @learningmap/learningmap@0.2.4
+
 ## 0.2.3
 
 ### Patch Changes
