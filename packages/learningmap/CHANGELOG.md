@@ -1,5 +1,11 @@
 # @hyperbook/web-component-learningmap
 
+## 0.2.4
+
+### Patch Changes
+
+- [`4c3857c`](https://github.com/openpatch/learningmap/commit/4c3857c9674524c5b097ee0ecb5657210f9e5476) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Fix performance in vscode
+
 ## 0.2.3
 
 ### Patch Changes
