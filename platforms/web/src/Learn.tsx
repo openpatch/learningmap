@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { LearningMap } from '@learningmap/learningmap';
 import type { RoadmapState } from '@learningmap/learningmap';
 import '@learningmap/learningmap/index.css';
-import { useLearnerStore } from './learnerStore';
+import * as db from './db';
 import './Learn.css';
 import logo from './logo.svg';
 
@@ -13,15 +13,9 @@ function Learn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [newMapUrl, setNewMapUrl] = useState('');
+  const [currentMap, setCurrentMap] = useState<any>(null);
+  const [allMaps, setAllMaps] = useState<any[]>([]);
   const updateTimeoutRef = useRef<number | null>(null);
-  
-  const {
-    addLearningMap,
-    updateState,
-    getLearningMap,
-    getAllLearningMaps,
-    removeLearningMap,
-  } = useLearnerStore();
   
   // Extract json ID from hash
   const getJsonIdFromHash = () => {
@@ -38,63 +32,68 @@ function Learn() {
   useEffect(() => {
     if (!jsonId) return;
     
-    // First, fetch the roadmap data to check if it has an id
-    const existingMap = getLearningMap(jsonId);
-    
-    if (existingMap) {
-      // Check if the roadmap has a storage ID and handle potential conflicts
-      const storageId = existingMap.roadmapData.settings?.id;
-      if (storageId && storageId !== jsonId) {
-        // There's a custom storage ID - check if a different map exists with that ID
-        const mapWithStorageId = getLearningMap(storageId);
-        if (mapWithStorageId && mapWithStorageId.roadmapData !== existingMap.roadmapData) {
-          // Ask user if they want to replace
-          const shouldReplace = window.confirm(
-            `A learning map with the storage ID "${storageId}" already exists. Would you like to replace it with this map? Your progress will not be removed.`
-          );
-          if (shouldReplace) {
-            // Keep the existing state but update the roadmap data
-            const existingState = mapWithStorageId.state;
-            addLearningMap(storageId, existingMap.roadmapData);
-            if (existingState) {
-              updateState(storageId, existingState);
+    const loadMap = async () => {
+      // First, check if the map exists in IndexedDB
+      const existingMap = await db.getLearningMap(jsonId);
+      
+      if (existingMap) {
+        // Check if the roadmap has a storage ID and handle potential conflicts
+        const storageId = existingMap.roadmapData.settings?.id;
+        if (storageId && storageId !== jsonId) {
+          // There's a custom storage ID - check if a different map exists with that ID
+          const mapWithStorageId = await db.getLearningMap(storageId);
+          if (mapWithStorageId && mapWithStorageId.roadmapData !== existingMap.roadmapData) {
+            // Ask user if they want to replace
+            const shouldReplace = window.confirm(
+              `A learning map with the storage ID "${storageId}" already exists. Would you like to replace it with this map? Your progress will not be removed.`
+            );
+            if (shouldReplace) {
+              // Keep the existing state but update the roadmap data
+              const existingState = mapWithStorageId.state;
+              await db.addLearningMap(storageId, existingMap.roadmapData, existingState);
+              // Remove the old jsonId entry to avoid duplicates
+              if (jsonId !== storageId) {
+                await db.removeLearningMap(jsonId);
+              }
             }
-            // Remove the old jsonId entry to avoid duplicates
+          } else {
+            // No conflict, just update
+            await db.addLearningMap(storageId, existingMap.roadmapData);
+            // Remove the old jsonId entry if different
             if (jsonId !== storageId) {
-              removeLearningMap(jsonId);
+              await db.removeLearningMap(jsonId);
             }
           }
         } else {
-          // No conflict, just update
-          addLearningMap(storageId, existingMap.roadmapData);
-          // Remove the old jsonId entry if different
-          if (jsonId !== storageId) {
-            removeLearningMap(jsonId);
-          }
+          // No custom storage ID, just use jsonId
+          await db.addLearningMap(jsonId, existingMap.roadmapData);
         }
-      } else {
-        // No custom storage ID, just use jsonId
-        addLearningMap(jsonId, existingMap.roadmapData);
+        setCurrentMap(existingMap);
+        return;
       }
-      return;
-    }
-    
-    // Need to fetch from jsonStore
-    setLoading(true);
-    setError(null);
-    
-    fetch(`https://json.openpatch.org/api/v2/${jsonId}`, {
-      method: 'GET',
-      mode: 'cors',
-    })
-      .then((r) => r.text())
-      .then((text) => {
+      
+      // Check if jsonId looks like a storage ID (contains . or /) - these can't be fetched
+      if (jsonId.includes('.') || jsonId.includes('/')) {
+        setError('Learning map not found. It may not have been loaded yet. Please make sure you have accessed the original map first.');
+        return;
+      }
+      
+      // Need to fetch from jsonStore
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await fetch(`https://json.openpatch.org/api/v2/${jsonId}`, {
+          method: 'GET',
+          mode: 'cors',
+        });
+        const text = await response.text();
         const json = JSON.parse(text);
         const storageId = json.settings?.id;
         
         if (storageId && storageId !== jsonId) {
           // Check if a map with this storage ID already exists
-          const existingMapWithStorageId = getLearningMap(storageId);
+          const existingMapWithStorageId = await db.getLearningMap(storageId);
           if (existingMapWithStorageId) {
             // Ask user if they want to replace
             const shouldReplace = window.confirm(
@@ -103,29 +102,32 @@ function Learn() {
             if (shouldReplace) {
               // Keep the existing state but update the roadmap data
               const existingState = existingMapWithStorageId.state;
-              addLearningMap(storageId, json);
-              if (existingState) {
-                updateState(storageId, existingState);
-              }
+              await db.addLearningMap(storageId, json, existingState);
             } else {
               // User chose not to replace, just use jsonId as key
-              addLearningMap(jsonId, json);
+              await db.addLearningMap(jsonId, json);
             }
           } else {
             // No conflict, use storage ID
-            addLearningMap(storageId, json);
+            await db.addLearningMap(storageId, json);
           }
         } else {
           // No custom storage ID, use jsonId
-          addLearningMap(jsonId, json);
+          await db.addLearningMap(jsonId, json);
         }
+        
+        // Reload the map
+        const loadedMap = await db.getLearningMap(storageId || jsonId);
+        setCurrentMap(loadedMap);
         setLoading(false);
-      })
-      .catch(() => {
+      } catch (err) {
         setError('Failed to load learning map. Please check the URL and try again.');
         setLoading(false);
-      });
-  }, [jsonId, getLearningMap, addLearningMap, updateState, removeLearningMap]);
+      }
+    };
+    
+    loadMap();
+  }, [jsonId]);
   
   const handleStateChange = useCallback((state: RoadmapState, key: string) => {
     if (key) {
@@ -134,10 +136,10 @@ function Learn() {
         clearTimeout(updateTimeoutRef.current);
       }
       updateTimeoutRef.current = setTimeout(() => {
-        updateState(key, state);
+        db.updateState(key, state);
       }, 500);
     }
-  }, [updateState]);
+  }, []);
   
   const handleAddMap = () => {
     // Parse URL to extract json ID
@@ -158,7 +160,7 @@ function Learn() {
     setError(null);
     const reader = new FileReader();
     
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
         const json = JSON.parse(content);
@@ -168,21 +170,18 @@ function Learn() {
         const storageId = json.settings?.id || uploadId;
         
         // Check if a map with this storage ID already exists
-        const existingMap = getLearningMap(storageId);
+        const existingMap = await db.getLearningMap(storageId);
         if (existingMap) {
           const shouldReplace = window.confirm(
             `A learning map with this ID already exists. Would you like to replace it? Your progress will not be removed.`
           );
           if (shouldReplace) {
             const existingState = existingMap.state;
-            addLearningMap(storageId, json);
-            if (existingState) {
-              updateState(storageId, existingState);
-            }
+            await db.addLearningMap(storageId, json, existingState);
             navigate(`/learn#json=${storageId}`);
           }
         } else {
-          addLearningMap(storageId, json);
+          await db.addLearningMap(storageId, json);
           navigate(`/learn#json=${storageId}`);
         }
       } catch (err) {
@@ -200,31 +199,22 @@ function Learn() {
     event.target.value = '';
   };
   
-  const handleRemoveMap = (id: string) => {
+  const handleRemoveMap = async (id: string) => {
     if (window.confirm('Are you sure you want to remove this learning map?')) {
-      removeLearningMap(id);
+      await db.removeLearningMap(id);
+      // Refresh the list
+      const maps = await db.getAllLearningMaps();
+      setAllMaps(maps);
     }
   };
   
   // If there's a json ID, show the learning map
   if (jsonId) {
     // First try to get by storage ID if present, otherwise use jsonId
-    let learningMap = getLearningMap(jsonId);
-    
-    // If not found by jsonId, check if there's a storage ID in any map
-    if (!learningMap) {
-      const allMaps = getAllLearningMaps();
-      const mapWithJsonId = allMaps.find(m => m.id === jsonId);
-      if (mapWithJsonId) {
-        learningMap = mapWithJsonId;
-      }
-    }
+    let learningMap = currentMap;
     
     // Try to determine the storage key (either custom id or jsonId)
     const storageKey = learningMap?.roadmapData?.settings?.id || jsonId;
-    if (storageKey !== jsonId) {
-      learningMap = getLearningMap(storageKey);
-    }
     
     if (loading) {
       return (
@@ -278,8 +268,12 @@ function Learn() {
     );
   }
   
-  // Show list of all learning maps
-  const allMaps = getAllLearningMaps();
+  // Load all maps for the list view
+  useEffect(() => {
+    if (!jsonId) {
+      db.getAllLearningMaps().then(setAllMaps);
+    }
+  }, [jsonId]);
   
   return (
     <div className="learn-list-container">
@@ -334,10 +328,10 @@ function Learn() {
           <div className="maps-grid">
             {allMaps.map((map) => {
             const completed = Object.values(map.state?.nodes || {}).filter(
-              (node) => node.state === 'completed' || node.state === 'mastered'
+              (node: any) => node.state === 'completed' || node.state === 'mastered'
             ).length;
             const total = map.roadmapData.nodes.filter(
-              (node) => node.type === 'task' || node.type === 'topic'
+              (node: any) => node.type === 'task' || node.type === 'topic'
             ).length;
             const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
             
