@@ -4,7 +4,7 @@ import {
 import { RoadmapData, KeyBindings } from "./types";
 import { EditorToolbar } from "./EditorToolbar";
 import { LearningMap } from "./LearningMap";
-import { useEditorStore } from "./editorStore";
+import { useEditorStore, setPersistence } from "./editorStore";
 import { WelcomeMessage } from "./WelcomeMessage";
 import { EditorCanvas } from "./EditorCanvas";
 import { EditorDialogs } from "./EditorDialogs";
@@ -17,6 +17,7 @@ export interface LearningMapEditorProps {
   jsonStore?: string;
   disableSharing?: boolean;
   disableFileOperations?: boolean;
+  disablePersist?: boolean;
   keyBindings?: Partial<KeyBindings>;
 }
 
@@ -26,6 +27,7 @@ export function LearningMapEditor({
   jsonStore = "https://json.openpatch.org",
   disableSharing = false,
   disableFileOperations = false,
+  disablePersist = false,
   keyBindings,
 }: LearningMapEditorProps) {
   // Only get minimal state needed in this component
@@ -42,6 +44,10 @@ export function LearningMapEditor({
 
   // Use language from settings if available, otherwise use prop
   const effectiveLanguage = settings?.language || language;
+
+  useEffect(() => {
+    setPersistence(!disablePersist);
+  }, [disablePersist]);
 
   useEffect(() => {
     setJsonStore(jsonStore);

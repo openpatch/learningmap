@@ -111,39 +111,6 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // Register editor commands that send messages to the webview
-  const editorCommands = [
-    'addTaskNode',
-    'addTopicNode',
-    'addImageNode',
-    'addTextNode',
-    'undo',
-    'redo',
-    'togglePreview',
-    'toggleDebug',
-    'zoomIn',
-    'zoomOut',
-    'resetZoom',
-    'toggleGrid',
-    'resetMap',
-    'cut',
-    'copy',
-    'paste',
-    'selectAll',
-    'fitView',
-    'zoomToSelection',
-    'deleteSelected',
-    'help',
-  ];
-
-  editorCommands.forEach(command => {
-    context.subscriptions.push(
-      vscode.commands.registerCommand(`learningmap.${command}`, () => {
-        provider.sendCommandToActiveEditor(command);
-      })
-    );
-  });
-
   console.log('Learningmap extension is now active');
 }
 

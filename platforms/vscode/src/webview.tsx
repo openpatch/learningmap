@@ -32,62 +32,6 @@ function WebviewEditor() {
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
   const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
 
-  // Handle commands from VS Code extension
-  const handleVSCodeCommand = (command: string) => {
-    // Simulate keyboard event to trigger the corresponding action
-    const event = new KeyboardEvent('keydown', {
-      key: getKeyForCommand(command),
-      ctrlKey: needsCtrl(command),
-      shiftKey: needsShift(command),
-      metaKey: needsCtrl(command),
-      bubbles: true,
-      cancelable: true,
-    });
-    window.dispatchEvent(event);
-  };
-
-  const getKeyForCommand = (command: string): string => {
-    const keyMap: Record<string, string> = {
-      addTaskNode: '1',
-      addTopicNode: '2',
-      addImageNode: '3',
-      addTextNode: '4',
-      undo: 'z',
-      redo: 'y',
-      togglePreview: 'p',
-      toggleDebug: 'd',
-      zoomIn: '+',
-      zoomOut: '-',
-      resetZoom: '0',
-      toggleGrid: "'",
-      resetMap: 'Delete',
-      cut: 'x',
-      copy: 'c',
-      paste: 'v',
-      selectAll: 'a',
-      fitView: '!',
-      zoomToSelection: '@',
-      deleteSelected: 'Delete',
-      help: '?',
-    };
-    return keyMap[command] || '';
-  };
-
-  const needsCtrl = (command: string): boolean => {
-    const ctrlCommands = [
-      'addTaskNode', 'addTopicNode', 'addImageNode', 'addTextNode',
-      'undo', 'redo', 'togglePreview', 'toggleDebug',
-      'zoomIn', 'zoomOut', 'resetZoom', 'toggleGrid', 'resetMap',
-      'cut', 'copy', 'paste', 'selectAll', 'help',
-    ];
-    return ctrlCommands.includes(command);
-  };
-
-  const needsShift = (command: string): boolean => {
-    const shiftCommands = ['fitView', 'zoomToSelection'];
-    return shiftCommands.includes(command);
-  };
-
   // Handle explicit save command
   const handleSave = () => {
     if (!isLoadingFromFile.current) {
@@ -105,13 +49,9 @@ function WebviewEditor() {
       const message = event.data;
       switch (message.type) {
         case 'command':
-          // Handle command from VS Code
-          if (message.command) {
-            if (message.command === 'save') {
-              handleSave();
-            } else {
-              handleVSCodeCommand(message.command);
-            }
+          // Handle save command from VS Code
+          if (message.command === 'save') {
+            handleSave();
           }
           break;
         case 'update':
@@ -175,7 +115,8 @@ function WebviewEditor() {
 
   return <LearningMapEditor 
     disableSharing={true} 
-    disableFileOperations={true} 
+    disableFileOperations={true}
+    disablePersist={true}
     keyBindings={vscodeKeyBindings}
   />;
 }

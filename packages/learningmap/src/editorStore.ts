@@ -18,6 +18,13 @@ import {
 import { NodeData, RoadmapData, Settings } from "./types";
 import { getZIndexForNodeType } from "./zIndexHelper";
 
+// Global flag to control persistence
+let persistenceEnabled = true;
+
+export function setPersistence(enabled: boolean) {
+  persistenceEnabled = enabled;
+}
+
 // Note: This is a global store for the editor. Typically only one editor instance is active at a time.
 // If you need multiple independent editor instances, consider creating store instances per component or using context.
 export interface EditorState {
@@ -133,6 +140,50 @@ const initialState = {
   showUnlockAfter: true,
 };
 
+// Temporal middleware configuration
+const temporalConfig = {
+  // Temporal middleware options - throttle undo history to improve drag performance
+  equality: (oldState: any, newState: any) => isDeepEqual(oldState, newState),
+  handleSet: (handleSet: any) =>
+    throttle<typeof handleSet>(
+      500,
+      (state: any) => {
+        handleSet(state);
+      },
+      { noLeading: false, noTrailing: true },
+    ),
+  partialize: (state: EditorState) => {
+    const { nodes, edges, settings } = state;
+    return { nodes, edges, settings };
+  },
+};
+
+// Persist middleware configuration
+const persistConfig = {
+  name: "learningmap-data", // name of the item in storage
+  version: 1,
+  partialize: (state: EditorState) => {
+    const { nodes, edges, settings } = state;
+    return { nodes, edges, settings };
+  },
+  storage: {
+    getItem: (name: string) => {
+      if (!persistenceEnabled) return null;
+      const str = localStorage.getItem(name);
+      return str ? JSON.parse(str) : null;
+    },
+    setItem: (name: string, value: any) => {
+      if (!persistenceEnabled) return;
+      localStorage.setItem(name, JSON.stringify(value));
+    },
+    removeItem: (name: string) => {
+      if (!persistenceEnabled) return;
+      localStorage.removeItem(name);
+    },
+  },
+} as const;
+
+// Create the store with conditional persistence
 export const useEditorStore = create<EditorState>()(
   persist(
     temporal(
@@ -382,8 +433,8 @@ export const useEditorStore = create<EditorState>()(
           if (nodesArr.length > 0) {
             const maxId = Math.max(
               ...nodesArr
-                .map((n) => parseInt(n.id.replace(/\D/g, ""), 10))
-                .filter((id) => !isNaN(id)),
+                .map((n: any) => parseInt(n.id.replace(/\D/g, ""), 10))
+                .filter((id: number) => !isNaN(id)),
             );
             nextNodeId = maxId + 1;
           }
@@ -401,7 +452,7 @@ export const useEditorStore = create<EditorState>()(
         getRoadmapData: () => {
           const state = get();
           return {
-            nodes: state.nodes.map((n) => ({
+            nodes: state.nodes.map((n: any) => ({
               id: n.id,
               type: n.type,
               position: n.position,
@@ -414,8 +465,8 @@ export const useEditorStore = create<EditorState>()(
               data: n.data,
             })),
             edges: state.edges
-              .filter((e) => !e.id.startsWith("debug-"))
-              .map((e) => ({
+              .filter((e: any) => !e.id.startsWith("debug-"))
+              .map((e: any) => ({
                 id: e.id,
                 source: e.source,
                 target: e.target,
@@ -446,31 +497,9 @@ export const useEditorStore = create<EditorState>()(
           set(initialState);
         },
       }),
-      {
-        // Temporal middleware options - throttle undo history to improve drag performance
-        equality: (oldState, newState) => isDeepEqual(oldState, newState),
-        handleSet: (handleSet) =>
-          throttle<typeof handleSet>(
-            500,
-            (state) => {
-              handleSet(state);
-            },
-            { noLeading: false, noTrailing: true },
-          ),
-        partialize: (state): any => {
-          const { nodes, edges, settings } = state;
-          return { nodes, edges, settings };
-        },
-      },
+      temporalConfig,
     ),
-    {
-      name: "learningmap-data", // name of the item in storage
-      version: 1,
-      partialize: (state) => {
-        const { nodes, edges, settings } = state;
-        return { nodes, edges, settings };
-      },
-    },
+    persistConfig,
   ),
 );
 
@@ -478,7 +507,7 @@ type PartialEditorState = Pick<EditorState, "nodes" | "edges" | "settings">;
 
 // Hook for accessing temporal store (undo/redo)
 export function useTemporalStore<T>(
-  selector?: (state: TemporalState<PartialEditorState>) => T,
+  selector?: (state: TemporalState<any>) => T,
   equality?: (a: T, b: T) => boolean,
 ) {
   return useStoreWithEqualityFn(useEditorStore.temporal, selector!, equality);
