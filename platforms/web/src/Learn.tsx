@@ -18,15 +18,7 @@ function Learn() {
   const updateTimeoutRef = useRef<number | null>(null);
   
   // Extract json ID from hash
-  const getJsonIdFromHash = () => {
-    const hash = location.hash;
-    if (hash.startsWith('#json=')) {
-      return hash.replace('#json=', '');
-    }
-    return null;
-  };
-  
-  const jsonId = getJsonIdFromHash();
+  const jsonId = location.hash.startsWith('#json=') ? location.hash.replace('#json=', '') : null;
   
   // Load roadmap data from jsonStore if needed
   useEffect(() => {
@@ -140,6 +132,13 @@ function Learn() {
       }, 500);
     }
   }, []);
+  
+  // Load all maps for the list view
+  useEffect(() => {
+    if (!jsonId) {
+      db.getAllLearningMaps().then(setAllMaps);
+    }
+  }, [jsonId]);
   
   const handleAddMap = () => {
     // Parse URL to extract json ID
@@ -267,13 +266,6 @@ function Learn() {
       </div>
     );
   }
-  
-  // Load all maps for the list view
-  useEffect(() => {
-    if (!jsonId) {
-      db.getAllLearningMaps().then(setAllMaps);
-    }
-  }, [jsonId]);
   
   return (
     <div className="learn-list-container">
