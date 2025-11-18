@@ -1,14 +1,13 @@
-import { Controls, Edge, Node, Panel, ReactFlow, ReactFlowProvider, useReactFlow } from "@xyflow/react";
+import { Controls, Node, Panel, ReactFlow, ReactFlowProvider, useReactFlow } from "@xyflow/react";
 import { ImageNode } from "./nodes/ImageNode";
 import { TaskNode } from "./nodes/TaskNode";
 import { TextNode } from "./nodes/TextNode";
 import { TopicNode } from "./nodes/TopicNode";
-import { NodeData, RoadmapData, RoadmapState, Settings } from "./types";
+import { NodeData, RoadmapData, RoadmapState } from "./types";
 import { useCallback, useEffect } from "react";
 import { parseRoadmapData } from "./helper";
 import { Drawer } from "./Drawer";
 import { ProgressTracker } from "./ProgressTracker";
-import { getTranslations } from "./translations";
 import { useViewerStore } from "./viewerStore";
 
 const nodeTypes = {
@@ -65,45 +64,20 @@ export function LearningMap({
   const setDrawerOpen = useViewerStore(state => state.setDrawerOpen);
   const loadRoadmapData = useViewerStore(state => state.loadRoadmapData);
   const getRoadmapState = useViewerStore(state => state.getRoadmapState);
-  const updateNodesStates = useViewerStore(state => state.updateNodesStates);
   const updateNodeState = useViewerStore(state => state.updateNodeState);
-  
+
   const { fitView, getViewport } = useReactFlow();
 
   // Use language from settings if available, otherwise use prop
   const effectiveLanguage = settings?.language || language;
-  const t = getTranslations(effectiveLanguage);
 
   const { completed, mastered, total } = countCompletedNodes(nodes);
 
   const parsedRoadmap = parseRoadmapData(roadmapData);
 
-  // Calculate translateExtent to ensure at least one node is always visible
-  const calculateTranslateExtent = useCallback(() => {
-    if (nodes.length === 0) return [[-Infinity, -Infinity], [Infinity, Infinity]] as [[number, number], [number, number]];
-    
-    const padding = 200; // Add padding so nodes aren't at the very edge
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    
-    nodes.forEach(node => {
-      if (node.position) {
-        // Estimate node size (approximate, could be refined)
-        const nodeWidth = node.width || 200;
-        const nodeHeight = node.height || 100;
-        
-        minX = Math.min(minX, node.position.x - padding);
-        minY = Math.min(minY, node.position.y - padding);
-        maxX = Math.max(maxX, node.position.x + nodeWidth + padding);
-        maxY = Math.max(maxY, node.position.y + nodeHeight + padding);
-      }
-    });
-    
-    return [[minX, minY], [maxX, maxY]] as [[number, number], [number, number]];
-  }, [nodes]);
-
   useEffect(() => {
     loadRoadmapData(parsedRoadmap, initialState);
-    
+
     // Only use fitView if there's no saved state
     if (!initialState) {
       // Use setTimeout to ensure nodes are rendered before fitView
@@ -141,7 +115,7 @@ export function LearningMap({
   useEffect(() => {
     const viewport = getViewport();
     const minimalState = getRoadmapState(viewport);
-    
+
     if (onChange) {
       onChange(minimalState);
     } else {
@@ -168,8 +142,6 @@ export function LearningMap({
     zoom: initialState?.zoom || settings?.viewport?.zoom || 1,
   };
 
-  const translateExtent = calculateTranslateExtent();
-
   return (
     <div
       className="editor-canvas"
@@ -193,9 +165,9 @@ export function LearningMap({
         edges={edges}
         onNodeClick={onNodeClick}
         onNodesChange={onNodesChange}
+        minZoom={0.2}
         nodeTypes={nodeTypes}
         defaultViewport={defaultViewport}
-        translateExtent={translateExtent}
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={defaultEdgeOptions}
         nodesDraggable={false}

@@ -95,7 +95,7 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
     ({ nodes: selectedNodes }) => {
       // Only select nodes, not edges (as per requirement #6)
       setSelectedNodeIds(selectedNodes.map(n => n.id));
-      
+
       // Close the node panel if no nodes are selected and it's currently open
       if (selectedNodes.length === 0) {
         setDrawerOpen(false);
@@ -150,6 +150,7 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
         onPaneClick={handlePaneClick}
         nodeTypes={nodeTypes}
         selectionOnDrag={false}
+        minZoom={0.2}
         edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={defaultEdgeOptions}
