@@ -104,6 +104,16 @@ export class LearningmapEditorProvider implements vscode.CustomTextEditorProvide
     // Listen for messages from the webview
     webviewPanel.webview.onDidReceiveMessage(async e => {
       switch (e.type) {
+        case 'change':
+          // Content changed in the webview - update the document to mark it as dirty
+          // Set flag to prevent circular updates
+          isUpdatingFromDocument = true;
+          await this.saveDocument(document, e.content);
+          // Reset flag after a delay
+          setTimeout(() => {
+            isUpdatingFromDocument = false;
+          }, 200);
+          return;
         case 'save':
           if (!isUpdatingFromDocument) {
             await this.saveDocument(document, e.content);

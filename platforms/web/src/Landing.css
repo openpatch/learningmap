@@ -1,14 +1,5 @@
-/* Import Concert One font */
-@font-face {
-  font-family: 'Concert One';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(/concert_one_latin.woff2) format('woff2');
-}
-
 body {
-  font-family: "Concert One", sans-serif;
+  font-family: sans-serif;
 }
 
 .landing-container {
@@ -16,6 +7,7 @@ body {
   display: flex;
   flex-direction: column;
   background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+  font-family: sans-serif;
 }
 
 /* Header */

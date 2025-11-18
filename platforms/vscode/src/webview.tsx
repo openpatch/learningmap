@@ -27,10 +27,40 @@ interface VSCodeMessage {
 function WebviewEditor() {
   const [isReady, setIsReady] = useState(false);
   const isLoadingFromFile = useRef(false);
+  const changeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Get store methods
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
   const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
+  
+  // Subscribe to store changes to notify VS Code of unsaved changes (debounced)
+  useEffect(() => {
+    const unsubscribe = useEditorStore.subscribe(() => {
+      // Don't notify during initial load
+      if (!isLoadingFromFile.current && isReady) {
+        // Clear previous timeout
+        if (changeTimeoutRef.current) {
+          clearTimeout(changeTimeoutRef.current);
+        }
+        
+        // Debounce change notifications to avoid rapid updates during dragging
+        changeTimeoutRef.current = setTimeout(() => {
+          const data = getRoadmapData();
+          vscode.postMessage({
+            type: 'change',
+            content: data,
+          });
+        }, 500); // Wait 500ms after last change before notifying
+      }
+    });
+    
+    return () => {
+      unsubscribe();
+      if (changeTimeoutRef.current) {
+        clearTimeout(changeTimeoutRef.current);
+      }
+    };
+  }, [getRoadmapData, isReady]);
 
   // Handle explicit save command
   const handleSave = () => {

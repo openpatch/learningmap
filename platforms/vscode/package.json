@@ -36,7 +36,12 @@
         "displayName": "Learningmap Editor",
         "selector": [
           {
-            "filenamePattern": "*.learningmap"
+            "filenamePattern": "*.learningmap",
+            "scheme": "file"
+          },
+          {
+            "filenamePattern": "*.learningmap",
+            "scheme": "untitled"
           }
         ],
         "priority": "default"
