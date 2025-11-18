@@ -1,5 +1,11 @@
 # learningmap-studio
 
+## 0.3.1
+
+### Patch Changes
+
+- [`4df6da8`](https://github.com/openpatch/learningmap/commit/4df6da862815f9d81c63d76b065405a89fa4279a) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Do not save if there are no changes
+
 ## 0.3.0
 
 ### Minor Changes
