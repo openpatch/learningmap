@@ -1,5 +1,16 @@
 # learningmap-studio
 
+## 0.3.0
+
+### Minor Changes
+
+- [`f986065`](https://github.com/openpatch/learningmap/commit/f9860658e4817f018694895aa27dd199a3f26120) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Use sans-serif instead of an unreadable custom font
+
+### Patch Changes
+
+- Updated dependencies [[`f986065`](https://github.com/openpatch/learningmap/commit/f9860658e4817f018694895aa27dd199a3f26120)]:
+  - @learningmap/learningmap@0.3.0
+
 ## 0.2.5
 
 ### Patch Changes
