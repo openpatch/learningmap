@@ -28,7 +28,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  color: #000;
+  color: var(--learningmap-color-black);
   overflow: hidden;
   font-family: sans-serif;
 }
