@@ -156,6 +156,7 @@
   width: 500px;
   max-width: 90vw;
   background: var(--color-nav, white);
+  color: var(--color-text, #000);
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
   z-index: 1003;
   display: flex;
