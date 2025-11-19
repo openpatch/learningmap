@@ -1,5 +1,11 @@
 # @hyperbook/web-component-learningmap
 
+## 0.3.1
+
+### Patch Changes
+
+- [`0cb5661`](https://github.com/openpatch/learningmap/commit/0cb56610bb09cf81884d8ec38eff9813066bcce4) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - use black text color in drawer
+
 ## 0.3.0
 
 ### Minor Changes
