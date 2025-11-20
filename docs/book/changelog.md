@@ -13,31 +13,36 @@ If you need a new feature, open an [issue](https://github.com/openpatch/learning
 
 :::
 
-<!--
-## v0.41.0
+## v0.3.1
 
 ::::tabs
 
-:::tab{title="New :rocket:" id="new"}
+:::tab{title="Fixed :bug:" id="fixed"}
 
-- Allow emojis in tab titles. E.g.: `:::tab{title="Hi :smile:"}`
+- Fix text color in drawer for better readability
 
 :::
 
+::::
+
+## v0.3.0
+
+::::tabs
+
 :::tab{title="Improved :+1:" id="improved"}
 
-
+- Use sans-serif font instead of custom font for better readability
+- Use CSS variable for font color
 
 :::
 
 :::tab{title="Fixed :bug:" id="fixed"}
 
-
+- Fix React hook error
 
 :::
 
 ::::
--->
 
 ## v0.2.4
 
