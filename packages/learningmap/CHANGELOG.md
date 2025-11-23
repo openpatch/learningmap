@@ -1,5 +1,11 @@
 # @hyperbook/web-component-learningmap
 
+## 0.3.2
+
+### Patch Changes
+
+- [`b6c19e0`](https://github.com/openpatch/learningmap/commit/b6c19e0ff43f965fc85751fa68289281d162035c) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Add missing styles for started nodes
+
 ## 0.3.1
 
 ### Patch Changes
