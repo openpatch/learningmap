@@ -670,6 +670,11 @@ header.drawer-header {
   }
 }
 
+.react-flow__node-task.started,
+.react-flow__node-topic.started {
+  outline: 2px dashed #f59e42;
+}
+
 .react-flow__node-task.mastered,
 .react-flow__node-topic.mastered {
   text-decoration: line-through;
