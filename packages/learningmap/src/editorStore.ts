@@ -109,6 +109,7 @@ export interface EditorState {
 
   // Bulk operations
   loadRoadmapData: (roadmapData: RoadmapData) => void;
+  updateRoadmapData: (roadmapData: RoadmapData) => void;
   getRoadmapData: () => RoadmapData;
   closeAllDrawers: () => void;
   reset: () => void;
@@ -304,6 +305,7 @@ export const useEditorStore = create<EditorState>()(
               n.id === nodeId ? { ...n, ...updates } : n,
             ),
           });
+          get().updateDebugEdges();
         },
 
         updateNodeData: (nodeId, dataUpdates) => {
@@ -314,6 +316,7 @@ export const useEditorStore = create<EditorState>()(
                 : n,
             ),
           });
+          get().updateDebugEdges();
         },
 
         updateNodes: (updates) => {
@@ -323,6 +326,7 @@ export const useEditorStore = create<EditorState>()(
               return updated ? updated : n;
             }),
           });
+          get().updateDebugEdges();
         },
 
         updateEdge: (edgeId, updates) => {
@@ -406,6 +410,11 @@ export const useEditorStore = create<EditorState>()(
         },
         setShowUnlockAfter: (showUnlockAfter) => {
           set({ showUnlockAfter });
+          get().updateDebugEdges();
+        },
+
+        updateRoadmapData: (roadmapData) => {
+          get().loadRoadmapData(roadmapData);
           get().updateDebugEdges();
         },
 

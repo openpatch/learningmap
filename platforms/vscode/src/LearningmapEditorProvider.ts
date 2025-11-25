@@ -71,8 +71,19 @@ export class LearningmapEditorProvider
       }, 100);
     };
 
+    const initWebview = () => {
+      webviewPanel.webview.postMessage({
+        type: "init",
+        content: document.getText(),
+      });
+      // Reset flag after a short delay
+      setTimeout(() => {
+        isUpdatingFromDocument = false;
+      }, 100);
+    };
+
     // Send initial content
-    updateWebview();
+    initWebview();
 
     // Listen for changes in the document (from external sources)
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(
@@ -132,7 +143,7 @@ export class LearningmapEditorProvider
           return;
         case "ready":
           // Webview is ready, send initial content
-          updateWebview();
+          initWebview();
           return;
       }
     });

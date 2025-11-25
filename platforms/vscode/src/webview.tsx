@@ -28,11 +28,11 @@ function WebviewEditor() {
   const [isReady, setIsReady] = useState(false);
   const isLoadingFromFile = useRef(false);
   const changeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Get store methods
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
   const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
-  
+
   // Subscribe to store changes to notify VS Code of unsaved changes (debounced)
   useEffect(() => {
     const unsubscribe = useEditorStore.subscribe(() => {
@@ -42,7 +42,7 @@ function WebviewEditor() {
         if (changeTimeoutRef.current) {
           clearTimeout(changeTimeoutRef.current);
         }
-        
+
         // Debounce change notifications to avoid rapid updates during dragging
         changeTimeoutRef.current = setTimeout(() => {
           const data = getRoadmapData();
@@ -53,7 +53,7 @@ function WebviewEditor() {
         }, 500); // Wait 500ms after last change before notifying
       }
     });
-    
+
     return () => {
       unsubscribe();
       if (changeTimeoutRef.current) {
@@ -85,9 +85,11 @@ function WebviewEditor() {
           }
           break;
         case 'update':
+          break;
+        case 'init':
           // Set flag to prevent saving during load
           isLoadingFromFile.current = true;
-          
+
           // Load the content from the file
           try {
             if (message.content) {
@@ -114,7 +116,7 @@ function WebviewEditor() {
               type: 'learningmap',
             } as RoadmapData);
           }
-          
+
           // Clear the flag after a short delay to allow store to settle
           setTimeout(() => {
             isLoadingFromFile.current = false;
@@ -124,7 +126,7 @@ function WebviewEditor() {
     };
 
     window.addEventListener('message', messageHandler);
-    
+
     // Signal that webview is ready
     vscode.postMessage({ type: 'ready' });
     setIsReady(true);
@@ -143,8 +145,8 @@ function WebviewEditor() {
     save: undefined, // Disable save shortcut - VS Code handles this
   };
 
-  return <LearningMapEditor 
-    disableSharing={true} 
+  return <LearningMapEditor
+    disableSharing={true}
     disableFileOperations={true}
     disablePersist={true}
     keyBindings={vscodeKeyBindings}
