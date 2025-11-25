@@ -1,5 +1,13 @@
 # @hyperbook/web-component-learningmap
 
+## 0.4.0
+
+### Minor Changes
+
+- [`223bd6e`](https://github.com/openpatch/learningmap/commit/223bd6e69a5f4509f026623390791cb776d23f0c) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Fix debug edges getting removed when saving
+
+- [`815f513`](https://github.com/openpatch/learningmap/commit/815f513483ea43174f1a137abd507ba18416d4d6) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Hide content in the drawer if the node is locked
+
 ## 0.3.2
 
 ### Patch Changes
