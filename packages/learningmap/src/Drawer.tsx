@@ -105,56 +105,59 @@ export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, lang
           </button>
         </header>
         <div className="drawer-content">
-          {node.data?.description && <div className="drawer-description" style={{ marginBottom: 16 }} dangerouslySetInnerHTML={{ __html: descriptionHtml }} />}
-          {node.data?.video && <div className="drawer-video" style={{ marginBottom: 16 }}>
-            <Video url={node.data?.video} />
-          </div>}
-          {node.data?.resources && node.data?.resources.length > 0 && (
-            <div className="drawer-resources" style={{ marginBottom: 16 }}>
-              <div style={{ fontWeight: 600, marginBottom: 8 }}>{t.resourcesLabel}</div>
-              <ul>
-                {node.data?.resources.map((r: Resource, idx: number) => {
-                  if (r.type === "book") {
-                    // Format: 📚 Label (Name, Location)
-                    // If name is empty, no comma should be visible
-                    const bookDetails = [];
-                    if (r.bookName) bookDetails.push(r.bookName);
-                    if (r.bookLocation) bookDetails.push(r.bookLocation);
-                    const detailsText = bookDetails.length > 0 ? ` (${bookDetails.join(', ')})` : '';
-                    
-                    return (
-                      <li key={idx}>
-                        📚 <strong>{r.label}</strong>{detailsText}
-                      </li>
-                    );
-                  }
-                  return (
-                    <li key={idx}>
-                      🌐 {r.url ? (
-                        <a href={r.url} target="_blank" rel="noopener noreferrer">{r.label}</a>
-                      ) : (
-                        <span>{r.label}</span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
-          {unlockConditions.length > 0 && (
+          {unlockConditions.length > 0 ? (
             <div className="drawer-unlock-conditions" style={{ marginBottom: 16 }}>
               <div style={{ fontWeight: 600, marginBottom: 8 }}>{t.unlockConditionsMessage}</div>
               <ul>
                 {unlockConditions.map(n => (
                   <li key={n.id}>
                     <button className="link-button" onClick={() => { onNodeClick(null, n, true); }}>
-                      {n.data?.label || n.id} - {n.data?.state}
+                      {n.data?.label || n.id} - {n.data?.state === "locked" ? "🔒" : "🔓"}
                     </button>
                   </li>
                 ))}
               </ul>
             </div>
-          )}
+          ) :
+            <>
+              {node.data?.description && <div className="drawer-description" style={{ marginBottom: 16 }} dangerouslySetInnerHTML={{ __html: descriptionHtml }} />}
+              {node.data?.video && <div className="drawer-video" style={{ marginBottom: 16 }}>
+                <Video url={node.data?.video} />
+              </div>}
+              {node.data?.resources && node.data?.resources.length > 0 && (
+                <div className="drawer-resources" style={{ marginBottom: 16 }}>
+                  <div style={{ fontWeight: 600, marginBottom: 8 }}>{t.resourcesLabel}</div>
+                  <ul>
+                    {node.data?.resources.map((r: Resource, idx: number) => {
+                      if (r.type === "book") {
+                        // Format: 📚 Label (Name, Location)
+                        // If name is empty, no comma should be visible
+                        const bookDetails = [];
+                        if (r.bookName) bookDetails.push(r.bookName);
+                        if (r.bookLocation) bookDetails.push(r.bookLocation);
+                        const detailsText = bookDetails.length > 0 ? ` (${bookDetails.join(', ')})` : '';
+
+                        return (
+                          <li key={idx}>
+                            📚 <strong>{r.label}</strong>{detailsText}
+                          </li>
+                        );
+                      }
+                      return (
+                        <li key={idx}>
+                          🌐 {r.url ? (
+                            <a href={r.url} target="_blank" rel="noopener noreferrer">{r.label}</a>
+                          ) : (
+                            <span>{r.label}</span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+            </>
+          }
           {!locked && completionNeeds.length > 0 && (
             <div className="drawer-completion-needs" style={{ marginBottom: 16 }}>
               <div style={{ fontWeight: 600, marginBottom: 8 }}>{t.completionNeedsMessage}</div>
