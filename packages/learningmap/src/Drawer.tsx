@@ -44,6 +44,23 @@ function getCompletionNeeds(node: Node<NodeData>, nodes: Node<NodeData>[]): Node
   return unmetNeeds;
 }
 
+function getEmojiFromState(state: string | undefined): string {
+  switch (state) {
+    case 'locked':
+      return '🔒';
+    case 'unlocked':
+      return '🔓';
+    case 'started':
+      return '▶️';
+    case 'completed':
+      return '✅';
+    case 'mastered':
+      return '🌟';
+    default:
+      return '';
+  }
+}
+
 function getCompletionOptional(node: Node<NodeData>, nodes: Node<NodeData>[]): Node<NodeData>[] {
   const unmetOptional: Node<NodeData>[] = [];
   if (node.data?.completion?.optional) {
@@ -112,7 +129,7 @@ export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, lang
                 {unlockConditions.map(n => (
                   <li key={n.id}>
                     <button className="link-button" onClick={() => { onNodeClick(null, n, true); }}>
-                      {n.data?.label || n.id} - {n.data?.state === "locked" ? "🔒" : "🔓"}
+                      {n.data?.label || n.id} - {getEmojiFromState(n.data?.state)}
                     </button>
                   </li>
                 ))}
@@ -165,7 +182,7 @@ export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, lang
                 {completionNeeds.map(n => (
                   <li key={n.id}>
                     <button className="link-button" onClick={() => { onNodeClick(null, n, true); }}>
-                      {n.data?.label || n.id} - {n.data?.state}
+                      {n.data?.label || n.id} - {getEmojiFromState(n.data?.state)}
                     </button>
                   </li>
                 ))}
