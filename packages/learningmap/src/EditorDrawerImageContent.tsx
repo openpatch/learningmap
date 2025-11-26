@@ -20,18 +20,23 @@ interface Props {
  * @returns Promise that resolves to a base64 data URL of the compressed image
  * @throws Error if image loading or canvas operations fail
  */
-async function compressImage(file: File, maxWidth: number = 1920, maxHeight: number = 1920, quality: number = 0.85): Promise<string> {
+async function compressImage(
+  file: File,
+  maxWidth: number = 1920,
+  maxHeight: number = 1920,
+  quality: number = 0.85
+): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
       const img = new Image();
-      
+
       img.onload = () => {
         const canvas = document.createElement('canvas');
         let width = img.width;
         let height = img.height;
-        
+
         // Calculate new dimensions while maintaining aspect ratio
         if (width > maxWidth || height > maxHeight) {
           const aspectRatio = width / height;
@@ -43,48 +48,52 @@ async function compressImage(file: File, maxWidth: number = 1920, maxHeight: num
             width = maxHeight * aspectRatio;
           }
         }
-        
+
         canvas.width = width;
         canvas.height = height;
-        
+
         const ctx = canvas.getContext('2d');
         if (!ctx) {
           reject(new Error('Failed to get canvas context'));
           return;
         }
-        
+
+        // Clear canvas to transparent (important for PNGs)
+        ctx.clearRect(0, 0, width, height);
+
         ctx.drawImage(img, 0, 0, width, height);
-        
-        // Convert all raster images to JPEG for consistent compression
-        // JPEG provides good quality at significantly smaller file sizes
-        const dataUrl = canvas.toDataURL('image/jpeg', quality);
-        
+
+        // Preserve PNG transparency, use JPEG for other formats
+        const isPNG = file.type === 'image/png';
+        const mimeType = isPNG ? 'image/png' : 'image/jpeg';
+        const dataUrl = canvas.toDataURL(mimeType, quality);
+
         resolve(dataUrl);
       };
-      
+
       img.onerror = () => {
         reject(new Error('Failed to load image'));
       };
-      
+
       img.src = e.target?.result as string;
     };
-    
+
     reader.onerror = () => {
       reject(new Error('Failed to read file'));
     };
-    
+
     reader.readAsDataURL(file);
   });
 }
 
 export function EditorDrawerImageContent({ localNode, handleFieldChange, language = "en" }: Props) {
   const t = getTranslations(language);
-  
+
   // Convert file to base64 with compression
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     try {
       // For SVG files, don't compress (they're already vector graphics)
       if (file.type === 'image/svg+xml') {
