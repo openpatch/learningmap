@@ -1,5 +1,11 @@
 # @hyperbook/web-component-learningmap
 
+## 0.4.2
+
+### Patch Changes
+
+- [`9f632bf`](https://github.com/openpatch/learningmap/commit/9f632bfccf3a431b7509ba17c352b717f583cbe1) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Keep transparent pixels for png images
+
 ## 0.4.1
 
 ### Patch Changes
