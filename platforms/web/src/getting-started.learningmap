@@ -356,6 +356,7 @@
   "settings": {
     "id": "demo-getting-started",
     "title": "Getting Started with Learningmap",
+    "language": "en",
     "background": {
       "color": "#ebfff1"
     },

@@ -6,12 +6,19 @@ import { LearningMap } from "@learningmap/learningmap";
 import "@learningmap/learningmap/index.css";
 import demoMapRaw from "./getting-started.learningmap?raw";
 import type { RoadmapData } from "@learningmap/learningmap";
+import * as db from "./db";
 
 function Landing() {
   const navigate = useNavigate();
   
   // Parse the demo map from raw JSON
   const demoMap: RoadmapData = JSON.parse(demoMapRaw);
+
+  const handleEditDemo = async () => {
+    const demoId = "demo-getting-started";
+    await db.addTeacherMap(demoId, demoMap);
+    navigate(`/create#id=${demoId}`);
+  };
 
   return (
     <div className="landing-container">
@@ -76,6 +83,15 @@ function Landing() {
         </p>
         <div className="demo-map-container">
           <LearningMap roadmapData={demoMap} />
+        </div>
+        <div style={{ textAlign: "center", marginTop: "1rem" }}>
+          <button
+            onClick={handleEditDemo}
+            className="nav-button"
+            style={{ display: "inline-block", width: "auto" }}
+          >
+            Edit This Map
+          </button>
         </div>
       </section>
 

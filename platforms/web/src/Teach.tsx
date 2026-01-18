@@ -13,6 +13,7 @@ function Teach() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showDataDialog, setShowDataDialog] = useState(false);
   const [showConflictDialog, setShowConflictDialog] = useState(false);
   const [conflictData, setConflictData] = useState<{
     storageId: string;
@@ -20,6 +21,49 @@ function Teach() {
     jsonId?: string;
     existingMap: TeacherMapEntry;
   } | null>(null);
+
+  const handleExport = async () => {
+    try {
+      const data = await db.exportAllData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `learningmap-backup-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setShowDataDialog(false);
+    } catch (err) {
+      alert("Failed to export data");
+    }
+  };
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+        await db.importAllData(data);
+        alert("Data imported successfully! Refresh the page to see all changes.");
+        setShowDataDialog(false);
+        // Refresh the maps list
+        const maps = await db.getAllTeacherMaps();
+        setAllMaps(maps);
+      } catch (err) {
+        alert("Failed to import data. Please check the file format.");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = "";
+  };
 
   useEffect(() => {
     db.getAllTeacherMaps().then(setAllMaps);
@@ -224,16 +268,19 @@ function Teach() {
     <div className="teach-container">
       <Header>
         <button
+          onClick={() => navigate("/create")}
+          className="toolbar-button toolbar-button-primary"
+        >
+          New Map
+        </button>
+        <button
           onClick={() => setShowAddDialog(true)}
           className="toolbar-button"
         >
           Add Map
         </button>
-        <button
-          onClick={() => navigate("/create")}
-          className="toolbar-button toolbar-button-primary"
-        >
-          + Create New Map
+        <button onClick={() => setShowDataDialog(true)} className="nav-button">
+          Manage Data
         </button>
       </Header>
 
@@ -354,6 +401,52 @@ function Teach() {
                 >
                   Cancel
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDataDialog && (
+        <div className="dialog-overlay" onClick={() => setShowDataDialog(false)}>
+          <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+            <div className="dialog-header">
+              <h2>Manage Your Data</h2>
+              <button
+                className="dialog-close"
+                onClick={() => setShowDataDialog(false)}
+                aria-label="Close dialog"
+              >
+                ×
+              </button>
+            </div>
+            <div className="dialog-body">
+              <div style={{ marginBottom: "1.5rem" }}>
+                <h3 style={{ marginBottom: "0.5rem" }}>Backup Your Data</h3>
+                <p style={{ marginBottom: "1rem", color: "#666" }}>
+                  Download all your created maps and student learning maps as a JSON file. 
+                  Keep this file safe to restore your data later or transfer to another device.
+                </p>
+                <button onClick={handleExport} className="role-button role-button-primary" style={{ width: "100%" }}>
+                  Download Backup
+                </button>
+              </div>
+              
+              <div style={{ borderTop: "1px solid #ddd", paddingTop: "1.5rem" }}>
+                <h3 style={{ marginBottom: "0.5rem" }}>Restore from Backup</h3>
+                <p style={{ marginBottom: "1rem", color: "#666" }}>
+                  Upload a previously downloaded backup file to restore your maps. 
+                  This will merge with your existing data.
+                </p>
+                <label className="role-button role-button-secondary" style={{ cursor: "pointer", display: "block", width: "100%", textAlign: "center", boxSizing: "border-box" }}>
+                  Upload Backup
+                  <input
+                    type="file"
+                    accept=".json,application/json"
+                    onChange={handleImport}
+                    style={{ display: "none" }}
+                  />
+                </label>
               </div>
             </div>
           </div>

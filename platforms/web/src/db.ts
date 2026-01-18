@@ -138,4 +138,43 @@ export async function removeTeacherMap(id: string) {
   await db.delete("teacherMaps", id);
 }
 
+// Export all data from IndexedDB
+export async function exportAllData() {
+  const db = await getDB();
+  const learningMaps = await db.getAll("learningMaps");
+  const teacherMaps = await db.getAll("teacherMaps");
+  
+  const data = {
+    version: 1,
+    exportDate: new Date().toISOString(),
+    learningMaps,
+    teacherMaps,
+  };
+  
+  return data;
+}
+
+// Import data into IndexedDB
+export async function importAllData(data: any) {
+  if (!data || data.version !== 1) {
+    throw new Error("Invalid data format");
+  }
+  
+  const db = await getDB();
+  
+  // Import learning maps
+  if (data.learningMaps && Array.isArray(data.learningMaps)) {
+    for (const map of data.learningMaps) {
+      await db.put("learningMaps", map);
+    }
+  }
+  
+  // Import teacher maps
+  if (data.teacherMaps && Array.isArray(data.teacherMaps)) {
+    for (const map of data.teacherMaps) {
+      await db.put("teacherMaps", map);
+    }
+  }
+}
+
 export type { TeacherMapEntry };
