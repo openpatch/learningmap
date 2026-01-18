@@ -14,6 +14,13 @@ function Teach() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showConflictDialog, setShowConflictDialog] = useState(false);
+  const [conflictData, setConflictData] = useState<{
+    storageId: string;
+    roadmapData: any;
+    jsonId?: string;
+    existingMap: TeacherMapEntry;
+  } | null>(null);
 
   useEffect(() => {
     db.getAllTeacherMaps().then(setAllMaps);
@@ -83,6 +90,16 @@ function Teach() {
         const roadmapData = await response.json();
         const storageId = roadmapData.settings?.id || jsonId;
         
+        // Check if map already exists
+        const existingMap = await db.getTeacherMap(storageId);
+        if (existingMap) {
+          // Show conflict dialog
+          setConflictData({ storageId, roadmapData, jsonId, existingMap });
+          setShowConflictDialog(true);
+          setLoading(false);
+          return;
+        }
+        
         await db.addTeacherMap(storageId, roadmapData, jsonId);
         const maps = await db.getAllTeacherMaps();
         setAllMaps(maps);
@@ -114,6 +131,15 @@ function Teach() {
         const uploadId = `upload-${Date.now()}`;
         const storageId = json.settings?.id || uploadId;
         
+        // Check if map already exists
+        const existingMap = await db.getTeacherMap(storageId);
+        if (existingMap) {
+          // Show conflict dialog
+          setConflictData({ storageId, roadmapData: json, existingMap });
+          setShowConflictDialog(true);
+          return;
+        }
+        
         await db.addTeacherMap(storageId, json, undefined);
         const maps = await db.getAllTeacherMaps();
         setAllMaps(maps);
@@ -131,6 +157,37 @@ function Teach() {
     
     // Reset the input so the same file can be uploaded again if needed
     event.target.value = '';
+  };
+
+  const handleConflictOverwrite = async () => {
+    if (!conflictData) return;
+    
+    await db.addTeacherMap(conflictData.storageId, conflictData.roadmapData, conflictData.jsonId);
+    const maps = await db.getAllTeacherMaps();
+    setAllMaps(maps);
+    setNewMapUrl('');
+    setShowAddDialog(false);
+    setShowConflictDialog(false);
+    setConflictData(null);
+  };
+
+  const handleConflictNewId = async () => {
+    if (!conflictData) return;
+    
+    // Generate a new unique ID
+    const newId = `${conflictData.storageId}-${Date.now()}`;
+    await db.addTeacherMap(newId, conflictData.roadmapData, conflictData.jsonId);
+    const maps = await db.getAllTeacherMaps();
+    setAllMaps(maps);
+    setNewMapUrl('');
+    setShowAddDialog(false);
+    setShowConflictDialog(false);
+    setConflictData(null);
+  };
+
+  const handleConflictCancel = () => {
+    setShowConflictDialog(false);
+    setConflictData(null);
   };
 
   return (
@@ -189,6 +246,60 @@ function Teach() {
                   onChange={handleFileUpload}
                   style={{ display: 'none' }}
                 />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {showConflictDialog && conflictData && (
+        <div className="dialog-overlay" onClick={handleConflictCancel}>
+          <div className="dialog-content conflict-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="dialog-header">
+              <h2>⚠️ Map Already Exists</h2>
+              <button 
+                className="dialog-close" 
+                onClick={handleConflictCancel}
+                aria-label="Close dialog"
+              >
+                ×
+              </button>
+            </div>
+            <div className="dialog-body">
+              <p>
+                A learning map with ID <strong>{conflictData.storageId}</strong> already exists in your collection.
+              </p>
+              <div className="conflict-info">
+                <div className="conflict-map-info">
+                  <h4>Existing Map:</h4>
+                  <p><strong>{conflictData.existingMap.roadmapData.settings?.title || 'Untitled'}</strong></p>
+                  <p className="text-small">Last modified: {new Date(conflictData.existingMap.lastModified).toLocaleString()}</p>
+                </div>
+                <div className="conflict-map-info">
+                  <h4>New Map:</h4>
+                  <p><strong>{conflictData.roadmapData.settings?.title || 'Untitled'}</strong></p>
+                </div>
+              </div>
+              <p>What would you like to do?</p>
+              <div className="conflict-actions">
+                <button 
+                  onClick={handleConflictOverwrite} 
+                  className="conflict-button conflict-button-danger"
+                >
+                  Overwrite Existing
+                </button>
+                <button 
+                  onClick={handleConflictNewId} 
+                  className="conflict-button conflict-button-primary"
+                >
+                  Keep Both (New ID)
+                </button>
+                <button 
+                  onClick={handleConflictCancel} 
+                  className="conflict-button conflict-button-secondary"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
