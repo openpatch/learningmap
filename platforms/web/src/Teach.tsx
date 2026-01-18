@@ -9,7 +9,6 @@ import { Footer } from './Footer';
 function Teach() {
   const navigate = useNavigate();
   const [allMaps, setAllMaps] = useState<TeacherMapEntry[]>([]);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [newMapUrl, setNewMapUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,18 +30,6 @@ function Teach() {
       await db.removeTeacherMap(id);
       const maps = await db.getAllTeacherMaps();
       setAllMaps(maps);
-    }
-  };
-
-  const handleCopyShareLink = async (map: TeacherMapEntry) => {
-    const shareUrl = map.jsonId 
-      ? `${window.location.origin}/learn#json=${map.jsonId}`
-      : null;
-    
-    if (shareUrl) {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopiedId(map.id);
-      setTimeout(() => setCopiedId(null), 2000);
     }
   };
 
@@ -360,11 +347,6 @@ function Teach() {
                     <span>Created: {new Date(map.createdAt).toLocaleDateString()}</span>
                     <span>Modified: {new Date(map.lastModified).toLocaleDateString()}</span>
                   </div>
-                  {map.jsonId && (
-                    <div className="share-section">
-                      <span className="published-badge">✓ Published</span>
-                    </div>
-                  )}
                 </div>
                 <div className="map-card-footer">
                   <button
@@ -373,14 +355,6 @@ function Teach() {
                   >
                     Edit
                   </button>
-                  {map.jsonId && (
-                    <button
-                      onClick={() => handleCopyShareLink(map)}
-                      className="action-button primary-button"
-                    >
-                      {copiedId === map.id ? '✓ Copied!' : 'Copy Share Link'}
-                    </button>
-                  )}
                 </div>
               </div>
             ))}
