@@ -17,6 +17,7 @@ import {
 } from "@xyflow/react";
 import { NodeData, RoadmapData, Settings } from "./types";
 import { getZIndexForNodeType } from "./zIndexHelper";
+import { getTranslations, detectBrowserLanguage, Translations } from "./translations";
 
 // Global flag to control persistence
 let persistenceEnabled = true;
@@ -113,6 +114,10 @@ export interface EditorState {
   getRoadmapData: () => RoadmapData;
   closeAllDrawers: () => void;
   reset: () => void;
+
+  // Computed getters
+  getLanguage: () => string;
+  getTranslations: () => Translations;
 }
 
 const initialState = {
@@ -504,6 +509,22 @@ export const useEditorStore = create<EditorState>()(
 
         reset: () => {
           set(initialState);
+        },
+
+        getLanguage: () => {
+          const state = get();
+          const settingsLang = state.settings?.language;
+          if (settingsLang && settingsLang !== "auto") {
+            return settingsLang;
+          }
+          if (state.defaultLanguage) {
+            return state.defaultLanguage;
+          }
+          return detectBrowserLanguage();
+        },
+
+        getTranslations: () => {
+          return getTranslations(get().getLanguage());
         },
       }),
       temporalConfig,

@@ -6,30 +6,22 @@ import { EditorDrawerTopicContent } from "./EditorDrawerTopicContent";
 import { EditorDrawerImageContent } from "./EditorDrawerImageContent";
 import { EditorDrawerTextContent } from "./EditorDrawerTextContent";
 import { Completion, NodeData } from "./types";
-import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 
-interface EditorDrawerProps {
-  defaultLanguage?: string;
-}
-
-export const EditorDrawer: React.FC<EditorDrawerProps> = ({
-  defaultLanguage = "en",
-}) => {
+export const EditorDrawer: React.FC = () => {
   // Get node and all nodes from store
   const selectedNodeId = useEditorStore(state => state.selectedNodeId);
   const nodes = useEditorStore(state => state.nodes);
   const isOpen = useEditorStore(state => state.drawerOpen);
-  const settings = useEditorStore(state => state.settings);
 
   // Get actions from store
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
   const updateNode = useEditorStore(state => state.updateNode);
   const deleteNode = useEditorStore(state => state.deleteNode);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
-  const language = settings?.language || defaultLanguage;
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   const node = nodes.find(n => n.id === selectedNodeId) || null;
 
@@ -212,7 +204,6 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
           handleCompletionOptionalChange={handleCompletionOptionalChange}
           addCompletionOptional={addCompletionOptional}
           removeCompletionOptional={removeCompletionOptional}
-          language={language}
         />
       </>
     );
@@ -241,7 +232,6 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
           handleCompletionOptionalChange={handleCompletionOptionalChange}
           addCompletionOptional={addCompletionOptional}
           removeCompletionOptional={removeCompletionOptional}
-          language={language}
         />
       </>
     );
@@ -257,7 +247,6 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
         <EditorDrawerImageContent
           localNode={localNode}
           handleFieldChange={handleFieldChange}
-          language={language}
         />
       </>
     );
@@ -273,7 +262,6 @@ export const EditorDrawer: React.FC<EditorDrawerProps> = ({
         <EditorDrawerTextContent
           localNode={localNode}
           handleFieldChange={handleFieldChange}
-          language={language}
         />
       </>
     );

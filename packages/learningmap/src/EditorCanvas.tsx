@@ -11,7 +11,6 @@ import { MultiNodePanel } from "./MultiNodePanel";
 import { EditorPanel } from "./EditorPanel";
 import { EdgePanel } from "./EdgePanel";
 import { SettingsPanel } from "./SettingsPanel";
-import { getTranslations } from "./translations";
 import { NodeData } from "./types";
 
 const nodeTypes = {
@@ -25,17 +24,13 @@ const edgeTypes = {
   floating: FloatingEdge
 };
 
-interface EditorCanvasProps {
-  defaultLanguage?: string;
-}
-
-export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps) => {
+export const EditorCanvas = memo(() => {
   // Get state from store
-  const settings = useEditorStore(state => state.settings);
   const nodes = useEditorStore(state => state.nodes);
   const edges = useEditorStore(state => state.edges);
   const showGrid = useEditorStore(state => state.showGrid);
   const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
+  const settings = useEditorStore(state => state.settings);
 
   // Get actions from store
   const onNodesChange = useEditorStore(state => state.onNodesChange);
@@ -49,12 +44,12 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
   const setLastMousePosition = useEditorStore(state => state.setLastMousePosition);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
   const { setViewport, screenToFlowPosition } = useReactFlow();
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  const language = settings?.language || defaultLanguage;
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   // Apply viewport from settings on mount or when settings change
   useEffect(() => {
@@ -173,9 +168,9 @@ export const EditorCanvas = memo(({ defaultLanguage = "en" }: EditorCanvasProps)
           </ControlButton>
         </Controls>
         {selectedNodeIds.length > 1 && <MultiNodePanel />}
-        <EditorPanel defaultLanguage={defaultLanguage} />
-        <EdgePanel defaultLanguage={defaultLanguage} />
-        <SettingsPanel defaultLanguage={defaultLanguage} />
+        <EditorPanel />
+        <EdgePanel />
+        <SettingsPanel />
       </ReactFlow>
     </div>
   );

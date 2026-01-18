@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { X, Link2, Check } from "lucide-react";
-import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 import { useJsonStore } from "./useJsonStore";
 
@@ -11,11 +10,10 @@ export function ShareDialog() {
   // Get state from store
   const open = useEditorStore(state => state.shareDialogOpen);
   const shareLink = useEditorStore(state => state.shareLink);
-  const settings = useEditorStore(state => state.settings);
   const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
-  const language = settings?.language || "en";
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   const onClose = () => setShareDialogOpen(false);
 

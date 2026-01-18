@@ -1,6 +1,5 @@
 import React from "react";
 import { X, Download, AlertTriangle } from "lucide-react";
-import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 
 interface LoadExternalDialogProps {
@@ -16,10 +15,9 @@ export function LoadExternalDialog({
 }: LoadExternalDialogProps) {
   // Get state from store
   const open = useEditorStore(state => state.loadExternalDialogOpen);
-  const settings = useEditorStore(state => state.settings);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
   
-  const language = settings?.language || "en";
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   if (!open) return null;
 

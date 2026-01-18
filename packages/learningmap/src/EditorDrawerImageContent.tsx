@@ -1,11 +1,10 @@
 import { Node } from "@xyflow/react";
 import { ImageNodeData } from "./types";
-import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
 
 interface Props {
   localNode: Node<ImageNodeData>;
   handleFieldChange: (field: string, value: any) => void;
-  language?: string;
 }
 
 /**
@@ -86,8 +85,9 @@ async function compressImage(
   });
 }
 
-export function EditorDrawerImageContent({ localNode, handleFieldChange, language = "en" }: Props) {
-  const t = getTranslations(language);
+export function EditorDrawerImageContent({ localNode, handleFieldChange }: Props) {
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
+  const t = getTranslationsFromStore();
 
   // Convert file to base64 with compression
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

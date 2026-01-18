@@ -11,6 +11,15 @@ This is work in progress! If you have any questions, please open an issue or rea
 
 Go to [learningmap.app](https://learningmap.app) to create your own learning maps!
 
+## For Teachers & Students
+
+The web platform at [learningmap.app](https://learningmap.app) is designed for two primary audiences:
+
+- **Teachers**: Create and manage learning maps, share them with students via shareable links
+- **Students**: Access shared learning maps, track progress, and work through topics at their own pace
+
+Both teacher and student data is stored locally in your browser using IndexedDB, ensuring privacy and offline access.
+
 ## How are these docs structured?
 
 These docs are focused on developers, and structured the following way:

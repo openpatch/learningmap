@@ -3,7 +3,6 @@ import { useReactFlow } from "@xyflow/react";
 import { useEditorStore, useTemporalStore } from "./editorStore";
 import { Node } from "@xyflow/react";
 import { NodeData, KeyBindings, KeyBinding } from "./types";
-import { getTranslations } from "./translations";
 
 interface KeyboardShortcutsProps {
   jsonStore?: string;
@@ -62,7 +61,6 @@ export const KeyboardShortcuts = ({
   const selectedEdge = useEditorStore(state => state.selectedEdge);
   const nodes = useEditorStore(state => state.nodes);
   const lastMousePosition = useEditorStore(state => state.lastMousePosition);
-  const settings = useEditorStore(state => state.settings);
 
   // Get store actions
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
@@ -84,9 +82,9 @@ export const KeyboardShortcuts = ({
   const drawerOpen = useEditorStore(state => state.drawerOpen);
   const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
   const settingsDrawerOpen = useEditorStore(state => state.settingsDrawerOpen);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
-  const language = settings?.language || "en";
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   // Temporal store for undo/redo
   const { undo, redo } = useTemporalStore((state) => ({

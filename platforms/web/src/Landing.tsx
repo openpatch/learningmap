@@ -40,13 +40,16 @@ function Landing() {
       {/* Header */}
       <header className="landing-header">
         <div className="header-content">
-          <div className="logo-section">
+          <div className="logo-section" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <img src={logo} alt="LearningMap Logo" className="logo" />
             <span className="logo-text">Learningmap</span>
           </div>
           <nav className="nav-links">
+            <button onClick={() => navigate('/teach')} className="nav-button">
+              For Teachers
+            </button>
             <button onClick={() => navigate('/learn')} className="nav-button">
-              My Maps
+              For Students
             </button>
           </nav>
         </div>
@@ -60,15 +63,25 @@ function Landing() {
         <p className="hero-subtitle">
           All stored locally in your browser—ensuring privacy and offline access.
         </p>
-        <div className="cta-buttons">
-          <button onClick={() => navigate('/create')} className="cta-primary">
-            Create a LearningMap
+      </section>
+
+      {/* Role Selection */}
+      <section className="role-section">
+        <div className="role-card">
+          <div className="role-icon">👩‍🏫</div>
+          <h3>I'm a Teacher</h3>
+          <p>Create learning maps and share them with your students. Manage your collection and track what you've built.</p>
+          <button onClick={() => navigate('/teach')} className="role-button role-button-primary">
+            Go to My Maps
           </button>
-          {/*
-          <button onClick={() => navigate('/learn')} className="cta-secondary">
-            Explore LearningMaps
+        </div>
+        <div className="role-card">
+          <div className="role-icon">👨‍🎓</div>
+          <h3>I'm a Student</h3>
+          <p>Access learning maps shared by your teachers. Track your progress and work through topics at your own pace.</p>
+          <button onClick={() => navigate('/learn')} className="role-button role-button-secondary">
+            Go to My Learning
           </button>
-          */}
         </div>
       </section>
 

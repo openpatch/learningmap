@@ -1,13 +1,11 @@
 import { useCallback } from "react";
 import { useEditorStore } from "./editorStore";
-import { getTranslations } from "./translations";
 
 export const useJsonStore = () => {
   const jsonStore = useEditorStore((state) => state.jsonStore);
   const getRoadmapData = useEditorStore((state) => state.getRoadmapData);
-  const language = useEditorStore((state) => state.settings.language);
-  const defaultLanguage = useEditorStore((state) => state.defaultLanguage);
-  const t = getTranslations(language || defaultLanguage);
+  const getTranslationsFromStore = useEditorStore((state) => state.getTranslations);
+  const t = getTranslationsFromStore();
   const setShareLink = useEditorStore((state) => state.setShareLink);
   const setShareDialogOpen = useEditorStore(
     (state) => state.setShareDialogOpen,

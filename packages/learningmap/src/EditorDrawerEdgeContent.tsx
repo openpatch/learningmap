@@ -1,19 +1,18 @@
 import { ColorSelector } from "./ColorSelector";
 import { Edge } from "@xyflow/react";
-import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
 
 interface Props {
   localEdge: Edge;
   handleFieldChange: (field: string, value: any) => void;
-  language?: string;
 }
 
 export function EditorDrawerEdgeContent({
   localEdge,
   handleFieldChange,
-  language = "en",
 }: Props) {
-  const t = getTranslations(language);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
+  const t = getTranslationsFromStore();
   
   return (
     <div className="panel-content">

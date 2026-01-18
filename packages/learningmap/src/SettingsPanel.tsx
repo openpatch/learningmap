@@ -3,17 +3,10 @@ import { X, Trash2, RefreshCw } from "lucide-react";
 import { Panel, useReactFlow } from "@xyflow/react";
 import { Settings } from "./types";
 import { ColorSelector } from "./ColorSelector";
-import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 import { generateRandomId } from "./helper";
 
-interface SettingsPanelProps {
-  defaultLanguage?: string;
-}
-
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({
-  defaultLanguage = "en",
-}) => {
+export const SettingsPanel: React.FC = () => {
   // Get state from store
   const isOpen = useEditorStore(state => state.settingsDrawerOpen);
   const settings = useEditorStore(state => state.settings);
@@ -23,9 +16,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   // Get actions from store
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
   const setSettings = useEditorStore(state => state.setSettings);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
-  const language = settings?.language || defaultLanguage;
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   const { getViewport } = useReactFlow();
 
@@ -87,9 +80,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <div className="form-group">
             <label>{t.languageLabel}</label>
             <select
-              value={settings?.language || "en"}
+              value={settings?.language || "auto"}
               onChange={(e) => handleFieldChange({ language: e.target.value })}
             >
+              <option value="auto">{t.languageAuto}</option>
               <option value="en">{t.languageEnglish}</option>
               <option value="de">{t.languageGerman}</option>
             </select>

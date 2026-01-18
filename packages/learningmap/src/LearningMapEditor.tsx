@@ -9,6 +9,7 @@ import { WelcomeMessage } from "./WelcomeMessage";
 import { EditorCanvas } from "./EditorCanvas";
 import { EditorDialogs } from "./EditorDialogs";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
+import { detectBrowserLanguage } from "./translations";
 import { useEffect } from "react";
 
 export interface LearningMapEditorProps {
@@ -23,7 +24,7 @@ export interface LearningMapEditorProps {
 
 export function LearningMapEditor({
   roadmapData,
-  language = "en",
+  language,
   jsonStore = "https://json.openpatch.org",
   disableSharing = false,
   disableFileOperations = false,
@@ -41,9 +42,14 @@ export function LearningMapEditor({
   const setJsonStore = useEditorStore(state => state.setJsonStore);
   const setDefaultLanguage = useEditorStore(state => state.setDefaultLanguage);
   const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
+  const setSettings = useEditorStore(state => state.setSettings);
 
-  // Use language from settings if available, otherwise use prop
-  const effectiveLanguage = settings?.language || language;
+  // Initialize settings with "auto" as default language if not set
+  useEffect(() => {
+    if (!settings?.language) {
+      setSettings({ ...settings, language: "auto" });
+    }
+  }, [settings, setSettings]);
 
   useEffect(() => {
     setPersistence(!disablePersist);
@@ -51,7 +57,9 @@ export function LearningMapEditor({
 
   useEffect(() => {
     setJsonStore(jsonStore);
-    setDefaultLanguage(language);
+    // Set default language from prop or browser detection
+    const defaultLang = language && language !== "auto" ? language : detectBrowserLanguage();
+    setDefaultLanguage(defaultLang);
   }, [jsonStore, language, setJsonStore, setDefaultLanguage]);
 
   useEffect(() => {
@@ -76,19 +84,19 @@ export function LearningMapEditor({
       <KeyboardShortcuts jsonStore={jsonStore} keyBindings={keyBindings} />
 
       {/* Toolbar */}
-      <EditorToolbar defaultLanguage={language} disableSharing={disableSharing} disableFileOperations={disableFileOperations} />
+      <EditorToolbar disableSharing={disableSharing} disableFileOperations={disableFileOperations} />
 
       {/* Preview or Edit mode */}
-      {previewMode && <LearningMap roadmapData={getRoadmapData()} language={effectiveLanguage} />}
+      {previewMode && <LearningMap roadmapData={getRoadmapData()} />}
       {!previewMode && <>
         {/* Welcome message when empty */}
-        {nodes.length === 0 && edges.length === 0 && <WelcomeMessage defaultLanguage={language} />}
+        {nodes.length === 0 && edges.length === 0 && <WelcomeMessage />}
 
         {/* Main canvas */}
-        <EditorCanvas defaultLanguage={language} />
+        <EditorCanvas />
 
         {/* Dialogs */}
-        <EditorDialogs defaultLanguage={language} jsonStore={jsonStore} />
+        <EditorDialogs jsonStore={jsonStore} />
       </>}
     </>
   );

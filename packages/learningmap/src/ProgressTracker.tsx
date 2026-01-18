@@ -1,9 +1,10 @@
 import { CheckCircle } from "lucide-react";
 import StarCircle from "./icons/StarCircle";
-import { getTranslations } from "./translations";
+import { useViewerStore } from "./viewerStore";
 
-export const ProgressTracker = ({ completed, mastered, total, language = "en" }: { completed: number; mastered: number; total: number; language?: string }) => {
-  const t = getTranslations(language);
+export const ProgressTracker = ({ completed, mastered, total }: { completed: number; mastered: number; total: number }) => {
+  const getTranslationsFromStore = useViewerStore(state => state.getTranslations);
+  const t = getTranslationsFromStore();
   const progress = total > 0 ? (completed / total) * 100 : 0;
 
   return (

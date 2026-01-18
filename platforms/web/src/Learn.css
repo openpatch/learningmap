@@ -11,30 +11,34 @@
   width: 100%;
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
-  padding: 12px 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.toolbar-inner {
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 10;
-  box-sizing: border-box;
 }
 
 .toolbar-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .toolbar-logo {
-  height: 32px;
-  width: 32px;
+  height: 40px;
+  width: 40px;
 }
 
 .toolbar-title {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 400;
-  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
 }
 
 .toolbar-right {

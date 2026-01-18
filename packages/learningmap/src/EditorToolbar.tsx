@@ -1,7 +1,6 @@
 import React from "react";
 import { Menu, MenuButton, MenuDivider, MenuItem, SubMenu } from "@szhsin/react-menu";
 import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2, RotateCcw } from "lucide-react";
-import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 import { Node, useReactFlow } from "@xyflow/react";
 import { NodeData } from "./types";
@@ -10,20 +9,17 @@ import { useFileOperations } from "./useFileOperations";
 import { getZIndexForNodeType } from "./zIndexHelper";
 
 interface EditorToolbarProps {
-  defaultLanguage?: string;
   disableSharing?: boolean;
   disableFileOperations?: boolean;
 }
 
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
-  defaultLanguage = "en",
   disableSharing = false,
   disableFileOperations = false,
 }) => {
   const { screenToFlowPosition } = useReactFlow();
 
   // Get state directly from store
-  const settings = useEditorStore(state => state.settings);
   const debugMode = useEditorStore(state => state.debugMode);
   const previewMode = useEditorStore(state => state.previewMode);
   const showCompletionNeeds = useEditorStore(state => state.showCompletionNeeds);
@@ -43,12 +39,12 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const reset = useEditorStore(state => state.reset);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
   const [_, postToJsonStore] = useJsonStore();
   const { downloadRoadmap, openRoadmap } = useFileOperations();
 
-  const language = settings?.language || defaultLanguage;
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   const onToggleDebugMode = () => setDebugMode(!debugMode);
   const onTogglePreviewMode = () => setPreviewMode(!previewMode);

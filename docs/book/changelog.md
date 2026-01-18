@@ -13,6 +13,27 @@ If you need a new feature, open an [issue](https://github.com/openpatch/learning
 
 :::
 
+## v0.5.0
+
+::::tabs
+
+:::tab{title="New :rocket:" id="new"}
+
+- Add "Auto" language detection option in settings
+- Add `getLanguage()` and `getTranslations()` methods to editor store
+
+:::
+
+:::tab{title="Improved :+1:" id="improved"}
+
+- Default language is now "auto" which detects browser language automatically
+- Better internationalization support with improved language selection logic
+- Simplified translation access throughout components via store methods
+
+:::
+
+::::
+
 ## v0.3.1
 
 ::::tabs

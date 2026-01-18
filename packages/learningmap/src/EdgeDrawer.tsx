@@ -2,29 +2,21 @@ import React from "react";
 import { X, Trash2, Save } from "lucide-react";
 import { Edge } from "@xyflow/react";
 import { EditorDrawerEdgeContent } from "./EditorDrawerEdgeContent";
-import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 
-interface EdgeDrawerProps {
-  defaultLanguage?: string;
-}
-
-export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
-  defaultLanguage = "en",
-}) => {
+export const EdgeDrawer: React.FC = () => {
   // Get edge and drawer state from store
   const selectedEdge = useEditorStore(state => state.selectedEdge);
   const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
-  const settings = useEditorStore(state => state.settings);
 
   // Get actions from store
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const updateEdge = useEditorStore(state => state.updateEdge);
   const deleteEdge = useEditorStore(state => state.deleteEdge);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
-  const language = settings?.language || defaultLanguage;
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   const closeDrawer = () => {
     setEdgeDrawerOpen(false);
@@ -69,7 +61,6 @@ export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
             }
             onUpdate(updated);
           }}
-          language={language}
         />
         <div className="drawer-footer">
           <button onClick={onDelete} className="danger-button">

@@ -3,18 +3,15 @@ import { X } from "lucide-react";
 import { useEditorStore } from "./editorStore";
 import { ShareDialog } from "./ShareDialog";
 import { LoadExternalDialog } from "./LoadExternalDialog";
-import { getTranslations } from "./translations";
 import { useJsonStore } from "./useJsonStore";
 import { useFileOperations } from "./useFileOperations";
 
 interface EditorDialogsProps {
-  defaultLanguage?: string;
   jsonStore?: string;
 }
 
-export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https://json.openpatch.org" }: EditorDialogsProps) => {
+export const EditorDialogs = memo(({ jsonStore = "https://json.openpatch.org" }: EditorDialogsProps) => {
   // Get state from store
-  const settings = useEditorStore(state => state.settings);
   const helpOpen = useEditorStore(state => state.helpOpen);
   const pendingExternalId = useEditorStore(state => state.pendingExternalId);
   const [getFromJsonStore] = useJsonStore();
@@ -24,11 +21,11 @@ export const EditorDialogs = memo(({ defaultLanguage = "en", jsonStore = "https:
   const setShareDialogOpen = useEditorStore(state => state.setShareDialogOpen);
   const setLoadExternalDialogOpen = useEditorStore(state => state.setLoadExternalDialogOpen);
   const setPendingExternalId = useEditorStore(state => state.setPendingExternalId);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
   const { downloadRoadmap } = useFileOperations();
 
-  const language = settings?.language || defaultLanguage;
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   useEffect(() => {
     // https://www.learningmap.app/#json=PjYfAMWXls8ipRsLrpt7t

@@ -4,6 +4,16 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    watch: {
+      // Watch for changes in the learningmap package source files
+      ignored: ['!**/node_modules/@learningmap/**', '!**/packages/learningmap/src/**'],
+    },
+  },
+  optimizeDeps: {
+    // Force Vite to re-optimize when learningmap package changes
+    exclude: ['@learningmap/learningmap'],
+  },
   plugins: [
     react(),
     VitePWA({

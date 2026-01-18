@@ -12,6 +12,8 @@ explore learning pathways. It is developed by
 ## Platforms
 
 - **Web App**: Create and share learningmaps at [learningmap.app](https://learningmap.app)
+  - **For Teachers**: Create, manage, and share learning maps with students
+  - **For Students**: Access shared maps, track progress, and learn at your own pace
 - **VS Code Extension**: Edit `.learningmap` files locally in VS Code (see [platforms/vscode](platforms/vscode))
 - **React Component**: Integrate learningmap into your own React app (see [packages/learningmap](packages/learningmap))
 - **Web Component**: Use learningmap in any web application (see [packages/web-component](packages/web-component))

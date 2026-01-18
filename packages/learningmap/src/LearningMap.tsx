@@ -9,6 +9,7 @@ import { parseRoadmapData } from "./helper";
 import { Drawer } from "./Drawer";
 import { ProgressTracker } from "./ProgressTracker";
 import { useViewerStore } from "./viewerStore";
+import { detectBrowserLanguage } from "./translations";
 
 const nodeTypes = {
   topic: TopicNode,
@@ -50,7 +51,7 @@ export interface LearningMapProps {
 export function LearningMap({
   roadmapData,
   onChange,
-  language = "en",
+  language,
   initialState
 }: LearningMapProps) {
   // Use Zustand store
@@ -65,15 +66,19 @@ export function LearningMap({
   const loadRoadmapData = useViewerStore(state => state.loadRoadmapData);
   const getRoadmapState = useViewerStore(state => state.getRoadmapState);
   const updateNodeState = useViewerStore(state => state.updateNodeState);
+  const setDefaultLanguage = useViewerStore(state => state.setDefaultLanguage);
 
   const { fitView, getViewport } = useReactFlow();
-
-  // Use language from settings if available, otherwise use prop
-  const effectiveLanguage = settings?.language || language;
 
   const { completed, mastered, total } = countCompletedNodes(nodes);
 
   const parsedRoadmap = parseRoadmapData(roadmapData);
+
+  // Set default language from prop or browser detection
+  useEffect(() => {
+    const defaultLang = language && language !== "auto" ? language : detectBrowserLanguage();
+    setDefaultLanguage(defaultLang);
+  }, [language, setDefaultLanguage]);
 
   useEffect(() => {
     loadRoadmapData(parsedRoadmap, initialState);
@@ -181,11 +186,11 @@ export function LearningMap({
           </Panel>
         )}
         <Panel position="top-center" className="progress-panel">
-          <ProgressTracker completed={completed} total={total} mastered={mastered} language={effectiveLanguage} />
+          <ProgressTracker completed={completed} total={total} mastered={mastered} />
         </Panel>
         <Controls showInteractive={false} />
       </ReactFlow>
-      <Drawer node={selectedNode} open={drawerOpen} onClose={closeDrawer} onUpdate={updateNode} nodes={nodes} onNodeClick={onNodeClick} language={effectiveLanguage} />
+      <Drawer node={selectedNode} open={drawerOpen} onClose={closeDrawer} onUpdate={updateNode} nodes={nodes} onNodeClick={onNodeClick} />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { Node } from "@xyflow/react";
 import { Plus, Trash2 } from "lucide-react";
 import { NodeData, Resource } from "./types";
-import { getTranslations } from "./translations";
+import { useEditorStore } from "./editorStore";
 import { FONT_SIZE_VALUES, getFontSizeOption, FontSizeOption } from "./fontSizes";
 
 interface Props {
@@ -20,7 +20,6 @@ interface Props {
   handleCompletionOptionalChange: (idx: number, id: string) => void;
   addCompletionOptional: () => void;
   removeCompletionOptional: (idx: number) => void;
-  language?: string;
 }
 
 export function EditorDrawerTaskContent({
@@ -39,9 +38,9 @@ export function EditorDrawerTaskContent({
   handleCompletionOptionalChange,
   addCompletionOptional,
   removeCompletionOptional,
-  language = "en",
 }: Props) {
-  const t = getTranslations(language);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
+  const t = getTranslationsFromStore();
   
   // Color options for the dropdown
   const colorOptions = [

@@ -20,8 +20,6 @@ body {
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -349,6 +347,82 @@ body {
   border-radius: 2px;
 }
 
+/* Role Selection Section */
+.role-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.role-card {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.role-card:hover {
+  border-color: var(--learningmap-color-openpatch, #007864);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.role-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.role-card h3 {
+  font-size: 1.5rem;
+  color: #1a1a1a;
+  margin: 0 0 0.75rem 0;
+}
+
+.role-card p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+.role-button {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.role-button-primary {
+  background-color: var(--learningmap-color-openpatch, #007864);
+  color: white;
+}
+
+.role-button-primary:hover {
+  background-color: var(--learningmap-color-dark-forest, #004c45);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 120, 100, 0.3);
+}
+
+.role-button-secondary {
+  background-color: white;
+  color: var(--learningmap-color-openpatch, #007864);
+  border: 2px solid var(--learningmap-color-openpatch, #007864);
+}
+
+.role-button-secondary:hover {
+  background-color: var(--learningmap-color-freshmint, #b5e3d8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 120, 100, 0.2);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-title {
@@ -387,6 +461,10 @@ body {
 
   .logo-text {
     font-size: 1.25rem;
+  }
+
+  .role-section {
+    grid-template-columns: 1fr;
   }
 }
 

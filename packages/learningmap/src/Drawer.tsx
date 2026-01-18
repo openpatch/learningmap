@@ -3,7 +3,7 @@ import { NodeData, Resource } from "./types";
 import { X, Lock, CheckCircle } from "lucide-react";
 import { Video } from "./Video";
 import StarCircle from "./icons/StarCircle";
-import { getTranslations } from "./translations";
+import { useViewerStore } from "./viewerStore";
 import { marked } from "marked";
 import { useMemo } from "react";
 import DOMPurify from "dompurify";
@@ -15,7 +15,6 @@ interface DrawerProps {
   node: Node<NodeData>;
   nodes: Node<NodeData>[];
   onNodeClick: (_: any, node: Node<NodeData>, focus: boolean) => void;
-  language?: string;
 }
 
 function getUnlockConditions(node: Node<NodeData>, nodes: Node<NodeData>[]): Node<NodeData>[] {
@@ -74,8 +73,9 @@ function getCompletionOptional(node: Node<NodeData>, nodes: Node<NodeData>[]): N
   return unmetOptional;
 }
 
-export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick, language = "en" }: DrawerProps) {
-  const t = getTranslations(language);
+export function Drawer({ open, onClose, onUpdate, node, nodes, onNodeClick }: DrawerProps) {
+  const getTranslationsFromStore = useViewerStore(state => state.getTranslations);
+  const t = getTranslationsFromStore();
 
   // Parse markdown description and sanitize HTML
   const descriptionHtml = useMemo(() => {

@@ -1,28 +1,20 @@
 import React from "react";
 import { FolderOpen, Plus, Info } from "lucide-react";
-import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 import { Node } from "@xyflow/react";
 import { NodeData } from "./types";
 import logo from "./logo.svg";
 import { useFileOperations } from "./useFileOperations";
 
-interface WelcomeMessageProps {
-  defaultLanguage?: string;
-}
-
-export const WelcomeMessage: React.FC<WelcomeMessageProps> = ({
-  defaultLanguage = "en",
-}) => {
+export const WelcomeMessage: React.FC = () => {
   // Get state and actions from store
-  const settings = useEditorStore(state => state.settings);
   const addNode = useEditorStore(state => state.addNode);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
   const { openRoadmap } = useFileOperations();
 
-  const language = settings?.language || defaultLanguage;
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   const onAddTopic = () => {
     const position = { x: window.innerWidth / 2, y: window.innerHeight / 2 };

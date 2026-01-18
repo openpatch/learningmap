@@ -6,7 +6,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
-    "dev": "node scripts/watcher.mjs",
+    "dev": "pnpm --parallel -r dev",
     "build": "pnpm -r build",
     "test": "CI=true pnpm -r test",
     "lint": "pnpm -r lint",

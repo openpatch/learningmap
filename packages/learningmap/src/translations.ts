@@ -184,6 +184,7 @@ export interface Translations {
 
   // Language settings
   languageLabel: string;
+  languageAuto: string;
   languageEnglish: string;
   languageGerman: string;
 
@@ -407,6 +408,7 @@ const en: Translations = {
 
   // Language settings
   languageLabel: "Language",
+  languageAuto: "Auto (detect from browser)",
   languageEnglish: "English",
   languageGerman: "German",
 
@@ -633,6 +635,7 @@ const de: Translations = {
 
   // Language settings
   languageLabel: "Sprache",
+  languageAuto: "Automatisch (aus Browser erkennen)",
   languageEnglish: "Englisch",
   languageGerman: "Deutsch",
 
@@ -670,6 +673,42 @@ export const translations: Record<string, Translations> = {
   en,
   de,
 };
+
+/**
+ * Detects the user's browser language and returns a supported language code.
+ * Falls back to 'en' if the browser language is not supported.
+ */
+export function detectBrowserLanguage(): string {
+  if (typeof window === 'undefined' || !window.navigator) {
+    return 'en';
+  }
+
+  // Get browser language (e.g., 'en-US', 'de-DE', 'de')
+  const browserLang = window.navigator.language || (window.navigator as any).userLanguage;
+  
+  if (!browserLang) {
+    return 'en';
+  }
+
+  // Extract the base language code (e.g., 'en' from 'en-US')
+  const baseLang = browserLang.split('-')[0].toLowerCase();
+
+  // Check if the base language is supported
+  if (translations[baseLang]) {
+    return baseLang;
+  }
+
+  // Fallback to English
+  return 'en';
+}
+
+export function getLanguage(explicitLanguage?: string, storageKey: string = 'learningmap-language'): string {
+  if (explicitLanguage && explicitLanguage !== "auto" && translations[explicitLanguage]) {
+    return explicitLanguage;
+  }
+
+  return detectBrowserLanguage();
+}
 
 export function getTranslations(language: string = "en"): Translations {
   return translations[language] || translations.en;

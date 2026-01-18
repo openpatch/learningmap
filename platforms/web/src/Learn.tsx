@@ -247,14 +247,22 @@ function Learn() {
     return (
       <div className="learn-container">
         <div className="learn-toolbar">
-          <div className="toolbar-left">
-            <img src={logo} alt="Logo" className="toolbar-logo" />
-            <h1 className="toolbar-title">Learningmap</h1>
-          </div>
-          <div className="toolbar-right">
-            <button onClick={() => navigate('/learn')} className="toolbar-button">
-              My Learningmaps
-            </button>
+          <div className="toolbar-inner">
+            <div className="toolbar-left">
+              <img 
+                src={logo} 
+                alt="Logo" 
+                className="toolbar-logo" 
+                onClick={() => navigate('/')}
+                style={{ cursor: 'pointer' }}
+              />
+              <h1 className="toolbar-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Learningmap</h1>
+            </div>
+            <div className="toolbar-right">
+              <button onClick={() => navigate('/learn')} className="toolbar-button">
+                My Learningmaps
+              </button>
+            </div>
           </div>
         </div>
         <LearningMap
@@ -270,9 +278,17 @@ function Learn() {
   return (
     <div className="learn-list-container">
       <div className="learn-toolbar">
-        <div className="toolbar-left">
-          <img src={logo} alt="Logo" className="toolbar-logo" />
-          <h1 className="toolbar-title">Learningmap</h1>
+        <div className="toolbar-inner">
+          <div className="toolbar-left">
+            <img 
+              src={logo} 
+              alt="Logo" 
+              className="toolbar-logo" 
+              onClick={() => navigate('/')}
+              style={{ cursor: 'pointer' }}
+            />
+            <h1 className="toolbar-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Learningmap</h1>
+          </div>
         </div>
       </div>
       

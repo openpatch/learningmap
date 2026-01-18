@@ -2,20 +2,12 @@ import React, { useEffect } from "react";
 import { X, Trash2 } from "lucide-react";
 import { Edge, Panel } from "@xyflow/react";
 import { EditorDrawerEdgeContent } from "./EditorDrawerEdgeContent";
-import { getTranslations } from "./translations";
 import { useEditorStore } from "./editorStore";
 
-interface EdgePanelProps {
-  defaultLanguage?: string;
-}
-
-export const EdgePanel: React.FC<EdgePanelProps> = ({
-  defaultLanguage = "en",
-}) => {
+export const EdgePanel: React.FC = () => {
   // Get edge and drawer state from store
   const selectedEdge = useEditorStore(state => state.selectedEdge);
   const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
-  const settings = useEditorStore(state => state.settings);
   const edges = useEditorStore(state => state.edges);
 
   // Get actions from store
@@ -23,9 +15,9 @@ export const EdgePanel: React.FC<EdgePanelProps> = ({
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const updateEdge = useEditorStore(state => state.updateEdge);
   const deleteEdge = useEditorStore(state => state.deleteEdge);
+  const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
-  const language = settings?.language || defaultLanguage;
-  const t = getTranslations(language);
+  const t = getTranslationsFromStore();
 
   // Close panel when edge gets deselected
   useEffect(() => {
@@ -77,7 +69,6 @@ export const EdgePanel: React.FC<EdgePanelProps> = ({
             }
             onUpdate(updated);
           }}
-          language={language}
         />
         <div className="panel-footer panel-footer-centered">
           <button onClick={onDelete} className="danger-button">

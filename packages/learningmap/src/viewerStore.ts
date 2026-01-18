@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Node, Edge, applyNodeChanges, NodeChange } from '@xyflow/react';
 import { NodeData, RoadmapData, RoadmapState, Settings } from './types';
+import { getTranslations, detectBrowserLanguage, Translations } from './translations';
 
 // Note: This is a global store. If you need multiple independent LearningMap instances
 // on the same page, consider creating store instances per component or using context.
@@ -9,6 +10,9 @@ export interface ViewerState {
   nodes: Node<NodeData>[];
   edges: Edge[];
   settings: Settings;
+  
+  // Default language (from prop or browser detection)
+  defaultLanguage?: string;
   
   // UI state
   selectedNode: Node<NodeData> | null;
@@ -19,6 +23,7 @@ export interface ViewerState {
   setNodes: (nodes: Node<NodeData>[]) => void;
   setEdges: (edges: Edge[]) => void;
   setSettings: (settings: Settings) => void;
+  setDefaultLanguage: (defaultLanguage: string) => void;
   updateNodeState: (nodeId: string, state: string) => void;
   setSelectedNode: (node: Node<NodeData> | null) => void;
   setDrawerOpen: (drawerOpen: boolean) => void;
@@ -27,6 +32,10 @@ export interface ViewerState {
   loadRoadmapData: (roadmapData: RoadmapData, initialState?: RoadmapState) => void;
   getRoadmapState: (viewport: { x: number; y: number; zoom: number }) => RoadmapState;
   updateNodesStates: () => void;
+
+  // Computed getters
+  getLanguage: () => string;
+  getTranslations: () => Translations;
 }
 
 const getStateMap = (nodes: Node<NodeData>[]) => {
@@ -146,6 +155,10 @@ export const useViewerStore = create<ViewerState>()((set, get) => ({
     set({ settings });
   },
 
+  setDefaultLanguage: (defaultLanguage) => {
+    set({ defaultLanguage });
+  },
+
   updateNodeState: (nodeId, state) => {
     const updatedNodes = get().nodes.map((n) =>
       n.id === nodeId ? { ...n, data: { ...n.data, state } } : n
@@ -211,5 +224,21 @@ export const useViewerStore = create<ViewerState>()((set, get) => ({
   updateNodesStates: () => {
     const updatedNodes = calculateNodesStates(get().nodes);
     set({ nodes: updatedNodes });
+  },
+
+  getLanguage: () => {
+    const state = get();
+    const settingsLang = state.settings?.language;
+    if (settingsLang && settingsLang !== "auto") {
+      return settingsLang;
+    }
+    if (state.defaultLanguage) {
+      return state.defaultLanguage;
+    }
+    return detectBrowserLanguage();
+  },
+
+  getTranslations: () => {
+    return getTranslations(get().getLanguage());
   },
 }));
