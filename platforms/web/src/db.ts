@@ -122,6 +122,12 @@ export async function getAllTeacherMaps(): Promise<TeacherMapEntry[]> {
   return allMaps.reverse(); // Most recent first
 }
 
+export async function findTeacherMapBySettingsId(settingsId: string): Promise<TeacherMapEntry | undefined> {
+  const db = await getDB();
+  const allMaps = await db.getAll('teacherMaps');
+  return allMaps.find(map => map.roadmapData.settings?.id === settingsId);
+}
+
 export async function removeTeacherMap(id: string) {
   const db = await getDB();
   await db.delete('teacherMaps', id);

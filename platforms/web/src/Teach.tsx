@@ -84,19 +84,21 @@ function Teach() {
         }
 
         const roadmapData = await response.json();
-        const storageId = roadmapData.settings?.id || jsonId;
+        const settingsId = roadmapData.settings?.id || jsonId;
         
-        // Check if map already exists
-        const existingMap = await db.getTeacherMap(storageId);
+        // Check if a map with the same settings.id already exists
+        const existingMap = await db.findTeacherMapBySettingsId(settingsId);
         if (existingMap) {
           // Show conflict dialog
-          setConflictData({ storageId, roadmapData, jsonId, existingMap });
+          setConflictData({ storageId: existingMap.id, roadmapData, jsonId, existingMap });
           setShowConflictDialog(true);
           setLoading(false);
           return;
         }
         
-        await db.addTeacherMap(storageId, roadmapData, jsonId);
+        // Generate a unique database ID
+        const dbId = `map-${Date.now()}`;
+        await db.addTeacherMap(dbId, roadmapData, jsonId);
         const maps = await db.getAllTeacherMaps();
         setAllMaps(maps);
         setNewMapUrl('');
@@ -123,20 +125,20 @@ function Teach() {
         const content = e.target?.result as string;
         const json = JSON.parse(content);
         
-        // Generate a unique ID for this uploaded map
-        const uploadId = `upload-${Date.now()}`;
-        const storageId = json.settings?.id || uploadId;
+        const settingsId = json.settings?.id;
         
-        // Check if map already exists
-        const existingMap = await db.getTeacherMap(storageId);
+        // Check if a map with the same settings.id already exists
+        const existingMap = settingsId ? await db.findTeacherMapBySettingsId(settingsId) : undefined;
         if (existingMap) {
           // Show conflict dialog
-          setConflictData({ storageId, roadmapData: json, existingMap });
+          setConflictData({ storageId: existingMap.id, roadmapData: json, existingMap });
           setShowConflictDialog(true);
           return;
         }
         
-        await db.addTeacherMap(storageId, json, undefined);
+        // Generate a unique database ID
+        const dbId = `map-${Date.now()}`;
+        await db.addTeacherMap(dbId, json, undefined);
         const maps = await db.getAllTeacherMaps();
         setAllMaps(maps);
         setShowAddDialog(false);
@@ -158,6 +160,7 @@ function Teach() {
   const handleConflictOverwrite = async () => {
     if (!conflictData) return;
     
+    // Overwrite the existing map (keep same database ID)
     await db.addTeacherMap(conflictData.storageId, conflictData.roadmapData, conflictData.jsonId);
     const maps = await db.getAllTeacherMaps();
     setAllMaps(maps);
@@ -170,19 +173,23 @@ function Teach() {
   const handleConflictNewId = async () => {
     if (!conflictData) return;
     
-    // Generate a new unique ID
-    const newId = `${conflictData.storageId}-${Date.now()}`;
+    // Generate a new unique database ID
+    const newDbId = `map-${Date.now()}`;
+    
+    // Generate a new settings.id to avoid conflicts
+    const currentSettingsId = conflictData.roadmapData.settings?.id || 'map';
+    const newSettingsId = `${currentSettingsId}-${Date.now()}`;
     
     // Update the ID in the roadmap settings
     const updatedRoadmapData = {
       ...conflictData.roadmapData,
       settings: {
         ...conflictData.roadmapData.settings,
-        id: newId,
+        id: newSettingsId,
       },
     };
     
-    await db.addTeacherMap(newId, updatedRoadmapData, conflictData.jsonId);
+    await db.addTeacherMap(newDbId, updatedRoadmapData, conflictData.jsonId);
     const maps = await db.getAllTeacherMaps();
     setAllMaps(maps);
     setNewMapUrl('');

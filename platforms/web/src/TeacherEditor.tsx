@@ -77,25 +77,35 @@ function TeacherEditorInner() {
     saveTimeoutRef.current = window.setTimeout(async () => {
       const roadmapData = getRoadmapData();
       
-      // Generate a storage ID for this map
-      let storageId: string;
+      // Determine the database ID for this map
+      let dbId: string;
       if (mapId) {
-        // Use mapId if available (editing existing map)
-        storageId = roadmapData.settings?.id || mapId;
+        // Editing existing map - use the database ID from URL
+        dbId = mapId;
       } else {
-        // For new maps without mapId, use or create a unique ID
-        storageId = roadmapData.settings?.id || `local-${Date.now()}`;
-        // Update settings with the generated ID if it doesn't have one
-        if (!roadmapData.settings?.id) {
-          roadmapData.settings = { ...roadmapData.settings, id: storageId };
+        // New map - check if we already created a database entry
+        // Look for existing map with matching settings.id
+        const settingsId = roadmapData.settings?.id;
+        const existingMap = settingsId ? await db.findTeacherMapBySettingsId(settingsId) : undefined;
+        
+        if (existingMap) {
+          // Already saved - update existing
+          dbId = existingMap.id;
+        } else {
+          // First save - generate new database ID
+          dbId = `map-${Date.now()}`;
+          // Ensure settings.id is set
+          if (!roadmapData.settings?.id) {
+            roadmapData.settings = { ...roadmapData.settings, id: `map-${Date.now()}` };
+          }
         }
       }
       
       try {
-        // Check if this map exists in teacher's collection
-        const existingMap = await db.getTeacherMap(storageId);
+        // Get existing map to preserve jsonId
+        const existingMap = await db.getTeacherMap(dbId);
         // Save or update the map
-        await db.addTeacherMap(storageId, roadmapData, existingMap?.jsonId || undefined);
+        await db.addTeacherMap(dbId, roadmapData, existingMap?.jsonId || undefined);
       } catch (err) {
         console.error('Failed to auto-save map:', err);
       }
@@ -121,13 +131,28 @@ function TeacherEditorInner() {
         lastSavedRef.current = jsonId;
 
         // Get current roadmap data and save to teacher collection
-        const roadmapData = getRoadmapData();
-        const storageId = roadmapData.settings?.id || jsonId;
+        const saveSharedMap = async () => {
+          const roadmapData = getRoadmapData();
+          const settingsId = roadmapData.settings?.id;
+          
+          // Find existing map by database ID or settings ID
+          let dbId: string;
+          if (mapId) {
+            // Editing existing map - use the database ID from URL
+            dbId = mapId;
+          } else {
+            // New map - look for existing by settings.id
+            const existingMap = settingsId ? await db.findTeacherMapBySettingsId(settingsId) : undefined;
+            dbId = existingMap?.id || `map-${Date.now()}`;
+          }
+          
+          await db.addTeacherMap(dbId, roadmapData, jsonId);
+        };
         
-        db.addTeacherMap(storageId, roadmapData, jsonId);
+        saveSharedMap();
       }
     }
-  }, [shareLink, shareDialogOpen, getRoadmapData]);
+  }, [shareLink, shareDialogOpen, getRoadmapData, mapId]);
 
   return null;
 }
