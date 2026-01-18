@@ -16,6 +16,7 @@ function Learn() {
   const [newMapUrl, setNewMapUrl] = useState('');
   const [currentMap, setCurrentMap] = useState<any>(null);
   const [allMaps, setAllMaps] = useState<any[]>([]);
+  const [showAddDialog, setShowAddDialog] = useState(false);
   const updateTimeoutRef = useRef<number | null>(null);
   
   // Extract json ID from hash
@@ -264,47 +265,77 @@ function Learn() {
   
   return (
     <div className="learn-list-container">
-      <Header />
+      <Header>
+        <button onClick={() => setShowAddDialog(true)} className="toolbar-button">
+          Add Map
+        </button>
+      </Header>
+      
+      {showAddDialog && (
+        <div className="dialog-overlay" onClick={() => setShowAddDialog(false)}>
+          <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+            <div className="dialog-header">
+              <h2>Add a Learning Map</h2>
+              <button 
+                className="dialog-close" 
+                onClick={() => setShowAddDialog(false)}
+                aria-label="Close dialog"
+              >
+                ×
+              </button>
+            </div>
+            <div className="dialog-body">
+              <div className="add-map-form">
+                <input
+                  type="text"
+                  placeholder="Paste learning map URL (e.g., https://learningmap.app/learn/#json=...)"
+                  value={newMapUrl}
+                  onChange={(e) => setNewMapUrl(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleAddMap();
+                    }
+                  }}
+                />
+                <button onClick={handleAddMap}>Add Map</button>
+              </div>
+              {error && <p className="error-message">{error}</p>}
+              <div className="add-map-divider">
+                <span>or</span>
+              </div>
+              <div className="add-map-upload">
+                <label htmlFor="file-upload" className="upload-button">
+                  📁 Upload JSON File
+                </label>
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={handleFileUpload}
+                  style={{ display: 'none' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       <div className="learn-list-content">
-        <div className="add-map-section">
-          <h2>Add a New Learning Map</h2>
-          <div className="add-map-form">
-            <input
-              type="text"
-              placeholder="Paste learning map URL (e.g., https://learningmap.app/learn/#json=...)"
-              value={newMapUrl}
-              onChange={(e) => setNewMapUrl(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handleAddMap();
-                }
-              }}
-            />
-            <button onClick={handleAddMap}>Add Map</button>
-          </div>
-          <div className="add-map-divider">
-            <span>or</span>
-          </div>
-          <div className="add-map-upload">
-            <label htmlFor="file-upload" className="upload-button">
-              Upload Map File
-            </label>
-            <input
-              id="file-upload"
-              type="file"
-              accept=".json,application/json"
-              onChange={handleFileUpload}
-              style={{ display: 'none' }}
-            />
-          </div>
-          {error && <p className="error-message">{error}</p>}
+        <div className="page-header">
+          <h2><span className="page-emoji">👨‍🎓</span> My Learning Maps</h2>
+          <p className="page-subheading">
+            Track your progress and continue learning at your own pace.
+          </p>
         </div>
         
         {allMaps.length === 0 ? (
           <div className="empty-state">
-            <p>You haven't added any learning maps yet.</p>
-            <p>Paste a learning map URL above to get started!</p>
+            <div className="empty-icon">🗺️</div>
+            <h3>No learning maps yet</h3>
+            <p>Add your first learning map to start your learning journey!</p>
+            <button onClick={() => setShowAddDialog(true)} className="empty-action-button">
+              Add Your First Map
+            </button>
           </div>
         ) : (
           <div className="maps-grid">
@@ -330,6 +361,11 @@ function Learn() {
                   </button>
                 </div>
                 <div className="map-card-body">
+                  <div className="map-stats">
+                    <span className="stat">
+                      📊 {completed} / {total} tasks completed
+                    </span>
+                  </div>
                   <div className="progress-section">
                     <div className="progress-bar">
                       <div
@@ -338,20 +374,19 @@ function Learn() {
                       ></div>
                     </div>
                     <span className="progress-text">
-                      {completed} / {total} completed ({progress}%)
+                      {progress}% complete
                     </span>
                   </div>
                   <div className="map-meta">
                     <span>
-                      Last accessed:{' '}
-                      {new Date(map.lastAccessed).toLocaleDateString()}
+                      Last accessed: {new Date(map.lastAccessed).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
                 <div className="map-card-footer">
                   <button
                     onClick={() => navigate(`/learn#json=${map.id}`)}
-                    className="continue-button"
+                    className="action-button primary-button"
                   >
                     Continue Learning
                   </button>

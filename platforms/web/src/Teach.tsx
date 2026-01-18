@@ -176,7 +176,17 @@ function Teach() {
     
     // Generate a new unique ID
     const newId = `${conflictData.storageId}-${Date.now()}`;
-    await db.addTeacherMap(newId, conflictData.roadmapData, conflictData.jsonId);
+    
+    // Update the ID in the roadmap settings
+    const updatedRoadmapData = {
+      ...conflictData.roadmapData,
+      settings: {
+        ...conflictData.roadmapData.settings,
+        id: newId,
+      },
+    };
+    
+    await db.addTeacherMap(newId, updatedRoadmapData, conflictData.jsonId);
     const maps = await db.getAllTeacherMaps();
     setAllMaps(maps);
     setNewMapUrl('');
@@ -307,19 +317,19 @@ function Teach() {
       )}
       
       <div className="teach-content">
-        <div className="teach-header">
-          <h2>My Created Maps</h2>
-          <p className="teach-description">
+        <div className="page-header">
+          <h2><span className="page-emoji">👩‍🏫</span> My Created Maps</h2>
+          <p className="page-subheading">
             Manage your learning maps. Edit, share with students, or create new ones.
           </p>
         </div>
 
         {allMaps.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📚</div>
+            <div className="empty-icon">📝</div>
             <h3>No learning maps yet</h3>
             <p>Create your first learning map and share it with your students.</p>
-            <button onClick={() => navigate('/create')} className="create-first-button">
+            <button onClick={() => navigate('/create')} className="empty-action-button">
               Create Your First Map
             </button>
           </div>
@@ -356,14 +366,14 @@ function Teach() {
                 <div className="map-card-footer">
                   <button
                     onClick={() => handleEditMap(map)}
-                    className="action-button edit-button"
+                    className="action-button secondary-button"
                   >
                     Edit
                   </button>
                   {map.jsonId ? (
                     <button
                       onClick={() => handleCopyShareLink(map)}
-                      className="action-button share-button"
+                      className="action-button primary-button"
                     >
                       {copiedId === map.id ? '✓ Copied!' : 'Copy Share Link'}
                     </button>
