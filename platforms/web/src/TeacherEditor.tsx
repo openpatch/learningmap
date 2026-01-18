@@ -5,7 +5,6 @@ import "@learningmap/learningmap/index.css";
 import * as db from './db';
 import './TeacherEditor.css';
 import { Header } from './Header';
-import { Footer } from './Footer';
 
 // This component wraps the LearningMapEditor and saves maps to the teacher's collection
 // when they are shared

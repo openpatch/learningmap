@@ -114,7 +114,7 @@ function Teach() {
         const uploadId = `upload-${Date.now()}`;
         const storageId = json.settings?.id || uploadId;
         
-        await db.addTeacherMap(storageId, json, null);
+        await db.addTeacherMap(storageId, json, undefined);
         const maps = await db.getAllTeacherMaps();
         setAllMaps(maps);
         setShowAddDialog(false);
