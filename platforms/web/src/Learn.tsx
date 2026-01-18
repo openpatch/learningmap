@@ -5,7 +5,8 @@ import type { RoadmapState } from '@learningmap/learningmap';
 import '@learningmap/learningmap/index.css';
 import * as db from './db';
 import './Learn.css';
-import logo from './logo.svg';
+import { Header } from './Header';
+import { Footer } from './Footer';
 
 function Learn() {
   const navigate = useNavigate();
@@ -246,25 +247,11 @@ function Learn() {
     
     return (
       <div className="learn-container">
-        <div className="learn-toolbar">
-          <div className="toolbar-inner">
-            <div className="toolbar-left">
-              <img 
-                src={logo} 
-                alt="Logo" 
-                className="toolbar-logo" 
-                onClick={() => navigate('/')}
-                style={{ cursor: 'pointer' }}
-              />
-              <h1 className="toolbar-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Learningmap</h1>
-            </div>
-            <div className="toolbar-right">
-              <button onClick={() => navigate('/learn')} className="toolbar-button">
-                My Learningmaps
-              </button>
-            </div>
-          </div>
-        </div>
+        <Header>
+          <button onClick={() => navigate('/learn')} className="toolbar-button">
+            My Learningmaps
+          </button>
+        </Header>
         <LearningMap
           key={storageKey}
           roadmapData={learningMap.roadmapData}
@@ -277,20 +264,7 @@ function Learn() {
   
   return (
     <div className="learn-list-container">
-      <div className="learn-toolbar">
-        <div className="toolbar-inner">
-          <div className="toolbar-left">
-            <img 
-              src={logo} 
-              alt="Logo" 
-              className="toolbar-logo" 
-              onClick={() => navigate('/')}
-              style={{ cursor: 'pointer' }}
-            />
-            <h1 className="toolbar-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Learningmap</h1>
-          </div>
-        </div>
-      </div>
+      <Header />
       
       <div className="learn-list-content">
         <div className="add-map-section">
@@ -388,6 +362,7 @@ function Learn() {
         </div>
       )}
       </div>
+      <Footer />
     </div>
   );
 }

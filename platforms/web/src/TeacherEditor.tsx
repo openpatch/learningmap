@@ -4,7 +4,8 @@ import { LearningMapEditor, useEditorStore } from '@learningmap/learningmap';
 import "@learningmap/learningmap/index.css";
 import * as db from './db';
 import './TeacherEditor.css';
-import logo from './logo.svg';
+import { Header } from './Header';
+import { Footer } from './Footer';
 
 // This component wraps the LearningMapEditor and saves maps to the teacher's collection
 // when they are shared
@@ -43,25 +44,11 @@ export function TeacherEditor() {
 
   return (
     <div className="teacher-editor-container">
-      <div className="teacher-editor-toolbar">
-        <div className="toolbar-inner">
-          <div className="toolbar-left">
-            <img 
-              src={logo} 
-              alt="Logo" 
-              className="toolbar-logo" 
-              onClick={() => navigate('/')}
-              style={{ cursor: 'pointer' }}
-            />
-            <h1 className="toolbar-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Learningmap</h1>
-          </div>
-          <div className="toolbar-right">
-            <button onClick={() => navigate('/teach')} className="toolbar-button">
-              My Maps
-            </button>
-          </div>
-        </div>
-      </div>
+      <Header>
+        <button onClick={() => navigate('/teach')} className="toolbar-button">
+          My Maps
+        </button>
+      </Header>
       <div className="teacher-editor-content">
         <LearningMapEditor jsonStore="https://json.openpatch.org" />
         <TeacherEditorInner />

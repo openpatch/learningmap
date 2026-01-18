@@ -16,7 +16,7 @@
 }
 
 .toolbar-inner {
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -83,6 +83,172 @@
   padding: 2rem;
   flex: 1;
   box-sizing: border-box;
+}
+
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog-content {
+  background: white;
+  border-radius: 8px;
+  padding: 0;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dialog-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.dialog-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--learningmap-color-quicksilver, #a4a4a4);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.dialog-close:hover {
+  background: var(--learningmap-color-whitesmoke, #f5f5f5);
+  color: #1f2937;
+}
+
+.dialog-body {
+  padding: 2rem;
+}
+
+.add-map-section {
+  background: var(--learningmap-color-whitesmoke, #f5f5f5);
+  padding: 2rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.add-map-section h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.add-map-form {
+  display: flex;
+  gap: 1rem;
+}
+
+.add-map-form input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.add-map-form button {
+  padding: 0.75rem 1.5rem;
+  background: var(--learningmap-color-openpatch, #007864);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 400;
+  transition: background 0.2s;
+}
+
+.add-map-form button:hover:not(:disabled) {
+  background: var(--learningmap-color-dark-forest, #004c45);
+}
+
+.add-map-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.add-map-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: var(--learningmap-color-quicksilver, #a4a4a4);
+}
+
+.add-map-divider::before,
+.add-map-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.add-map-divider span {
+  padding: 0 1rem;
+  font-size: 0.9rem;
+}
+
+.add-map-upload {
+  display: flex;
+  justify-content: center;
+}
+
+.upload-button {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  color: var(--learningmap-color-openpatch, #007864);
+  border: 2px solid var(--learningmap-color-openpatch, #007864);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 400;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.upload-button:hover {
+  background: var(--learningmap-color-freshmint, #b5e3d8);
+  border-color: var(--learningmap-color-dark-forest, #004c45);
+  color: var(--learningmap-color-dark-forest, #004c45);
+}
+
+.upload-button:focus {
+  outline: 2px solid var(--learningmap-color-openpatch, #007864);
+  outline-offset: 2px;
 }
 
 .teach-header {

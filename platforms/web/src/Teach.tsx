@@ -3,12 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import * as db from './db';
 import type { TeacherMapEntry } from './db';
 import './Teach.css';
-import logo from './logo.svg';
+import { Header } from './Header';
+import { Footer } from './Footer';
 
 function Teach() {
   const navigate = useNavigate();
   const [allMaps, setAllMaps] = useState<TeacherMapEntry[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [newMapUrl, setNewMapUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
     db.getAllTeacherMaps().then(setAllMaps);
@@ -44,27 +49,151 @@ function Teach() {
     }
   };
 
+  const handleAddMapFromUrl = async () => {
+    setError(null);
+    const trimmedUrl = newMapUrl.trim();
+    
+    if (!trimmedUrl) {
+      setError('Please enter a URL');
+      return;
+    }
+
+    // Extract jsonId from URL
+    const match = trimmedUrl.match(/#json=([^&]+)/);
+    if (match) {
+      const jsonId = match[1];
+      
+      // Check if it looks like a storage ID (contains . or /)
+      if (jsonId.includes('.') || jsonId.includes('/')) {
+        setError('Cannot import maps with custom storage IDs. Please use a published map URL.');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await fetch(`https://json.openpatch.org/api/v2/${jsonId}`, {
+          method: 'GET',
+          mode: 'cors',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch learning map');
+        }
+
+        const roadmapData = await response.json();
+        const storageId = roadmapData.settings?.id || jsonId;
+        
+        await db.addTeacherMap(storageId, roadmapData, jsonId);
+        const maps = await db.getAllTeacherMaps();
+        setAllMaps(maps);
+        setNewMapUrl('');
+        setShowAddDialog(false);
+      } catch (err) {
+        setError('Failed to load learning map. Please check the URL and try again.');
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setError('Invalid learning map URL. Please paste a valid URL with #json=...');
+    }
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setError(null);
+    const reader = new FileReader();
+    
+    reader.onload = async (e) => {
+      try {
+        const content = e.target?.result as string;
+        const json = JSON.parse(content);
+        
+        // Generate a unique ID for this uploaded map
+        const uploadId = `upload-${Date.now()}`;
+        const storageId = json.settings?.id || uploadId;
+        
+        await db.addTeacherMap(storageId, json, null);
+        const maps = await db.getAllTeacherMaps();
+        setAllMaps(maps);
+        setShowAddDialog(false);
+      } catch (err) {
+        setError('Invalid file format. Please upload a valid LearningMap JSON file.');
+      }
+    };
+    
+    reader.onerror = () => {
+      setError('Failed to read the file. Please try again.');
+    };
+    
+    reader.readAsText(file);
+    
+    // Reset the input so the same file can be uploaded again if needed
+    event.target.value = '';
+  };
+
   return (
     <div className="teach-container">
-      <div className="teach-toolbar">
-        <div className="toolbar-inner">
-          <div className="toolbar-left">
-            <img 
-              src={logo} 
-              alt="Logo" 
-              className="toolbar-logo" 
-              onClick={() => navigate('/')}
-              style={{ cursor: 'pointer' }}
-            />
-            <h1 className="toolbar-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Learningmap</h1>
-          </div>
-          <div className="toolbar-right">
-            <button onClick={() => navigate('/create')} className="toolbar-button toolbar-button-primary">
-              + Create New Map
-            </button>
+      <Header>
+        <button onClick={() => setShowAddDialog(true)} className="toolbar-button">
+          Add Map
+        </button>
+        <button onClick={() => navigate('/create')} className="toolbar-button toolbar-button-primary">
+          + Create New Map
+        </button>
+      </Header>
+      
+      {showAddDialog && (
+        <div className="dialog-overlay" onClick={() => setShowAddDialog(false)}>
+          <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+            <div className="dialog-header">
+              <h2>Add an Existing Learning Map</h2>
+              <button 
+                className="dialog-close" 
+                onClick={() => setShowAddDialog(false)}
+                aria-label="Close dialog"
+              >
+                ×
+              </button>
+            </div>
+            <div className="dialog-body">
+              <div className="add-map-form">
+                <input
+                  type="text"
+                  placeholder="Paste learning map URL (e.g., https://learningmap.app/learn#json=...)"
+                  value={newMapUrl}
+                  onChange={(e) => setNewMapUrl(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleAddMapFromUrl();
+                    }
+                  }}
+                />
+                <button onClick={handleAddMapFromUrl} disabled={loading}>
+                  {loading ? 'Adding...' : 'Add Map'}
+                </button>
+              </div>
+              {error && <p className="error-message">{error}</p>}
+              <div className="add-map-divider">
+                <span>or</span>
+              </div>
+              <div className="add-map-upload">
+                <label htmlFor="file-upload" className="upload-button">
+                  📁 Upload JSON File
+                </label>
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={handleFileUpload}
+                  style={{ display: 'none' }}
+                />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       
       <div className="teach-content">
         <div className="teach-header">
@@ -136,6 +265,7 @@ function Teach() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

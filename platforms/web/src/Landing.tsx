@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import './Landing.css';
-import logo from './logo.svg';
+import { Header } from './Header';
+import { Footer } from './Footer';
 
 function Landing() {
   const navigate = useNavigate();
@@ -37,23 +38,14 @@ function Landing() {
 
   return (
     <div className="landing-container">
-      {/* Header */}
-      <header className="landing-header">
-        <div className="header-content">
-          <div className="logo-section" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <img src={logo} alt="LearningMap Logo" className="logo" />
-            <span className="logo-text">Learningmap</span>
-          </div>
-          <nav className="nav-links">
-            <button onClick={() => navigate('/teach')} className="nav-button">
-              For Teachers
-            </button>
-            <button onClick={() => navigate('/learn')} className="nav-button">
-              For Students
-            </button>
-          </nav>
-        </div>
-      </header>
+      <Header>
+        <button onClick={() => navigate('/teach')} className="nav-button">
+          For Teachers
+        </button>
+        <button onClick={() => navigate('/learn')} className="nav-button">
+          For Students
+        </button>
+      </Header>
 
       {/* Hero Section */}
       <section className="hero-section">
@@ -141,17 +133,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="landing-footer">
-        <p>
-          Built with ❤️ by <a href="https://openpatch.org" target="_blank" rel="noopener noreferrer">OpenPatch</a>
-        </p>
-        <p>
-          <a href="https://learningmap.openpatch.org" target="_blank" rel="noopener noreferrer">Documentation</a>
-          {' • '}
-          <a href="https://github.com/openpatch/learningmap" target="_blank" rel="noopener noreferrer">GitHub</a>
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -1,0 +1,30 @@
+.app-footer {
+  background-color: white;
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.95rem;
+  border-top: 1px solid #e0e0e0;
+  margin-top: auto;
+}
+
+.app-footer p {
+  margin: 0.5rem 0;
+}
+
+.app-footer a {
+  color: #4a90e2;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.app-footer a:hover {
+  color: #357abd;
+  text-decoration: underline;
+}
+
+.app-footer a:focus {
+  outline: 2px solid #4a90e2;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
