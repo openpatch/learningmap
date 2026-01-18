@@ -409,12 +409,6 @@
   border: 1px solid #dee2e6;
   border-radius: 8px;
   overflow: hidden;
-  transition: all 0.2s;
-}
-
-.map-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
 }
 
 .map-card-header {
@@ -556,11 +550,6 @@
   border: 1px solid #dee2e6;
   border-radius: 8px;
   overflow: hidden;
-  transition: box-shadow 0.2s;
-}
-
-.map-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .map-card-header {
