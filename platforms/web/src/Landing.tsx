@@ -2,39 +2,16 @@ import { useNavigate } from "react-router-dom";
 import "./Landing.css";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { LearningMap } from "@learningmap/learningmap";
+import "@learningmap/learningmap/index.css";
+import demoMapRaw from "./getting-started.learningmap?raw";
+import type { RoadmapData } from "@learningmap/learningmap";
 
 function Landing() {
   const navigate = useNavigate();
-
-  // Featured learning maps with example JSON IDs
-  /*
-  const featuredMaps = [
-    {
-      id: 'example-1',
-      title: 'Getting Started with Programming',
-      description: 'A comprehensive guide to learning programming fundamentals, from variables to functions.',
-      thumbnail: '📚',
-      editUrl: '/create',
-      learnUrl: '/learn',
-    },
-    {
-      id: 'example-2',
-      title: 'Web Development Basics',
-      description: 'Learn HTML, CSS, and JavaScript to build your first website step by step.',
-      thumbnail: '🌐',
-      editUrl: '/create',
-      learnUrl: '/learn',
-    },
-    {
-      id: 'example-3',
-      title: 'Data Science Journey',
-      description: 'Explore data analysis, visualization, and machine learning concepts progressively.',
-      thumbnail: '📊',
-      editUrl: '/create',
-      learnUrl: '/learn',
-    },
-  ];
-  */
+  
+  // Parse the demo map from raw JSON
+  const demoMap: RoadmapData = JSON.parse(demoMapRaw);
 
   return (
     <div className="landing-container">
@@ -87,6 +64,18 @@ function Landing() {
           >
             Go to My Learning
           </button>
+        </div>
+      </section>
+
+      {/* Demo LearningMap */}
+      <section className="demo-section">
+        <h2 className="demo-title">Try It Out: Interactive Demo</h2>
+        <p className="demo-subtitle">
+          Explore this interactive learning map to see how it works. Click on
+          nodes to learn more!
+        </p>
+        <div className="demo-map-container">
+          <LearningMap roadmapData={demoMap} />
         </div>
       </section>
 

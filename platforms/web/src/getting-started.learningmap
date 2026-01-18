@@ -1,0 +1,356 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "type": "topic",
+      "position": {
+        "x": 246.94718117566373,
+        "y": 50
+      },
+      "zIndex": 30,
+      "data": {
+        "state": "unlocked",
+        "label": "Welcome to Learningmap",
+        "description": "Start here to learn how to use Learningmap for creating and exploring visual learning paths.",
+        "unlock": {
+          "after": []
+        },
+        "completion": {
+          "needs": [
+            "4"
+          ],
+          "optional": []
+        }
+      }
+    },
+    {
+      "id": "2",
+      "type": "task",
+      "position": {
+        "x": 93,
+        "y": 153
+      },
+      "zIndex": 30,
+      "data": {
+        "state": "unlocked",
+        "label": "Understanding Nodes",
+        "description": "Learningmaps consist of nodes (topics and tasks) connected by edges. \n\n## Topics\n\nA topic node is not actionable by the user, but it can be used to bundle other topic and task nodes. The completion status of a topic node is dependable on the completion status of other nodes, which is configurable by you.\n\n## Tasks\n\nTask nodes can be mark as started and completed by the student. Therefore they should be used to indicated something with the student should do.\n\n## Continue\n\nClick the button below once to mark this node as started.\n\nClick it another time to mark it as completed."
+      }
+    },
+    {
+      "id": "3",
+      "type": "task",
+      "position": {
+        "x": 449.4583492996978,
+        "y": 156.70635224756148
+      },
+      "zIndex": 30,
+      "data": {
+        "state": "unlocked",
+        "label": "Connecting Topics",
+        "description": "## Edges\n\nEdge are only visual sugar. The help students to find their way in the learning map, but they have no logic behind them. If you want to connect nodes logically read the content of the next task \"Unlocking and Completing Nodes\"\n\nYou can define the color and the style of the edges either individually or in the settings globaly."
+      }
+    },
+    {
+      "id": "4",
+      "type": "topic",
+      "position": {
+        "x": 252.4609484711704,
+        "y": 368.04130188651993
+      },
+      "zIndex": 30,
+      "data": {
+        "state": "unlocked",
+        "label": "Creating Your First Map",
+        "description": "Now go to the Learningmap Editor and start creating your first Learningmap.",
+        "color": "yellow",
+        "completion": {
+          "needs": [
+            "node-1768748272316",
+            "node-1768748267366",
+            "6"
+          ],
+          "optional": [
+            "5"
+          ]
+        },
+        "unlock": {
+          "after": [
+            "node-1768747616018"
+          ]
+        },
+        "resources": [
+          {
+            "label": "Learningmap Editor",
+            "type": "url",
+            "url": "/create"
+          }
+        ]
+      }
+    },
+    {
+      "id": "5",
+      "type": "task",
+      "position": {
+        "x": 100,
+        "y": 500
+      },
+      "zIndex": 30,
+      "data": {
+        "state": "unlocked",
+        "label": "Share with Teachers",
+        "description": "Build custom maps for your students. Share links or export files. Students can track their progress through each topic.",
+        "color": "lila",
+        "summary": "Optional",
+        "unlock": {
+          "after": [
+            "node-1768747616018"
+          ]
+        }
+      }
+    },
+    {
+      "id": "6",
+      "type": "task",
+      "position": {
+        "x": 431,
+        "y": 497
+      },
+      "zIndex": 30,
+      "data": {
+        "state": "unlocked",
+        "label": "Share with Students",
+        "description": "Share the map with your students. Their progress will be track. All data stays in their browser.",
+        "color": "red",
+        "unlock": {
+          "after": [
+            "node-1768747616018"
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-1768747448690",
+      "type": "text",
+      "position": {
+        "x": 110.5,
+        "y": 448
+      },
+      "zIndex": 20,
+      "data": {
+        "label": "text",
+        "state": "unlocked",
+        "text": "👩‍🏫"
+      }
+    },
+    {
+      "id": "node-1768747461738",
+      "type": "text",
+      "position": {
+        "x": 537.5599341491151,
+        "y": 447.0792282365044
+      },
+      "zIndex": 20,
+      "data": {
+        "label": "text",
+        "state": "unlocked",
+        "text": "👨‍🎓"
+      }
+    },
+    {
+      "id": "node-1768747616018",
+      "type": "task",
+      "position": {
+        "x": 219.94718117566373,
+        "y": 271.3961411825222
+      },
+      "zIndex": 30,
+      "data": {
+        "label": "Unlocking and Completing Nodes",
+        "state": "unlocked",
+        "description": "You can control when nodes unlock and how progress is measured using requirements.\n\n## Tasks\nTask nodes can have unlock requirements. This means a task becomes available only after all required nodes have been completed.\n\n## Topics\nTopic nodes can also define completion requirements. A topic is marked as completed once all required nodes are finished.\n\nYou can optionally add extra completion requirements. When both required and optional nodes are completed, the topic is marked as mastered—showing a deeper level of understanding.",
+        "summary": "",
+        "unlock": {
+          "after": [
+            "2",
+            "3"
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-1768748267366",
+      "type": "task",
+      "position": {
+        "x": 540.3459913500562,
+        "y": 377.5983800332267
+      },
+      "zIndex": 30,
+      "data": {
+        "label": "Add a task",
+        "state": "unlocked",
+        "description": "Add a task and set its unlock conditions.\n\n1. Click on + Nodes in the toolbar or Ctrl+1\n2. Click on the task node\n3. Modify the task node\n\n## Hint\n\nYou can use markdown in the description field.",
+        "unlock": {
+          "after": [
+            "node-1768747616018"
+          ]
+        }
+      }
+    },
+    {
+      "id": "node-1768748272316",
+      "type": "task",
+      "position": {
+        "x": 64.98182778425672,
+        "y": 376.6121473287334
+      },
+      "zIndex": 30,
+      "data": {
+        "label": "Add a topic",
+        "state": "unlocked",
+        "description": "Add a topic and set its completion needs.\n\n1. Click on + Nodes in the toolbar or Ctrl+2\n2. Click on the topic node\n3. Modify the topic node\n\nFor the completion needs should should add another topic node or a task node.\n\n## Hint\n\nYou can use markdown in the description field.",
+        "duration": "5 min",
+        "unlock": {
+          "after": [
+            "node-1768747616018"
+          ]
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "xy-edge__2top-1bottom",
+      "source": "2",
+      "target": "1",
+      "sourceHandle": "top",
+      "targetHandle": "bottom",
+      "animated": false,
+      "type": "default",
+      "style": {
+        "stroke": "#687d69",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "xy-edge__3top-1bottom",
+      "source": "3",
+      "target": "1",
+      "sourceHandle": "top",
+      "targetHandle": "bottom",
+      "animated": false,
+      "type": "default",
+      "style": {
+        "stroke": "#687d69",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "xy-edge__5top-4bottom",
+      "source": "5",
+      "target": "4",
+      "sourceHandle": "top",
+      "targetHandle": "bottom",
+      "animated": false,
+      "type": "default",
+      "style": {
+        "stroke": "#687d69",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "xy-edge__6top-4bottom",
+      "source": "6",
+      "target": "4",
+      "sourceHandle": "top",
+      "targetHandle": "bottom",
+      "animated": false,
+      "type": "default",
+      "style": {
+        "stroke": "#687d69",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "xy-edge__3bottom-node-1768747616018right",
+      "source": "3",
+      "target": "node-1768747616018",
+      "sourceHandle": "bottom",
+      "targetHandle": "right",
+      "animated": false,
+      "type": "default",
+      "style": {
+        "stroke": "#687d69",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "xy-edge__2bottom-node-1768747616018left",
+      "source": "2",
+      "target": "node-1768747616018",
+      "sourceHandle": "bottom",
+      "targetHandle": "left",
+      "animated": false,
+      "type": "default",
+      "style": {
+        "stroke": "#687d69",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "xy-edge__4top-node-1768747616018bottom",
+      "source": "4",
+      "target": "node-1768747616018",
+      "sourceHandle": "top",
+      "targetHandle": "bottom",
+      "animated": false,
+      "type": "default",
+      "style": {
+        "stroke": "#687d69",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "xy-edge__node-1768748267366left-4right",
+      "source": "node-1768748267366",
+      "target": "4",
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "animated": false,
+      "type": "default",
+      "style": {
+        "stroke": "#687d69",
+        "strokeWidth": 2
+      }
+    },
+    {
+      "id": "xy-edge__node-1768748272316right-4left",
+      "source": "node-1768748272316",
+      "target": "4",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "animated": false,
+      "type": "default",
+      "style": {
+        "stroke": "#687d69",
+        "strokeWidth": 2
+      }
+    }
+  ],
+  "settings": {
+    "id": "demo-getting-started",
+    "title": "Getting Started with Learningmap",
+    "background": {
+      "color": "#ebfff1"
+    },
+    "viewport": {
+      "x": 72,
+      "y": 51,
+      "zoom": 1
+    },
+    "defaultEdgeColor": "#687d69"
+  },
+  "version": 1,
+  "type": "learningmap",
+  "source": "https://learningmap.app"
+}
