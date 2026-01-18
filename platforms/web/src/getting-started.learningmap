@@ -4,14 +4,14 @@
       "id": "1",
       "type": "topic",
       "position": {
-        "x": 246.94718117566373,
+        "x": 236.28510360749925,
         "y": 50
       },
       "zIndex": 30,
       "data": {
         "state": "unlocked",
         "label": "Welcome to Learningmap",
-        "description": "Start here to learn how to use Learningmap for creating and exploring visual learning paths.",
+        "description": "Welcome! You're about to discover how to create interactive visual learning paths that help students navigate their educational journey.\n\nThis introduction will guide you through the essential concepts and tools you need to build your first Learningmap. By the end, you'll be ready to design engaging learning experiences for your students.\n\n**Let's get started!**",
         "unlock": {
           "after": []
         },
@@ -27,14 +27,14 @@
       "id": "2",
       "type": "task",
       "position": {
-        "x": 93,
+        "x": 56,
         "y": 153
       },
       "zIndex": 30,
       "data": {
         "state": "unlocked",
-        "label": "Understanding Nodes",
-        "description": "Learningmaps consist of nodes (topics and tasks) connected by edges. \n\n## Topics\n\nA topic node is not actionable by the user, but it can be used to bundle other topic and task nodes. The completion status of a topic node is dependable on the completion status of other nodes, which is configurable by you.\n\n## Tasks\n\nTask nodes can be mark as started and completed by the student. Therefore they should be used to indicated something with the student should do.\n\n## Continue\n\nClick the button below once to mark this node as started.\n\nClick it another time to mark it as completed."
+        "label": "Learn About Nodes",
+        "description": "Learningmaps are built using two types of nodes: **Topics** and **Tasks**. Understanding how they work is essential for creating effective learning paths.\n\n## Topic Nodes\n\nTopic nodes serve as organizational containers that group related content together. They're completed automatically when their required child nodes are finished. Use topics to:\n- Structure major learning units\n- Create clear sections in your map\n- Track overall progress through a subject area\n\n## Task Nodes\n\nTask nodes represent specific activities students should complete. Students can mark these as started and completed. Use tasks for:\n- Reading assignments\n- Practice exercises\n- Watching videos\n- Any actionable learning activity\n\n## Try It Now\n\nClick the button below once to mark this task as **started**.\n\nClick it again to mark it as **completed** and move forward!"
       }
     },
     {
@@ -47,22 +47,22 @@
       "zIndex": 30,
       "data": {
         "state": "unlocked",
-        "label": "Connecting Topics",
-        "description": "## Edges\n\nEdge are only visual sugar. The help students to find their way in the learning map, but they have no logic behind them. If you want to connect nodes logically read the content of the next task \"Unlocking and Completing Nodes\"\n\nYou can define the color and the style of the edges either individually or in the settings globaly."
+        "label": "Understand Connections",
+        "description": "## Visual Connections with Edges\n\nEdges are the lines that connect nodes on your map. They serve as visual guides that help students understand the recommended path through the content.\n\n**Important:** Edges are purely visual—they don't control which nodes unlock or when topics are completed. That logic is handled separately through unlock and completion requirements (you'll learn about this next!).\n\n## Customizing Edge Appearance\n\nYou can customize edges to make your map more intuitive:\n- **Color:** Change colors individually or set a global default\n- **Style:** Choose between solid, dashed, or animated lines\n- **Width:** Adjust thickness for emphasis\n\nThese visual cues help students navigate complex learning paths with confidence."
       }
     },
     {
       "id": "4",
       "type": "topic",
       "position": {
-        "x": 252.4609484711704,
+        "x": 253.28510360749925,
         "y": 368.04130188651993
       },
       "zIndex": 30,
       "data": {
         "state": "unlocked",
-        "label": "Creating Your First Map",
-        "description": "Now go to the Learningmap Editor and start creating your first Learningmap.",
+        "label": "Build Your First Map",
+        "description": "Now it's time to put your knowledge into action! Head to the Learningmap Editor and create your first learning path.\n\nComplete the required tasks to finish this section. The optional task will help you connect with other educators in the Learningmap community.",
         "color": "yellow",
         "completion": {
           "needs": [
@@ -92,14 +92,14 @@
       "id": "5",
       "type": "task",
       "position": {
-        "x": 100,
-        "y": 500
+        "x": 30,
+        "y": 484
       },
       "zIndex": 30,
       "data": {
         "state": "unlocked",
-        "label": "Share with Teachers",
-        "description": "Build custom maps for your students. Share links or export files. Students can track their progress through each topic.",
+        "label": "Share with Fellow Educators",
+        "description": "Collaboration makes us all better teachers! Share your Learningmap with colleagues to get feedback and inspire others.\n\n## How to Share Your Map for Editing\n\n1. Click the **menu icon** (☰) in the top right corner\n2. Select **Share**\n3. Copy the **edit link**\n4. Share it with other educators\n\n## Join the Community\n\nPost your Learningmap on social media (especially Mastodon!) using the hashtag **#learningmap** to connect with other educators and showcase your work.\n\n*This task is optional but highly recommended for professional growth!*",
         "color": "lila",
         "summary": "Optional",
         "unlock": {
@@ -113,14 +113,14 @@
       "id": "6",
       "type": "task",
       "position": {
-        "x": 431,
-        "y": 497
+        "x": 446,
+        "y": 502
       },
       "zIndex": 30,
       "data": {
         "state": "unlocked",
-        "label": "Share with Students",
-        "description": "Share the map with your students. Their progress will be track. All data stays in their browser.",
+        "label": "Share with Your Students",
+        "description": "Your Learningmap is ready for students! Give them access and let them take control of their learning journey.\n\n## How to Share with Students\n\n1. Click the **menu icon** (☰) in the top right corner\n2. Select **Share**\n3. Copy the **learn link**\n4. Distribute it to your students via your learning management system, email, or classroom website\n\n## Privacy & Progress Tracking\n\nStudent progress is automatically tracked and saved locally in their browser—no accounts needed, and all data stays private on their device.\n\nStudents can pick up right where they left off whenever they return!",
         "color": "red",
         "unlock": {
           "after": [
@@ -133,8 +133,8 @@
       "id": "node-1768747448690",
       "type": "text",
       "position": {
-        "x": 110.5,
-        "y": 448
+        "x": 285.5,
+        "y": 504
       },
       "zIndex": 20,
       "data": {
@@ -147,8 +147,8 @@
       "id": "node-1768747461738",
       "type": "text",
       "position": {
-        "x": 537.5599341491151,
-        "y": 447.0792282365044
+        "x": 399.55993414911507,
+        "y": 505.0792282365044
       },
       "zIndex": 20,
       "data": {
@@ -161,14 +161,14 @@
       "id": "node-1768747616018",
       "type": "task",
       "position": {
-        "x": 219.94718117566373,
+        "x": 229.78510360749925,
         "y": 271.3961411825222
       },
       "zIndex": 30,
       "data": {
-        "label": "Unlocking and Completing Nodes",
+        "label": "Master Node Dependencies",
         "state": "unlocked",
-        "description": "You can control when nodes unlock and how progress is measured using requirements.\n\n## Tasks\nTask nodes can have unlock requirements. This means a task becomes available only after all required nodes have been completed.\n\n## Topics\nTopic nodes can also define completion requirements. A topic is marked as completed once all required nodes are finished.\n\nYou can optionally add extra completion requirements. When both required and optional nodes are completed, the topic is marked as mastered—showing a deeper level of understanding.",
+        "description": "Control the learning flow by setting up unlock conditions and completion requirements. This is how you create structured, progressive learning paths.\n\n## Unlock Requirements (Tasks)\n\nTask nodes can have prerequisites—they only become available after students complete the required nodes. This ensures students build knowledge step-by-step.\n\n**Example:** A \"Practice Advanced Equations\" task might unlock only after completing \"Learn Basic Algebra.\"\n\n## Completion Requirements (Topics)\n\nTopic nodes are completed automatically when all required child nodes are finished. You define which nodes are necessary for completion.\n\n**Example:** A \"Geometry Basics\" topic might require completing tasks on \"Angles,\" \"Triangles,\" and \"Circles.\"\n\n## Optional Requirements\n\nAdd optional nodes for enrichment activities. When students complete both required and optional nodes, the topic shows as **mastered**—indicating deeper engagement and understanding.\n\nThis system lets you create flexible learning paths that adapt to different student needs!",
         "summary": "",
         "unlock": {
           "after": [
@@ -187,9 +187,9 @@
       },
       "zIndex": 30,
       "data": {
-        "label": "Add a task",
+        "label": "Create Your First Task",
         "state": "unlocked",
-        "description": "Add a task and set its unlock conditions.\n\n1. Click on + Nodes in the toolbar or Ctrl+1\n2. Click on the task node\n3. Modify the task node\n\n## Hint\n\nYou can use markdown in the description field.",
+        "description": "Practice creating a task node and configuring its unlock conditions.\n\n## Steps to Create a Task\n\n1. Click **+ Nodes** in the toolbar (or press **Ctrl+1**)\n2. Click on the canvas where you want to place the task node\n3. In the properties panel, customize:\n   - **Label:** Give it a clear, action-oriented name\n   - **Description:** Explain what students need to do\n   - **Unlock conditions:** Set which nodes must be completed first\n\n## Pro Tips\n\n✨ **Use markdown** in the description field for formatting—headings, bold text, lists, and links all work!\n\n✨ Make task labels **action-oriented**: \"Watch the Video,\" \"Complete the Quiz,\" \"Read Chapter 3\"\n\n✨ Keep descriptions **clear and concise**—students should immediately understand what to do",
         "unlock": {
           "after": [
             "node-1768747616018"
@@ -201,14 +201,14 @@
       "id": "node-1768748272316",
       "type": "task",
       "position": {
-        "x": 64.98182778425672,
-        "y": 376.6121473287334
+        "x": -23.018172215743277,
+        "y": 371.6121473287334
       },
       "zIndex": 30,
       "data": {
-        "label": "Add a topic",
+        "label": "Create Your First Topic",
         "state": "unlocked",
-        "description": "Add a topic and set its completion needs.\n\n1. Click on + Nodes in the toolbar or Ctrl+2\n2. Click on the topic node\n3. Modify the topic node\n\nFor the completion needs should should add another topic node or a task node.\n\n## Hint\n\nYou can use markdown in the description field.",
+        "description": "Practice creating a topic node and defining what's needed for completion.\n\n## Steps to Create a Topic\n\n1. Click **+ Nodes** in the toolbar (or press **Ctrl+2**)\n2. Click on the canvas where you want to place the topic node\n3. In the properties panel, customize:\n   - **Label:** Give it a descriptive name for the learning section\n   - **Description:** Explain what this topic covers\n   - **Completion needs:** Add the IDs of child nodes required for completion\n\n## Setting Up Completion Requirements\n\nYou'll need to add at least one other node (topic or task) to set as a completion requirement. This creates the logical structure of your learning path.\n\n## Pro Tips\n\n✨ **Use markdown** in the description field for rich formatting\n\n✨ Topics work great for **grouping related concepts**: \"Week 1: Introduction,\" \"Unit 2: Advanced Techniques\"\n\n✨ Use the **color property** to visually distinguish different learning modules",
         "duration": "5 min",
         "unlock": {
           "after": [
@@ -344,8 +344,8 @@
       "color": "#ebfff1"
     },
     "viewport": {
-      "x": 72,
-      "y": 51,
+      "x": 416,
+      "y": 68,
       "zoom": 1
     },
     "defaultEdgeColor": "#687d69"
