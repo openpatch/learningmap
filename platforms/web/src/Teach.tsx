@@ -373,15 +373,13 @@ function Teach() {
                   >
                     Edit
                   </button>
-                  {map.jsonId ? (
+                  {map.jsonId && (
                     <button
                       onClick={() => handleCopyShareLink(map)}
                       className="action-button primary-button"
                     >
                       {copiedId === map.id ? '✓ Copied!' : 'Copy Share Link'}
                     </button>
-                  ) : (
-                    <span className="unpublished-hint">Publish to share</span>
                   )}
                 </div>
               </div>
