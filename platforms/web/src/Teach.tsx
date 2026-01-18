@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import * as db from './db';
-import type { TeacherMapEntry } from './db';
-import './Teach.css';
-import { Header } from './Header';
-import { Footer } from './Footer';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as db from "./db";
+import type { TeacherMapEntry } from "./db";
+import "./Teach.css";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
 
 function Teach() {
   const navigate = useNavigate();
   const [allMaps, setAllMaps] = useState<TeacherMapEntry[]>([]);
-  const [newMapUrl, setNewMapUrl] = useState('');
+  const [newMapUrl, setNewMapUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -26,7 +26,11 @@ function Teach() {
   }, []);
 
   const handleRemoveMap = async (id: string) => {
-    if (window.confirm('Are you sure you want to remove this learning map from your collection?')) {
+    if (
+      window.confirm(
+        "Are you sure you want to remove this learning map from your collection?",
+      )
+    ) {
       await db.removeTeacherMap(id);
       const maps = await db.getAllTeacherMaps();
       setAllMaps(maps);
@@ -42,9 +46,9 @@ function Teach() {
   const handleAddMapFromUrl = async () => {
     setError(null);
     const trimmedUrl = newMapUrl.trim();
-    
+
     if (!trimmedUrl) {
-      setError('Please enter a URL');
+      setError("Please enter a URL");
       return;
     }
 
@@ -52,51 +56,65 @@ function Teach() {
     const match = trimmedUrl.match(/#json=([^&]+)/);
     if (match) {
       const jsonId = match[1];
-      
+
       // Check if it looks like a storage ID (contains . or /)
-      if (jsonId.includes('.') || jsonId.includes('/')) {
-        setError('Cannot import maps with custom storage IDs. Please use a published map URL.');
+      if (jsonId.includes(".") || jsonId.includes("/")) {
+        setError(
+          "Cannot import maps with custom storage IDs. Please use a published map URL.",
+        );
         return;
       }
 
       setLoading(true);
       try {
-        const response = await fetch(`https://json.openpatch.org/api/v2/${jsonId}`, {
-          method: 'GET',
-          mode: 'cors',
-        });
+        const response = await fetch(
+          `https://json.openpatch.org/api/v2/${jsonId}`,
+          {
+            method: "GET",
+            mode: "cors",
+          },
+        );
 
         if (!response.ok) {
-          throw new Error('Failed to fetch learning map');
+          throw new Error("Failed to fetch learning map");
         }
 
         const roadmapData = await response.json();
         const settingsId = roadmapData.settings?.id || jsonId;
-        
+
         // Check if a map with the same settings.id already exists
         const existingMap = await db.findTeacherMapBySettingsId(settingsId);
         if (existingMap) {
           // Show conflict dialog
-          setConflictData({ storageId: existingMap.id, roadmapData, jsonId, existingMap });
+          setConflictData({
+            storageId: existingMap.id,
+            roadmapData,
+            jsonId,
+            existingMap,
+          });
           setShowConflictDialog(true);
           setLoading(false);
           return;
         }
-        
+
         // Generate a unique database ID
         const dbId = `map-${Date.now()}`;
         await db.addTeacherMap(dbId, roadmapData, jsonId);
         const maps = await db.getAllTeacherMaps();
         setAllMaps(maps);
-        setNewMapUrl('');
+        setNewMapUrl("");
         setShowAddDialog(false);
       } catch (err) {
-        setError('Failed to load learning map. Please check the URL and try again.');
+        setError(
+          "Failed to load learning map. Please check the URL and try again.",
+        );
       } finally {
         setLoading(false);
       }
     } else {
-      setError('Invalid learning map URL. Please paste a valid URL with #json=...');
+      setError(
+        "Invalid learning map URL. Please paste a valid URL with #json=...",
+      );
     }
   };
 
@@ -106,23 +124,29 @@ function Teach() {
 
     setError(null);
     const reader = new FileReader();
-    
+
     reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
         const json = JSON.parse(content);
-        
+
         const settingsId = json.settings?.id;
-        
+
         // Check if a map with the same settings.id already exists
-        const existingMap = settingsId ? await db.findTeacherMapBySettingsId(settingsId) : undefined;
+        const existingMap = settingsId
+          ? await db.findTeacherMapBySettingsId(settingsId)
+          : undefined;
         if (existingMap) {
           // Show conflict dialog
-          setConflictData({ storageId: existingMap.id, roadmapData: json, existingMap });
+          setConflictData({
+            storageId: existingMap.id,
+            roadmapData: json,
+            existingMap,
+          });
           setShowConflictDialog(true);
           return;
         }
-        
+
         // Generate a unique database ID
         const dbId = `map-${Date.now()}`;
         await db.addTeacherMap(dbId, json, undefined);
@@ -130,28 +154,34 @@ function Teach() {
         setAllMaps(maps);
         setShowAddDialog(false);
       } catch (err) {
-        setError('Invalid file format. Please upload a valid LearningMap JSON file.');
+        setError(
+          "Invalid file format. Please upload a valid LearningMap JSON file.",
+        );
       }
     };
-    
+
     reader.onerror = () => {
-      setError('Failed to read the file. Please try again.');
+      setError("Failed to read the file. Please try again.");
     };
-    
+
     reader.readAsText(file);
-    
+
     // Reset the input so the same file can be uploaded again if needed
-    event.target.value = '';
+    event.target.value = "";
   };
 
   const handleConflictOverwrite = async () => {
     if (!conflictData) return;
-    
+
     // Overwrite the existing map (keep same database ID)
-    await db.addTeacherMap(conflictData.storageId, conflictData.roadmapData, conflictData.jsonId);
+    await db.addTeacherMap(
+      conflictData.storageId,
+      conflictData.roadmapData,
+      conflictData.jsonId,
+    );
     const maps = await db.getAllTeacherMaps();
     setAllMaps(maps);
-    setNewMapUrl('');
+    setNewMapUrl("");
     setShowAddDialog(false);
     setShowConflictDialog(false);
     setConflictData(null);
@@ -159,14 +189,14 @@ function Teach() {
 
   const handleConflictNewId = async () => {
     if (!conflictData) return;
-    
+
     // Generate a new unique database ID
     const newDbId = `map-${Date.now()}`;
-    
+
     // Generate a new settings.id to avoid conflicts
-    const currentSettingsId = conflictData.roadmapData.settings?.id || 'map';
+    const currentSettingsId = conflictData.roadmapData.settings?.id || "map";
     const newSettingsId = `${currentSettingsId}-${Date.now()}`;
-    
+
     // Update the ID in the roadmap settings
     const updatedRoadmapData = {
       ...conflictData.roadmapData,
@@ -175,11 +205,11 @@ function Teach() {
         id: newSettingsId,
       },
     };
-    
+
     await db.addTeacherMap(newDbId, updatedRoadmapData, conflictData.jsonId);
     const maps = await db.getAllTeacherMaps();
     setAllMaps(maps);
-    setNewMapUrl('');
+    setNewMapUrl("");
     setShowAddDialog(false);
     setShowConflictDialog(false);
     setConflictData(null);
@@ -193,21 +223,27 @@ function Teach() {
   return (
     <div className="teach-container">
       <Header>
-        <button onClick={() => setShowAddDialog(true)} className="toolbar-button">
+        <button
+          onClick={() => setShowAddDialog(true)}
+          className="toolbar-button"
+        >
           Add Map
         </button>
-        <button onClick={() => navigate('/create')} className="toolbar-button toolbar-button-primary">
+        <button
+          onClick={() => navigate("/create")}
+          className="toolbar-button toolbar-button-primary"
+        >
           + Create New Map
         </button>
       </Header>
-      
+
       {showAddDialog && (
         <div className="dialog-overlay" onClick={() => setShowAddDialog(false)}>
           <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
             <div className="dialog-header">
               <h2>Add an Existing Learning Map</h2>
-              <button 
-                className="dialog-close" 
+              <button
+                className="dialog-close"
                 onClick={() => setShowAddDialog(false)}
                 aria-label="Close dialog"
               >
@@ -222,13 +258,13 @@ function Teach() {
                   value={newMapUrl}
                   onChange={(e) => setNewMapUrl(e.target.value)}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       handleAddMapFromUrl();
                     }
                   }}
                 />
                 <button onClick={handleAddMapFromUrl} disabled={loading}>
-                  {loading ? 'Adding...' : 'Add Map'}
+                  {loading ? "Adding..." : "Add Map"}
                 </button>
               </div>
               {error && <p className="error-message">{error}</p>}
@@ -244,21 +280,24 @@ function Teach() {
                   type="file"
                   accept=".json,application/json"
                   onChange={handleFileUpload}
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                 />
               </div>
             </div>
           </div>
         </div>
       )}
-      
+
       {showConflictDialog && conflictData && (
         <div className="dialog-overlay" onClick={handleConflictCancel}>
-          <div className="dialog-content conflict-dialog" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="dialog-content conflict-dialog"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="dialog-header">
               <h2>⚠️ Map Already Exists</h2>
-              <button 
-                className="dialog-close" 
+              <button
+                className="dialog-close"
                 onClick={handleConflictCancel}
                 aria-label="Close dialog"
               >
@@ -267,35 +306,50 @@ function Teach() {
             </div>
             <div className="dialog-body">
               <p>
-                A learning map with ID <strong>{conflictData.storageId}</strong> already exists in your collection.
+                A learning map with ID <strong>{conflictData.storageId}</strong>{" "}
+                already exists in your collection.
               </p>
               <div className="conflict-info">
                 <div className="conflict-map-info">
                   <h4>Existing Map:</h4>
-                  <p><strong>{conflictData.existingMap.roadmapData.settings?.title || 'Untitled'}</strong></p>
-                  <p className="text-small">Last modified: {new Date(conflictData.existingMap.lastModified).toLocaleString()}</p>
+                  <p>
+                    <strong>
+                      {conflictData.existingMap.roadmapData.settings?.title ||
+                        "Untitled"}
+                    </strong>
+                  </p>
+                  <p className="text-small">
+                    Last modified:{" "}
+                    {new Date(
+                      conflictData.existingMap.lastModified,
+                    ).toLocaleString()}
+                  </p>
                 </div>
                 <div className="conflict-map-info">
                   <h4>New Map:</h4>
-                  <p><strong>{conflictData.roadmapData.settings?.title || 'Untitled'}</strong></p>
+                  <p>
+                    <strong>
+                      {conflictData.roadmapData.settings?.title || "Untitled"}
+                    </strong>
+                  </p>
                 </div>
               </div>
               <p>What would you like to do?</p>
               <div className="conflict-actions">
-                <button 
-                  onClick={handleConflictOverwrite} 
+                <button
+                  onClick={handleConflictOverwrite}
                   className="conflict-button conflict-button-danger"
                 >
                   Overwrite Existing
                 </button>
-                <button 
-                  onClick={handleConflictNewId} 
+                <button
+                  onClick={handleConflictNewId}
                   className="conflict-button conflict-button-primary"
                 >
                   Keep Both (New ID)
                 </button>
-                <button 
-                  onClick={handleConflictCancel} 
+                <button
+                  onClick={handleConflictCancel}
                   className="conflict-button conflict-button-secondary"
                 >
                   Cancel
@@ -305,12 +359,15 @@ function Teach() {
           </div>
         </div>
       )}
-      
+
       <div className="teach-content">
         <div className="page-header">
-          <h2><span className="page-emoji">👩‍🏫</span> My Created Maps</h2>
+          <h2>
+            <span className="page-emoji">👩‍🏫</span> My Created Maps
+          </h2>
           <p className="page-subheading">
-            Manage your learning maps. Edit, share with students, or create new ones.
+            Manage your learning maps. Edit, share with students, or create new
+            ones.
           </p>
         </div>
 
@@ -318,8 +375,13 @@ function Teach() {
           <div className="empty-state">
             <div className="empty-icon">📝</div>
             <h3>No learning maps yet</h3>
-            <p>Create your first learning map and share it with your students.</p>
-            <button onClick={() => navigate('/create')} className="empty-action-button">
+            <p>
+              Create your first learning map and share it with your students.
+            </p>
+            <button
+              onClick={() => navigate("/create")}
+              className="empty-action-button"
+            >
               Create Your First Map
             </button>
           </div>
@@ -328,7 +390,7 @@ function Teach() {
             {allMaps.map((map) => (
               <div key={map.id} className="map-card">
                 <div className="map-card-header">
-                  <h3>{map.roadmapData.settings?.title || 'Untitled Map'}</h3>
+                  <h3>{map.roadmapData.settings?.title || "Untitled Map"}</h3>
                   <button
                     onClick={() => handleRemoveMap(map.id)}
                     className="remove-button"
@@ -340,12 +402,21 @@ function Teach() {
                 <div className="map-card-body">
                   <div className="map-stats">
                     <span className="stat">
-                      📍 {map.roadmapData.nodes?.filter(n => n.type === 'task' || n.type === 'topic').length || 0} tasks
+                      📍{" "}
+                      {map.roadmapData.nodes?.filter(
+                        (n) => n.type === "task" || n.type === "topic",
+                      ).length || 0}{" "}
+                      tasks
                     </span>
                   </div>
                   <div className="map-meta">
-                    <span>Created: {new Date(map.createdAt).toLocaleDateString()}</span>
-                    <span>Modified: {new Date(map.lastModified).toLocaleDateString()}</span>
+                    <span>
+                      Created: {new Date(map.createdAt).toLocaleDateString()}
+                    </span>
+                    <span>
+                      Modified:{" "}
+                      {new Date(map.lastModified).toLocaleDateString()}
+                    </span>
                   </div>
                 </div>
                 <div className="map-card-footer">

@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { RoadmapData, RoadmapState } from '@learningmap/learningmap';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { RoadmapData, RoadmapState } from "@learningmap/learningmap";
 
 interface LearningMapEntry {
   id: string;
@@ -11,7 +11,7 @@ interface LearningMapEntry {
 
 interface LearnerStore {
   learningMaps: Record<string, LearningMapEntry>;
-  
+
   // Actions
   addLearningMap: (id: string, roadmapData: RoadmapData) => void;
   updateState: (id: string, state: RoadmapState) => void;
@@ -24,7 +24,7 @@ export const useLearnerStore = create<LearnerStore>()(
   persist(
     (set, get) => ({
       learningMaps: {},
-      
+
       addLearningMap: (id, roadmapData) => {
         set((state) => ({
           learningMaps: {
@@ -38,7 +38,7 @@ export const useLearnerStore = create<LearnerStore>()(
           },
         }));
       },
-      
+
       updateState: (id, state) => {
         set((prevState) => ({
           learningMaps: {
@@ -51,16 +51,18 @@ export const useLearnerStore = create<LearnerStore>()(
           },
         }));
       },
-      
+
       getLearningMap: (id) => {
         return get().learningMaps[id];
       },
-      
+
       getAllLearningMaps: () => {
         const maps = get().learningMaps;
-        return Object.values(maps).sort((a, b) => b.lastAccessed - a.lastAccessed);
+        return Object.values(maps).sort(
+          (a, b) => b.lastAccessed - a.lastAccessed,
+        );
       },
-      
+
       removeLearningMap: (id) => {
         set((state) => {
           const newMaps = { ...state.learningMaps };
@@ -70,8 +72,8 @@ export const useLearnerStore = create<LearnerStore>()(
       },
     }),
     {
-      name: 'learningmap-learner-storage',
+      name: "learningmap-learner-storage",
       version: 1,
-    }
-  )
+    },
+  ),
 );

@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import './Landing.css';
-import { Header } from './Header';
-import { Footer } from './Footer';
+import { useNavigate } from "react-router-dom";
+import "./Landing.css";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
 
 function Landing() {
   const navigate = useNavigate();
@@ -39,10 +39,10 @@ function Landing() {
   return (
     <div className="landing-container">
       <Header>
-        <button onClick={() => navigate('/teach')} className="nav-button">
+        <button onClick={() => navigate("/teach")} className="nav-button">
           For Teachers
         </button>
-        <button onClick={() => navigate('/learn')} className="nav-button">
+        <button onClick={() => navigate("/learn")} className="nav-button">
           For Students
         </button>
       </Header>
@@ -53,7 +53,8 @@ function Landing() {
           Interactive visual maps for teaching, learning, and collaborating
         </h1>
         <p className="hero-subtitle">
-          All stored locally in your browser—ensuring privacy and offline access.
+          All stored locally in your browser—ensuring privacy and offline
+          access.
         </p>
       </section>
 
@@ -62,16 +63,28 @@ function Landing() {
         <div className="role-card">
           <div className="role-icon">👩‍🏫</div>
           <h3>I'm a Teacher</h3>
-          <p>Create learning maps and share them with your students. Manage your collection and track what you've built.</p>
-          <button onClick={() => navigate('/teach')} className="role-button role-button-primary">
+          <p>
+            Create learning maps and share them with your students. Manage your
+            collection and track what you've built.
+          </p>
+          <button
+            onClick={() => navigate("/teach")}
+            className="role-button role-button-primary"
+          >
             Go to My Maps
           </button>
         </div>
         <div className="role-card">
           <div className="role-icon">👨‍🎓</div>
           <h3>I'm a Student</h3>
-          <p>Access learning maps shared by your teachers. Track your progress and work through topics at your own pace.</p>
-          <button onClick={() => navigate('/learn')} className="role-button role-button-secondary">
+          <p>
+            Access learning maps shared by your teachers. Track your progress
+            and work through topics at your own pace.
+          </p>
+          <button
+            onClick={() => navigate("/learn")}
+            className="role-button role-button-secondary"
+          >
             Go to My Learning
           </button>
         </div>
@@ -82,9 +95,10 @@ function Landing() {
         <div className="use-case-content">
           <h2>Perfect for Teachers and Students</h2>
           <p>
-            Teachers can build custom LearningMaps and share them instantly with their class.
-            Students can edit or study the same map, with every change kept locally in their
-            own browser. No accounts required, no data collected—just pure learning.
+            Teachers can build custom LearningMaps and share them instantly with
+            their class. Students can edit or study the same map, with every
+            change kept locally in their own browser. No accounts required, no
+            data collected—just pure learning.
           </p>
         </div>
       </section>
@@ -128,8 +142,9 @@ function Landing() {
       {/* Local Storage Note */}
       <section className="info-banner">
         <div className="info-content">
-          <strong>🔒 Privacy First:</strong> All maps are saved locally in your browser,
-          ensuring complete privacy and offline access. Your data never leaves your device.
+          <strong>🔒 Privacy First:</strong> All maps are saved locally in your
+          browser, ensuring complete privacy and offline access. Your data never
+          leaves your device.
         </div>
       </section>
 

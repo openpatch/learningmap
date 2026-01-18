@@ -1,11 +1,11 @@
-import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "@learningmap/learningmap/index.css";
-import Learn from './Learn';
-import Teach from './Teach';
-import Landing from './Landing';
-import ReloadPrompt from './ReloadPrompt';
-import { TeacherEditor } from './TeacherEditor';
+import Learn from "./Learn";
+import Teach from "./Teach";
+import Landing from "./Landing";
+import ReloadPrompt from "./ReloadPrompt";
+import { TeacherEditor } from "./TeacherEditor";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
       </Routes>
       <ReloadPrompt />
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

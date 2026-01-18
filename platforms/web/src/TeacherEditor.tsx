@@ -1,23 +1,23 @@
-import { useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { LearningMapEditor, useEditorStore } from '@learningmap/learningmap';
+import { useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { LearningMapEditor, useEditorStore } from "@learningmap/learningmap";
 import "@learningmap/learningmap/index.css";
-import * as db from './db';
-import './TeacherEditor.css';
-import { Header } from './Header';
+import * as db from "./db";
+import "./TeacherEditor.css";
+import { Header } from "./Header";
 
 // This component wraps the LearningMapEditor and saves maps to the teacher's collection
 // when they are shared or modified
 function TeacherEditorInner() {
   const location = useLocation();
-  const shareLink = useEditorStore(state => state.shareLink);
-  const shareDialogOpen = useEditorStore(state => state.shareDialogOpen);
-  const getRoadmapData = useEditorStore(state => state.getRoadmapData);
-  const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
-  const reset = useEditorStore(state => state.reset);
-  const nodes = useEditorStore(state => state.nodes);
-  const edges = useEditorStore(state => state.edges);
-  const settings = useEditorStore(state => state.settings);
+  const shareLink = useEditorStore((state) => state.shareLink);
+  const shareDialogOpen = useEditorStore((state) => state.shareDialogOpen);
+  const getRoadmapData = useEditorStore((state) => state.getRoadmapData);
+  const loadRoadmapData = useEditorStore((state) => state.loadRoadmapData);
+  const reset = useEditorStore((state) => state.reset);
+  const nodes = useEditorStore((state) => state.nodes);
+  const edges = useEditorStore((state) => state.edges);
+  const settings = useEditorStore((state) => state.settings);
   const lastSavedRef = useRef<string | null>(null);
   const saveTimeoutRef = useRef<number | null>(null);
   const initializedRef = useRef(false);
@@ -51,7 +51,7 @@ function TeacherEditorInner() {
           initializedRef.current = true;
         }
       } catch (err) {
-        console.error('Failed to load map:', err);
+        console.error("Failed to load map:", err);
       }
     };
 
@@ -80,10 +80,10 @@ function TeacherEditorInner() {
     // Debounce saves to avoid too many writes
     saveTimeoutRef.current = window.setTimeout(async () => {
       const roadmapData = getRoadmapData();
-      
+
       // Determine the database ID for this map
       let dbId: string;
-      
+
       if (currentDbIdRef.current) {
         // We already have a database ID for this editing session - use it
         dbId = currentDbIdRef.current;
@@ -91,20 +91,24 @@ function TeacherEditorInner() {
         // New map - generate a new database ID and remember it
         dbId = `map-${Date.now()}`;
         currentDbIdRef.current = dbId;
-        
+
         // Ensure settings.id is set
         if (!roadmapData.settings?.id) {
           roadmapData.settings = { ...roadmapData.settings, id: dbId };
         }
       }
-      
+
       try {
         // Get existing map to preserve jsonId
         const existingMap = await db.getTeacherMap(dbId);
         // Save or update the map
-        await db.addTeacherMap(dbId, roadmapData, existingMap?.jsonId || undefined);
+        await db.addTeacherMap(
+          dbId,
+          roadmapData,
+          existingMap?.jsonId || undefined,
+        );
       } catch (err) {
-        console.error('Failed to auto-save map:', err);
+        console.error("Failed to auto-save map:", err);
       }
     }, 1000); // Save after 1 second of inactivity
 
@@ -122,7 +126,7 @@ function TeacherEditorInner() {
       const match = shareLink.match(/#json=([^&]+)/);
       if (match) {
         const jsonId = match[1];
-        
+
         // Avoid duplicate saves for the same share
         if (lastSavedRef.current === jsonId) return;
         lastSavedRef.current = jsonId;
@@ -130,7 +134,7 @@ function TeacherEditorInner() {
         // Get current roadmap data and save to teacher collection
         const saveSharedMap = async () => {
           const roadmapData = getRoadmapData();
-          
+
           // Use the current database ID from this editing session
           let dbId: string;
           if (currentDbIdRef.current) {
@@ -140,10 +144,10 @@ function TeacherEditorInner() {
             dbId = `map-${Date.now()}`;
             currentDbIdRef.current = dbId;
           }
-          
+
           await db.addTeacherMap(dbId, roadmapData, jsonId);
         };
-        
+
         saveSharedMap();
       }
     }
@@ -158,7 +162,7 @@ export function TeacherEditor() {
   return (
     <div className="teacher-editor-container">
       <Header>
-        <button onClick={() => navigate('/teach')} className="toolbar-button">
+        <button onClick={() => navigate("/teach")} className="toolbar-button">
           My Maps
         </button>
       </Header>
