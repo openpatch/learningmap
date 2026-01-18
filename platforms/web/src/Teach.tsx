@@ -47,13 +47,9 @@ function Teach() {
   };
 
   const handleEditMap = (map: TeacherMapEntry) => {
-    if (map.jsonId) {
-      navigate(`/create#json=${map.jsonId}`);
-    } else {
-      // For maps without jsonId, we'd need to pass data differently
-      // For now, prompt to publish first
-      alert('Please publish this map first to get a shareable link, then you can edit it.');
-    }
+    // Use jsonId if published, otherwise use the local storage ID
+    const editId = map.jsonId || map.id;
+    navigate(`/create#id=${editId}`);
   };
 
   const handleAddMapFromUrl = async () => {

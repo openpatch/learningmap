@@ -13,6 +13,7 @@ function TeacherEditorInner() {
   const shareLink = useEditorStore(state => state.shareLink);
   const shareDialogOpen = useEditorStore(state => state.shareDialogOpen);
   const getRoadmapData = useEditorStore(state => state.getRoadmapData);
+  const loadRoadmapData = useEditorStore(state => state.loadRoadmapData);
   const reset = useEditorStore(state => state.reset);
   const nodes = useEditorStore(state => state.nodes);
   const edges = useEditorStore(state => state.edges);
@@ -21,20 +22,46 @@ function TeacherEditorInner() {
   const saveTimeoutRef = useRef<number | null>(null);
   const initializedRef = useRef(false);
 
-  // Extract jsonId from URL
-  const jsonId = location.hash.startsWith('#json=') ? location.hash.replace('#json=', '') : null;
+  // Extract id from URL - supports both #id= and #json= for backwards compatibility
+  const urlHash = location.hash.slice(1); // Remove the #
+  const idMatch = urlHash.match(/id=([^&]+)/);
+  const jsonMatch = urlHash.match(/json=([^&]+)/);
+  const mapId = idMatch ? idMatch[1] : jsonMatch ? jsonMatch[1] : null;
 
-  // Reset editor when creating a new map (no jsonId in URL)
+  // Load map from database when editing an existing map
   useEffect(() => {
-    if (!jsonId && !initializedRef.current) {
-      reset();
+    if (!mapId) {
+      // No ID in URL - reset for new map creation
+      if (!initializedRef.current) {
+        reset();
+        initializedRef.current = true;
+      }
+      return;
+    }
+
+    // Load map from database
+    const loadMap = async () => {
+      try {
+        const teacherMap = await db.getTeacherMap(mapId);
+        if (teacherMap) {
+          loadRoadmapData(teacherMap.roadmapData);
+          initializedRef.current = true;
+        }
+      } catch (err) {
+        console.error('Failed to load map:', err);
+      }
+    };
+
+    if (!initializedRef.current) {
+      loadMap();
       initializedRef.current = true;
     }
-    // Reset the flag when jsonId changes (navigating to edit an existing map)
-    if (jsonId) {
+
+    // Reset the flag when mapId changes (navigating to a different map)
+    return () => {
       initializedRef.current = false;
-    }
-  }, [jsonId, reset]);
+    };
+  }, [mapId, reset, loadRoadmapData]);
 
   // Auto-save changes with debouncing
   useEffect(() => {
@@ -52,11 +79,11 @@ function TeacherEditorInner() {
       
       // Generate a storage ID for this map
       let storageId: string;
-      if (jsonId) {
-        // Use jsonId if available
-        storageId = roadmapData.settings?.id || jsonId;
+      if (mapId) {
+        // Use mapId if available (editing existing map)
+        storageId = roadmapData.settings?.id || mapId;
       } else {
-        // For new maps without jsonId, use or create a unique ID
+        // For new maps without mapId, use or create a unique ID
         storageId = roadmapData.settings?.id || `local-${Date.now()}`;
         // Update settings with the generated ID if it doesn't have one
         if (!roadmapData.settings?.id) {
@@ -68,7 +95,7 @@ function TeacherEditorInner() {
         // Check if this map exists in teacher's collection
         const existingMap = await db.getTeacherMap(storageId);
         // Save or update the map
-        await db.addTeacherMap(storageId, roadmapData, existingMap?.jsonId || jsonId || undefined);
+        await db.addTeacherMap(storageId, roadmapData, existingMap?.jsonId || undefined);
       } catch (err) {
         console.error('Failed to auto-save map:', err);
       }
@@ -79,7 +106,7 @@ function TeacherEditorInner() {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [nodes, edges, settings, jsonId, getRoadmapData]);
+  }, [nodes, edges, settings, mapId, getRoadmapData]);
 
   // When a map is shared, save it to the teacher's collection
   useEffect(() => {
