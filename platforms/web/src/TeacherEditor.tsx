@@ -21,6 +21,7 @@ function TeacherEditorInner() {
   const lastSavedRef = useRef<string | null>(null);
   const saveTimeoutRef = useRef<number | null>(null);
   const initializedRef = useRef(false);
+  const currentDbIdRef = useRef<string | null>(null); // Track the current database ID
 
   // Extract id from URL - supports both #id= and #json= for backwards compatibility
   const urlHash = location.hash.slice(1); // Remove the #
@@ -34,6 +35,7 @@ function TeacherEditorInner() {
       // No ID in URL - reset for new map creation
       if (!initializedRef.current) {
         reset();
+        currentDbIdRef.current = null; // Reset database ID for new map
         initializedRef.current = true;
       }
       return;
@@ -45,6 +47,7 @@ function TeacherEditorInner() {
         const teacherMap = await db.getTeacherMap(mapId);
         if (teacherMap) {
           loadRoadmapData(teacherMap.roadmapData);
+          currentDbIdRef.current = mapId; // Set the database ID
           initializedRef.current = true;
         }
       } catch (err) {
@@ -60,6 +63,7 @@ function TeacherEditorInner() {
     // Reset the flag when mapId changes (navigating to a different map)
     return () => {
       initializedRef.current = false;
+      currentDbIdRef.current = null;
     };
   }, [mapId, reset, loadRoadmapData]);
 
@@ -79,25 +83,18 @@ function TeacherEditorInner() {
       
       // Determine the database ID for this map
       let dbId: string;
-      if (mapId) {
-        // Editing existing map - use the database ID from URL
-        dbId = mapId;
+      
+      if (currentDbIdRef.current) {
+        // We already have a database ID for this editing session - use it
+        dbId = currentDbIdRef.current;
       } else {
-        // New map - check if we already created a database entry
-        // Look for existing map with matching settings.id
-        const settingsId = roadmapData.settings?.id;
-        const existingMap = settingsId ? await db.findTeacherMapBySettingsId(settingsId) : undefined;
+        // New map - generate a new database ID and remember it
+        dbId = `map-${Date.now()}`;
+        currentDbIdRef.current = dbId;
         
-        if (existingMap) {
-          // Already saved - update existing
-          dbId = existingMap.id;
-        } else {
-          // First save - generate new database ID
-          dbId = `map-${Date.now()}`;
-          // Ensure settings.id is set
-          if (!roadmapData.settings?.id) {
-            roadmapData.settings = { ...roadmapData.settings, id: `map-${Date.now()}` };
-          }
+        // Ensure settings.id is set
+        if (!roadmapData.settings?.id) {
+          roadmapData.settings = { ...roadmapData.settings, id: dbId };
         }
       }
       
@@ -116,7 +113,7 @@ function TeacherEditorInner() {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [nodes, edges, settings, mapId, getRoadmapData]);
+  }, [nodes, edges, settings, getRoadmapData]);
 
   // When a map is shared, save it to the teacher's collection
   useEffect(() => {
@@ -133,17 +130,15 @@ function TeacherEditorInner() {
         // Get current roadmap data and save to teacher collection
         const saveSharedMap = async () => {
           const roadmapData = getRoadmapData();
-          const settingsId = roadmapData.settings?.id;
           
-          // Find existing map by database ID or settings ID
+          // Use the current database ID from this editing session
           let dbId: string;
-          if (mapId) {
-            // Editing existing map - use the database ID from URL
-            dbId = mapId;
+          if (currentDbIdRef.current) {
+            dbId = currentDbIdRef.current;
           } else {
-            // New map - look for existing by settings.id
-            const existingMap = settingsId ? await db.findTeacherMapBySettingsId(settingsId) : undefined;
-            dbId = existingMap?.id || `map-${Date.now()}`;
+            // New map that hasn't been saved yet - create database ID
+            dbId = `map-${Date.now()}`;
+            currentDbIdRef.current = dbId;
           }
           
           await db.addTeacherMap(dbId, roadmapData, jsonId);
@@ -152,7 +147,7 @@ function TeacherEditorInner() {
         saveSharedMap();
       }
     }
-  }, [shareLink, shareDialogOpen, getRoadmapData, mapId]);
+  }, [shareLink, shareDialogOpen, getRoadmapData]);
 
   return null;
 }
