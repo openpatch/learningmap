@@ -430,7 +430,7 @@ function Learn() {
                 <input
                   id="file-upload"
                   type="file"
-                  accept=".json,application/json"
+                  accept=".learningmap,.json,application/json"
                   onChange={handleFileUpload}
                   style={{ display: "none" }}
                 />
