@@ -65,33 +65,39 @@ const calculateNodesStates = (nodes: Node<NodeData>[]) => {
     for (const node of updatedNodes) {
       node.data.state = node.data?.state || 'locked';
       
-      // Check unlock conditions
-      if (node.data?.unlock?.after) {
-        const unlocked = node.data.unlock.after.every((depId: string) =>
-          isCompleteState(stateMap[depId])
-        );
-        if (unlocked) {
+      // Check unlock conditions - ALL conditions must be met to unlock
+      const hasUnlockAfter = Boolean(node.data?.unlock?.after);
+      const hasUnlockDate = Boolean(node.data?.unlock?.date);
+      
+      if (hasUnlockAfter || hasUnlockDate) {
+        // Check if all unlock conditions are satisfied
+        let shouldUnlock = true;
+        
+        if (hasUnlockAfter) {
+          const afterMet = node.data.unlock.after.every((depId: string) =>
+            isCompleteState(stateMap[depId])
+          );
+          shouldUnlock = shouldUnlock && afterMet;
+        }
+        
+        if (hasUnlockDate) {
+          const unlockDate = new Date(node.data.unlock.date);
+          const now = new Date();
+          const dateMet = now >= unlockDate;
+          shouldUnlock = shouldUnlock && dateMet;
+        }
+        
+        if (shouldUnlock) {
           if (node.data.state === 'locked') {
             node.data.state = 'unlocked';
           }
         } else {
-          node.data.state = 'locked';
-        }
-      }
-      
-      if (node.data?.unlock?.date) {
-        const unlockDate = new Date(node.data.unlock.date);
-        const now = new Date();
-        if (now >= unlockDate) {
-          if (node.data.state === 'locked') {
-            node.data.state = 'unlocked';
+          if (!isCompleteState(node.data.state)) {
+            node.data.state = 'locked';
           }
-        } else {
-          node.data.state = 'locked';
         }
-      }
-      
-      if (!node.data?.unlock?.after && !node.data?.unlock?.date) {
+      } else {
+        // No unlock conditions - node is unlocked by default
         if (node.data.state === 'locked') {
           node.data.state = 'unlocked';
         }

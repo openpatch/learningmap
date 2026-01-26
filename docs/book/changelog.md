@@ -13,6 +13,18 @@ If you need a new feature, open an [issue](https://github.com/openpatch/learning
 
 :::
 
+## v0.5.1
+
+::::tabs
+
+:::tab{title="Fixed :bug:" id="fixed"}
+
+- Fix node completion state not updating correctly.
+
+:::
+
+::::
+
 ## v0.5.0
 
 ::::tabs
