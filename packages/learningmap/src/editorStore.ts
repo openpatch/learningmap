@@ -65,6 +65,10 @@ export interface EditorState {
   showCompletionOptional: boolean;
   showUnlockAfter: boolean;
 
+  // Node picker state
+  pickerMode: boolean;
+  pickerCallback: ((nodeId: string) => void) | null;
+
   // Actions
   onNodesChange: (changes: NodeChange<Node<NodeData>>[]) => void;
   onEdgesChange: (changes: EdgeChange<Edge>[]) => void;
@@ -107,6 +111,8 @@ export interface EditorState {
   setShowCompletionNeeds: (showCompletionNeeds: boolean) => void;
   setShowCompletionOptional: (showCompletionOptional: boolean) => void;
   setShowUnlockAfter: (showUnlockAfter: boolean) => void;
+  setPickerMode: (mode: boolean, callback?: ((nodeId: string) => void) | null) => void;
+  executePickerCallback: (nodeId: string) => void;
 
   // Bulk operations
   loadRoadmapData: (roadmapData: RoadmapData) => void;
@@ -144,6 +150,8 @@ const initialState = {
   showCompletionNeeds: true,
   showCompletionOptional: true,
   showUnlockAfter: true,
+  pickerMode: false,
+  pickerCallback: null,
 };
 
 // Temporal middleware configuration
@@ -416,6 +424,16 @@ export const useEditorStore = create<EditorState>()(
         setShowUnlockAfter: (showUnlockAfter) => {
           set({ showUnlockAfter });
           get().updateDebugEdges();
+        },
+        setPickerMode: (mode, callback = null) => {
+          set({ pickerMode: mode, pickerCallback: callback });
+        },
+        executePickerCallback: (nodeId) => {
+          const { pickerCallback } = get();
+          if (pickerCallback) {
+            pickerCallback(nodeId);
+            set({ pickerMode: false, pickerCallback: null });
+          }
         },
 
         updateRoadmapData: (roadmapData) => {

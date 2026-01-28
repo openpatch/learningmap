@@ -13,6 +13,18 @@ If you need a new feature, open an [issue](https://github.com/openpatch/learning
 
 :::
 
+## v0.6.0
+
+::::tabs
+
+:::tab{title="New :rocket:" id="new"}
+
+- Add a picker for selecting nodes.
+
+:::
+
+::::
+
 ## v0.5.1
 
 ::::tabs

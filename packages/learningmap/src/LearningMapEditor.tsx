@@ -9,6 +9,7 @@ import { WelcomeMessage } from "./WelcomeMessage";
 import { EditorCanvas } from "./EditorCanvas";
 import { EditorDialogs } from "./EditorDialogs";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
+import { PickerBanner } from "./PickerBanner";
 import { detectBrowserLanguage } from "./translations";
 import { useEffect } from "react";
 
@@ -85,6 +86,9 @@ export function LearningMapEditor({
 
       {/* Toolbar */}
       <EditorToolbar disableSharing={disableSharing} disableFileOperations={disableFileOperations} />
+
+      {/* Picker mode banner */}
+      <PickerBanner />
 
       {/* Preview or Edit mode */}
       {previewMode && <LearningMap roadmapData={getRoadmapData()} />}

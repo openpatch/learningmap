@@ -1031,3 +1031,14 @@ dialog.help[open] {
 .panel-footer-centered button {
   flex: 1;
 }
+
+/* Picker Mode Styles */
+.editor-canvas.picker-mode .react-flow__node-task,
+.editor-canvas.picker-mode .react-flow__node-topic {
+  cursor: crosshair !important;
+}
+
+.editor-canvas.picker-mode .react-flow__node-task *,
+.editor-canvas.picker-mode .react-flow__node-topic * {
+  cursor: crosshair !important;
+}

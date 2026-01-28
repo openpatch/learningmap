@@ -105,6 +105,9 @@ export interface Translations {
   placeholderOptionalPassword: string;
   placeholderBackgroundText: string;
   selectNode: string;
+  pickFromMap: string;
+  pickingNode: string;
+  clickNodeToPick: string;
 
   // Buttons
   deleteNode: string;
@@ -323,6 +326,9 @@ const en: Translations = {
   placeholderOptionalPassword: "Optional password",
   placeholderBackgroundText: "Background Text",
   selectNode: "Select node...",
+  pickFromMap: "Pick from map",
+  pickingNode: "Picking node...",
+  clickNodeToPick: "Click on a node in the map to select it",
 
   // Buttons
   deleteNode: "Delete Node",
@@ -548,6 +554,9 @@ const de: Translations = {
   placeholderOptionalPassword: "Optionales Passwort",
   placeholderBackgroundText: "Hintergrundtext",
   selectNode: "Knoten auswählen...",
+  pickFromMap: "Von Karte auswählen",
+  pickingNode: "Knoten auswählen...",
+  clickNodeToPick: "Klicke auf einen Knoten in der Karte, um ihn auszuwählen",
 
   // Buttons
   deleteNode: "Knoten löschen",

@@ -13,7 +13,7 @@ interface Props {
   handleUnlockAfterChange: (idx: number, id: string) => void;
   addUnlockAfter: () => void;
   removeUnlockAfter: (idx: number) => void;
-  renderNodeSelect: (value: string, onChange: (id: string) => void) => React.ReactNode;
+  renderNodePicker: (value: string, onChange: (id: string) => void, onRemove: () => void) => React.ReactNode;
   handleCompletionNeedsChange: (idx: number, id: string) => void;
   addCompletionNeed: () => void;
   removeCompletionNeed: (idx: number) => void;
@@ -31,7 +31,7 @@ export function EditorDrawerTaskContent({
   handleUnlockAfterChange,
   addUnlockAfter,
   removeUnlockAfter,
-  renderNodeSelect,
+  renderNodePicker,
   handleCompletionNeedsChange,
   addCompletionNeed,
   removeCompletionNeed,
@@ -235,42 +235,27 @@ export function EditorDrawerTaskContent({
       </div>
       <div className="form-group">
         <label>{t.unlockAfter}</label>
-        {(localNode.data.unlock?.after || []).map((id: string, idx: number) => (
-          <div key={idx} style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-            {renderNodeSelect(id, newId => handleUnlockAfterChange(idx, newId))}
-            <button onClick={() => removeUnlockAfter(idx)} className="icon-button">
-              <Trash2 size={16} />
-            </button>
-          </div>
-        ))}
+        {(localNode.data.unlock?.after || []).map((id: string, idx: number) => 
+          renderNodePicker(id, newId => handleUnlockAfterChange(idx, newId), () => removeUnlockAfter(idx))
+        )}
         <button onClick={addUnlockAfter} className="secondary-button">
           <Plus size={16} /> {t.unlockAfter}
         </button>
       </div>
       {localNode.type === "topic" && <div className="form-group">
         <label>{t.completionNeeds}</label>
-        {(localNode.data.completion?.needs || []).map((need: string, idx: number) => (
-          <div key={idx} style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-            {renderNodeSelect(need, newId => handleCompletionNeedsChange(idx, newId))}
-            <button onClick={() => removeCompletionNeed(idx)} className="icon-button">
-              <Trash2 size={16} />
-            </button>
-          </div>
-        ))}
+        {(localNode.data.completion?.needs || []).map((need: string, idx: number) =>
+          renderNodePicker(need, newId => handleCompletionNeedsChange(idx, newId), () => removeCompletionNeed(idx))
+        )}
         <button onClick={addCompletionNeed} className="secondary-button">
           <Plus size={16} /> {t.completionNeeds}
         </button>
       </div>}
       {localNode.type === "topic" && <div className="form-group">
         <label>{t.completionOptional}</label>
-        {(localNode.data.completion?.optional || []).map((opt: string, idx: number) => (
-          <div key={idx} style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-            {renderNodeSelect(opt, newId => handleCompletionOptionalChange(idx, newId))}
-            <button onClick={() => removeCompletionOptional(idx)} className="icon-button">
-              <Trash2 size={16} />
-            </button>
-          </div>
-        ))}
+        {(localNode.data.completion?.optional || []).map((opt: string, idx: number) =>
+          renderNodePicker(opt, newId => handleCompletionOptionalChange(idx, newId), () => removeCompletionOptional(idx))
+        )}
         <button onClick={addCompletionOptional} className="secondary-button">
           <Plus size={16} /> {t.completionOptional}
         </button>

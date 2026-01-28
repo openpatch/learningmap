@@ -31,6 +31,7 @@ export const EditorCanvas = memo(() => {
   const showGrid = useEditorStore(state => state.showGrid);
   const selectedNodeIds = useEditorStore(state => state.selectedNodeIds);
   const settings = useEditorStore(state => state.settings);
+  const pickerMode = useEditorStore(state => state.pickerMode);
 
   // Get actions from store
   const onNodesChange = useEditorStore(state => state.onNodesChange);
@@ -71,12 +72,19 @@ export const EditorCanvas = memo(() => {
   }));
 
   const handleNodeClick = useCallback((_: any, node: Node<NodeData>) => {
+    // Execute picker callback when in picker mode
+    if (pickerMode) {
+      const executePickerCallback = useEditorStore.getState().executePickerCallback;
+      executePickerCallback(node.id);
+      return;
+    }
+    
     setSelectedNodeId(node.id);
     setDrawerOpen(true);
     setSelectedEdge(null);
     setEdgeDrawerOpen(false);
     setSettingsDrawerOpen(false);
-  }, [setSelectedNodeId, setDrawerOpen, setSelectedEdge, setEdgeDrawerOpen, setSettingsDrawerOpen]);
+  }, [setSelectedNodeId, setDrawerOpen, setSelectedEdge, setEdgeDrawerOpen, setSettingsDrawerOpen, pickerMode]);
 
   const handleEdgeClick = useCallback((_: any, edge: Edge) => {
     setSelectedEdge(edge);
@@ -127,9 +135,10 @@ export const EditorCanvas = memo(() => {
   return (
     <div
       ref={canvasRef}
-      className="editor-canvas"
+      className={`editor-canvas ${pickerMode ? "picker-mode" : ""}`}
       style={{
         backgroundColor: settings?.background?.color || "#ffffff",
+        cursor: pickerMode ? "crosshair" : "default",
       }}
       onMouseMove={handleMouseMove}
     >
@@ -149,10 +158,11 @@ export const EditorCanvas = memo(() => {
         edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={defaultEdgeOptions}
-        nodesDraggable={true}
+        nodesDraggable={!pickerMode}
         elevateNodesOnSelect={false}
-        nodesConnectable={true}
+        nodesConnectable={!pickerMode}
         selectNodesOnDrag={false}
+        elementsSelectable={!pickerMode}
         colorMode="light"
       >
         {showGrid && <Background />}

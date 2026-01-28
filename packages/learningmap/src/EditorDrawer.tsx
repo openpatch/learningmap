@@ -7,6 +7,7 @@ import { EditorDrawerImageContent } from "./EditorDrawerImageContent";
 import { EditorDrawerTextContent } from "./EditorDrawerTextContent";
 import { Completion, NodeData } from "./types";
 import { useEditorStore } from "./editorStore";
+import { NodePickerInput } from "./NodePickerInput";
 
 export const EditorDrawer: React.FC = () => {
   // Get node and all nodes from store
@@ -77,18 +78,19 @@ export const EditorDrawer: React.FC = () => {
     const aLabel = (a.data.label || a.id).toLowerCase();
     const bLabel = (b.data.label || b.id).toLowerCase();
     return aLabel.localeCompare(bLabel);
-  });
+  }).map(n => ({
+    id: n.id,
+    label: n.data.label || n.id
+  }));
 
-  // Helper for dropdowns
-  const renderNodeSelect = (value: string, onChange: (id: string) => void) => (
-    <select value={value} onChange={e => onChange(e.target.value)}>
-      <option value="">{t.selectNode}</option>
-      {sortedNodeOptions.map(n => (
-        <option key={n.id} value={n.id}>
-          {n.data.label || n.id}
-        </option>
-      ))}
-    </select>
+  // Helper for picker inputs
+  const renderNodePicker = (value: string, onChange: (id: string) => void, onRemove: () => void) => (
+    <NodePickerInput
+      value={value}
+      onChange={onChange}
+      onRemove={onRemove}
+      nodeOptions={sortedNodeOptions}
+    />
   );
 
   // Completion Needs
@@ -197,7 +199,7 @@ export const EditorDrawer: React.FC = () => {
           handleUnlockAfterChange={handleUnlockAfterChange}
           addUnlockAfter={addUnlockAfter}
           removeUnlockAfter={removeUnlockAfter}
-          renderNodeSelect={renderNodeSelect}
+          renderNodePicker={renderNodePicker}
           handleCompletionNeedsChange={handleCompletionNeedsChange}
           addCompletionNeed={addCompletionNeed}
           removeCompletionNeed={removeCompletionNeed}
@@ -225,7 +227,7 @@ export const EditorDrawer: React.FC = () => {
           handleUnlockAfterChange={handleUnlockAfterChange}
           addUnlockAfter={addUnlockAfter}
           removeUnlockAfter={removeUnlockAfter}
-          renderNodeSelect={renderNodeSelect}
+          renderNodePicker={renderNodePicker}
           handleCompletionNeedsChange={handleCompletionNeedsChange}
           addCompletionNeed={addCompletionNeed}
           removeCompletionNeed={removeCompletionNeed}

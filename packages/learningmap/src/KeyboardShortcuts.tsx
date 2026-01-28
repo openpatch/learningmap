@@ -83,6 +83,8 @@ export const KeyboardShortcuts = ({
   const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
   const settingsDrawerOpen = useEditorStore(state => state.settingsDrawerOpen);
   const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
+  const pickerMode = useEditorStore(state => state.pickerMode);
+  const setPickerMode = useEditorStore(state => state.setPickerMode);
 
   const t = getTranslationsFromStore();
 
@@ -206,6 +208,13 @@ export const KeyboardShortcuts = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // ESC key cancels picker mode
+      if (e.key === 'Escape' && pickerMode) {
+        e.preventDefault();
+        setPickerMode(false, null);
+        return;
+      }
+      
       if (drawerOpen || edgeDrawerOpen || settingsDrawerOpen) {
         return; // Ignore shortcuts when any drawer is open
       }
@@ -286,7 +295,7 @@ export const KeyboardShortcuts = ({
     };
   }, [onAddNode, onDeleteSelected, onSave, undo, redo, helpOpen, setHelpOpen, onTogglePreview, onToggleDebug,
     onZoomIn, onZoomOut, onResetZoom, onFitView, onZoomToSelection, onToggleGrid,
-    onResetMap, onCut, onCopy, onPaste, onSelectAll, drawerOpen, edgeDrawerOpen, settingsDrawerOpen, keyBindings]);
+    onResetMap, onCut, onCopy, onPaste, onSelectAll, drawerOpen, edgeDrawerOpen, settingsDrawerOpen, keyBindings, pickerMode, setPickerMode]);
 
   return null;
 };
