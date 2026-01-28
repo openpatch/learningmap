@@ -1,5 +1,11 @@
 # @hyperbook/web-component-learningmap
 
+## 0.6.0
+
+### Minor Changes
+
+- [`f2822c7`](https://github.com/openpatch/learningmap/commit/f2822c7760be8b05aabaff431bc2fa9d32eaa313) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Add a picker so selecting nodes
+
 ## 0.5.1
 
 ### Patch Changes
