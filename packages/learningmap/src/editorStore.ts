@@ -16,7 +16,11 @@ import {
   Connection,
 } from "@xyflow/react";
 import { NodeData, RoadmapData, Settings } from "./types";
-import { getZIndexForNodeType } from "./zIndexHelper";
+import {
+  getZIndexForNodeType,
+  reorderNodes,
+  LayerOperation,
+} from "./zIndexHelper";
 import { getTranslations, detectBrowserLanguage, Translations } from "./translations";
 
 // Global flag to control persistence
@@ -24,6 +28,22 @@ let persistenceEnabled = true;
 
 export function setPersistence(enabled: boolean) {
   persistenceEnabled = enabled;
+}
+
+/**
+ * Mirrors `data.locked` onto the React Flow interaction flags.
+ *
+ * Locking lives in `data` so it is persisted with the map, but React Flow
+ * reads these flags from the node itself.
+ */
+function applyLockFlags(node: Node<NodeData>): Node<NodeData> {
+  const locked = Boolean(node.data?.locked);
+  return {
+    ...node,
+    draggable: !locked,
+    selectable: !locked,
+    connectable: !locked,
+  };
 }
 
 // Note: This is a global store for the editor. Typically only one editor instance is active at a time.
@@ -47,6 +67,7 @@ export interface EditorState {
   edgeDrawerOpen: boolean;
   shareDialogOpen: boolean;
   loadExternalDialogOpen: boolean;
+  layersPanelOpen: boolean;
 
   // Selected items
   selectedNodeId: string | null;
@@ -84,6 +105,10 @@ export interface EditorState {
   deleteNode: (nodeId: string) => void;
   deleteEdge: (edgeId: string) => void;
   addNode: (node: Node<NodeData>) => void;
+  reorderNodes: (nodeIds: string[], operation: LayerOperation) => void;
+  setNodeLocked: (nodeId: string, locked: boolean) => void;
+  setNodesLocked: (nodeIds: string[], locked: boolean) => void;
+  selectNode: (nodeId: string, openPanel?: boolean) => void;
 
   setJsonStore: (jsonStore: string) => void;
   setDefaultLanguage: (defaultLanguage: string) => void;
@@ -98,6 +123,7 @@ export interface EditorState {
   setEdgeDrawerOpen: (edgeDrawerOpen: boolean) => void;
   setShareDialogOpen: (shareDialogOpen: boolean) => void;
   setLoadExternalDialogOpen: (loadExternalDialogOpen: boolean) => void;
+  setLayersPanelOpen: (layersPanelOpen: boolean) => void;
   setSelectedNodeId: (nodeId: string | null) => void;
   setSelectedNodeIds: (nodeIds: string[]) => void;
   setSelectedEdge: (edge: Edge | null) => void;
@@ -139,6 +165,7 @@ const initialState = {
   edgeDrawerOpen: false,
   shareDialogOpen: false,
   loadExternalDialogOpen: false,
+  layersPanelOpen: false,
   selectedNodeId: null,
   selectedNodeIds: [],
   selectedEdge: null,
@@ -315,7 +342,7 @@ export const useEditorStore = create<EditorState>()(
         updateNode: (nodeId, updates) => {
           set({
             nodes: get().nodes.map((n) =>
-              n.id === nodeId ? { ...n, ...updates } : n,
+              n.id === nodeId ? applyLockFlags({ ...n, ...updates }) : n,
             ),
           });
           get().updateDebugEdges();
@@ -325,7 +352,7 @@ export const useEditorStore = create<EditorState>()(
           set({
             nodes: get().nodes.map((n) =>
               n.id === nodeId
-                ? { ...n, data: { ...n.data, ...dataUpdates } }
+                ? applyLockFlags({ ...n, data: { ...n.data, ...dataUpdates } })
                 : n,
             ),
           });
@@ -371,8 +398,77 @@ export const useEditorStore = create<EditorState>()(
         },
 
         addNode: (node) => {
+          // Deselect everything else so the new node is unambiguously the
+          // active one, otherwise it is easy to lose track of where it landed.
+          const nodes = get().nodes.map((n) =>
+            n.selected ? { ...n, selected: false } : n,
+          );
+
           set({
-            nodes: [...get().nodes, node],
+            nodes: [...nodes, applyLockFlags({ ...node, selected: true })],
+            selectedNodeId: node.id,
+            selectedNodeIds: [node.id],
+          });
+
+          // Image and text nodes are empty until they are given content, so
+          // open the editor right away instead of leaving a blank placeholder.
+          if (node.type === "image" || node.type === "text") {
+            set({
+              drawerOpen: true,
+              edgeDrawerOpen: false,
+              settingsDrawerOpen: false,
+              selectedEdge: null,
+            });
+          }
+        },
+
+        reorderNodes: (nodeIds, operation) => {
+          set({ nodes: reorderNodes(get().nodes, nodeIds, operation) });
+        },
+
+        setNodeLocked: (nodeId, locked) => {
+          get().setNodesLocked([nodeId], locked);
+        },
+
+        setNodesLocked: (nodeIds, locked) => {
+          const ids = new Set(nodeIds);
+          set({
+            nodes: get().nodes.map((n) =>
+              ids.has(n.id)
+                ? applyLockFlags({
+                    ...n,
+                    data: { ...n.data, locked },
+                    // A locked node cannot stay selected on the canvas.
+                    selected: locked ? false : n.selected,
+                  })
+                : n,
+            ),
+          });
+
+          if (locked) {
+            set({
+              selectedNodeIds: get().selectedNodeIds.filter(
+                (id) => !ids.has(id),
+              ),
+            });
+          }
+        },
+
+        selectNode: (nodeId, openPanel = true) => {
+          const node = get().nodes.find((n) => n.id === nodeId);
+          set({
+            nodes: get().nodes.map((n) => {
+              // Locked nodes stay unselected on the canvas, but can still be
+              // edited through the panel.
+              const selected = n.id === nodeId && !n.data?.locked;
+              return n.selected === selected ? n : { ...n, selected };
+            }),
+            selectedNodeId: nodeId,
+            selectedNodeIds: node?.data?.locked ? [] : [nodeId],
+            selectedEdge: null,
+            edgeDrawerOpen: false,
+            settingsDrawerOpen: false,
+            drawerOpen: openPanel,
           });
         },
 
@@ -399,6 +495,7 @@ export const useEditorStore = create<EditorState>()(
         setShareDialogOpen: (shareDialogOpen) => set({ shareDialogOpen }),
         setLoadExternalDialogOpen: (loadExternalDialogOpen) =>
           set({ loadExternalDialogOpen }),
+        setLayersPanelOpen: (layersPanelOpen) => set({ layersPanelOpen }),
         setSelectedNodeId: (selectedNodeId) =>
           set({
             selectedNodeId,
@@ -450,15 +547,16 @@ export const useEditorStore = create<EditorState>()(
             ? roadmapData.edges
             : [];
 
-          const rawNodes = nodesArr.map((n) => ({
-            ...n,
-            draggable: true,
-            className: n.data.color ? n.data.color : n.className,
-            // Ensure zIndex is set based on node type if not already present
-            zIndex:
-              n.zIndex !== undefined ? n.zIndex : getZIndexForNodeType(n.type),
-            data: { ...n.data },
-          }));
+          const rawNodes = nodesArr.map((n) =>
+            applyLockFlags({
+              ...n,
+              className: n.data.color ? n.data.color : n.className,
+              // Ensure zIndex is set based on node type if not already present
+              zIndex:
+                n.zIndex !== undefined ? n.zIndex : getZIndexForNodeType(n.type),
+              data: { ...n.data },
+            }),
+          );
 
           // Calculate next node ID
           let nextNodeId = 1;

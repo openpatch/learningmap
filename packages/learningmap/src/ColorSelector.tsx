@@ -20,7 +20,7 @@ export const ColorSelector: React.FC<ColorSelectorProps> = ({ value, onChange, l
         type="text"
         value={value}
         onChange={e => onChange(e.target.value)}
-        placeholder="#e5e7eb"
+        placeholder="#111827"
         style={{ width: 100 }}
       />
     </div>

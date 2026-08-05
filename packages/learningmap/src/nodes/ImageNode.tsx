@@ -1,5 +1,7 @@
 import { Node, NodeResizer } from "@xyflow/react";
+import { ImageIcon } from "lucide-react";
 import { ImageNodeData } from "../types";
+import { useEditorStore } from "../editorStore";
 
 // Normalize and validate URL to prevent XSS attacks
 function normalizeAndValidateUrl(url: string): string | null {
@@ -84,7 +86,10 @@ function parseMarkdownLinks(text: string): React.ReactNode[] {
   return parts.length > 0 ? parts : [text];
 }
 
-export const ImageNode = ({ data, selected }: Node<ImageNodeData>) => {
+export const ImageNode = ({ data, selected, isConnectable }: Node<ImageNodeData>) => {
+  const t = useEditorStore((state) => state.getTranslations)();
+  const editable = Boolean(isConnectable) && !data.locked;
+
   return (
     <>
       {data.data ? (
@@ -107,7 +112,13 @@ export const ImageNode = ({ data, selected }: Node<ImageNodeData>) => {
           </div>
         </>
       ) : (
-        <span>No Image</span>
+        <>
+          <NodeResizer isVisible={selected} />
+          <div className="node-placeholder">
+            <ImageIcon size={20} aria-hidden />
+            <span>{editable ? t.clickToChooseImage : t.noImage}</span>
+          </div>
+        </>
       )}
     </>
   );

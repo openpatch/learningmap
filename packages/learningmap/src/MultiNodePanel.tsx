@@ -3,6 +3,7 @@ import { NodeData } from "./types";
 import { FC } from "react";
 import { AlignCenterVertical, AlignCenterHorizontal, AlignEndHorizontal, AlignEndVertical, AlignStartVertical, AlignStartHorizontal, RulerDimensionLine, AlignVerticalDistributeCenter, AlignHorizontalDistributeCenter } from "lucide-react";
 import { useEditorStore } from "./editorStore";
+import { LayerControls } from "./LayerControls";
 
 export const MultiNodePanel: FC = () => {
   // Get selected nodes from store
@@ -146,5 +147,6 @@ export const MultiNodePanel: FC = () => {
     {nodes.length > 2 && <button title="Distribute Horizontal" onClick={distributeHorizontal}><AlignHorizontalDistributeCenter /></button>}
     <button title="Same Width" onClick={sameWidth}><RulerDimensionLine /></button>
     <button title="Same Height" onClick={sameHeight}><RulerDimensionLine style={{ transform: "rotate(90deg)" }} /></button>
+    <LayerControls nodeIds={selectedNodeIds} compact />
   </Panel>;
 }

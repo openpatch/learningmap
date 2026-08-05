@@ -8,6 +8,7 @@ import { EditorDrawerTextContent } from "./EditorDrawerTextContent";
 import { Completion, NodeData } from "./types";
 import { useEditorStore } from "./editorStore";
 import { NodePickerInput } from "./NodePickerInput";
+import { LayerControls } from "./LayerControls";
 
 export const EditorPanel: React.FC = () => {
   // Get node and all nodes from store
@@ -296,6 +297,7 @@ export const EditorPanel: React.FC = () => {
     <Panel position="center-right" className="editor-panel">
       <div className="panel-inner">
         {content}
+        <LayerControls nodeIds={[node.id]} />
         <div className="panel-footer">
           <button onClick={onCopy} className="secondary-button">
             <Copy size={16} /> {t.copyNode}

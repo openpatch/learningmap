@@ -11,7 +11,10 @@ import { MultiNodePanel } from "./MultiNodePanel";
 import { EditorPanel } from "./EditorPanel";
 import { EdgePanel } from "./EdgePanel";
 import { SettingsPanel } from "./SettingsPanel";
+import { LayersPanel } from "./LayersPanel";
 import { NodeData } from "./types";
+import { getNodesAtPosition } from "./zIndexHelper";
+import { getReadableTextColor } from "./colorHelper";
 
 const nodeTypes = {
   topic: TopicNode,
@@ -39,6 +42,7 @@ export const EditorCanvas = memo(() => {
   const onConnect = useEditorStore(state => state.onConnect);
   const setSelectedNodeIds = useEditorStore(state => state.setSelectedNodeIds);
   const setSelectedNodeId = useEditorStore(state => state.setSelectedNodeId);
+  const selectNode = useEditorStore(state => state.selectNode);
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
@@ -71,20 +75,42 @@ export const EditorCanvas = memo(() => {
     canRedo: state.futureStates.length > 0,
   }));
 
-  const handleNodeClick = useCallback((_: any, node: Node<NodeData>) => {
+  /**
+   * Picks the next node underneath the cursor, so nodes covered by another one
+   * can still be reached. Returns the clicked node when there is nothing to
+   * cycle through.
+   */
+  const cycleStackedNode = useCallback((event: React.MouseEvent, clickedNodeId?: string) => {
+    const { nodes: currentNodes, selectedNodeId: currentSelectedNodeId } = useEditorStore.getState();
+    const point = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+    const stack = getNodesAtPosition(currentNodes, point);
+
+    if (stack.length === 0) return null;
+
+    const activeId = currentSelectedNodeId ?? clickedNodeId;
+    const activeIndex = stack.findIndex(n => n.id === activeId);
+    return stack[(activeIndex + 1) % stack.length];
+  }, [screenToFlowPosition]);
+
+  const handleNodeClick = useCallback((event: React.MouseEvent, node: Node<NodeData>) => {
     // Execute picker callback when in picker mode
     if (pickerMode) {
       const executePickerCallback = useEditorStore.getState().executePickerCallback;
       executePickerCallback(node.id);
       return;
     }
-    
-    setSelectedNodeId(node.id);
-    setDrawerOpen(true);
-    setSelectedEdge(null);
-    setEdgeDrawerOpen(false);
-    setSettingsDrawerOpen(false);
-  }, [setSelectedNodeId, setDrawerOpen, setSelectedEdge, setEdgeDrawerOpen, setSettingsDrawerOpen, pickerMode]);
+
+    // Ctrl/Cmd-click adds to the selection and Shift-drag draws a selection
+    // box. Both are handled by React Flow, and taking over here would clear
+    // the other selected nodes.
+    if (event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
+
+    const target = event.altKey ? cycleStackedNode(event, node.id) ?? node : node;
+
+    selectNode(target.id, true);
+  }, [selectNode, pickerMode, cycleStackedNode]);
 
   const handleEdgeClick = useCallback((_: any, edge: Edge) => {
     setSelectedEdge(edge);
@@ -99,11 +125,16 @@ export const EditorCanvas = memo(() => {
       // Only select nodes, not edges (as per requirement #6)
       setSelectedNodeIds(selectedNodes.map(n => n.id));
 
-      // Close the node panel if no nodes are selected and it's currently open
-      if (selectedNodes.length === 0) {
-        setDrawerOpen(false);
-        setSelectedNodeId(null);
-      }
+      if (selectedNodes.length > 0) return;
+
+      // Locked nodes are never selected on the canvas but can still be edited
+      // through the panel, so keep the panel open for them.
+      const state = useEditorStore.getState();
+      const activeNode = state.nodes.find(n => n.id === state.selectedNodeId);
+      if (activeNode?.data?.locked) return;
+
+      setDrawerOpen(false);
+      setSelectedNodeId(null);
     },
     [setSelectedNodeIds, setDrawerOpen, setSelectedNodeId]
   );
@@ -115,13 +146,23 @@ export const EditorCanvas = memo(() => {
   }, [screenToFlowPosition, setLastMousePosition]);
 
   // Close panels when clicking on empty canvas
-  const handlePaneClick = useCallback(() => {
+  const handlePaneClick = useCallback((event: React.MouseEvent) => {
+    // Locked nodes do not receive clicks, so alt-clicking "through" them lands
+    // on the pane. Cycle from here as well to keep them reachable.
+    if (event.altKey && !pickerMode) {
+      const target = cycleStackedNode(event);
+      if (target) {
+        selectNode(target.id, true);
+        return;
+      }
+    }
+
     setDrawerOpen(false);
     setSelectedNodeId(null);
     setEdgeDrawerOpen(false);
     setSelectedEdge(null);
     setSettingsDrawerOpen(false);
-  }, [setDrawerOpen, setSelectedNodeId, setEdgeDrawerOpen, setSelectedEdge, setSettingsDrawerOpen]);
+  }, [setDrawerOpen, setSelectedNodeId, setEdgeDrawerOpen, setSelectedEdge, setSettingsDrawerOpen, cycleStackedNode, selectNode, pickerMode]);
 
   const defaultEdgeOptions = {
     animated: false,
@@ -139,6 +180,8 @@ export const EditorCanvas = memo(() => {
       style={{
         backgroundColor: settings?.background?.color || "#ffffff",
         cursor: pickerMode ? "crosshair" : "default",
+        // Default text colour for text nodes that have none of their own.
+        ["--learningmap-text-default" as any]: getReadableTextColor(settings?.background?.color),
       }}
       onMouseMove={handleMouseMove}
     >
@@ -159,7 +202,9 @@ export const EditorCanvas = memo(() => {
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={defaultEdgeOptions}
         nodesDraggable={!pickerMode}
-        elevateNodesOnSelect={false}
+        // Selected nodes are lifted above the stack so their resize handles
+        // stay reachable even when the node itself sits in the background.
+        elevateNodesOnSelect={true}
         nodesConnectable={!pickerMode}
         selectNodesOnDrag={false}
         elementsSelectable={!pickerMode}
@@ -178,6 +223,7 @@ export const EditorCanvas = memo(() => {
           </ControlButton>
         </Controls>
         {selectedNodeIds.length > 1 && <MultiNodePanel />}
+        <LayersPanel />
         <EditorPanel />
         <EdgePanel />
         <SettingsPanel />

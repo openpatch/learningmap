@@ -55,6 +55,8 @@ export interface Translations {
     cut: string;
     copy: string;
     paste: string;
+    cycleStackedNodes: string;
+    editTextInline: string;
   };
 
   // Drawer titles
@@ -219,6 +221,22 @@ export interface Translations {
   // Image caption
   caption: string;
   placeholderImageCaption: string;
+
+  // Layers
+  layers: string;
+  layersEmpty: string;
+  bringToFront: string;
+  bringForward: string;
+  sendBackward: string;
+  sendToBack: string;
+  lockNode: string;
+  unlockNode: string;
+  zoomToNode: string;
+
+  // Node placeholders
+  noImage: string;
+  clickToChooseImage: string;
+  doubleClickToAddText: string;
 }
 
 const en: Translations = {
@@ -276,6 +294,8 @@ const en: Translations = {
     cut: "Cut",
     copy: "Copy",
     paste: "Paste",
+    cycleStackedNodes: "Cycle through overlapping nodes",
+    editTextInline: "Edit a text node in place",
   },
 
   // Drawer titles
@@ -446,6 +466,22 @@ const en: Translations = {
   // Image caption
   caption: "Caption",
   placeholderImageCaption: "Add caption (supports [markdown links](url))",
+
+  // Layers
+  layers: "Layers",
+  layersEmpty: "No nodes yet",
+  bringToFront: "Bring to Front",
+  bringForward: "Bring Forward",
+  sendBackward: "Send Backward",
+  sendToBack: "Send to Back",
+  lockNode: "Lock",
+  unlockNode: "Unlock",
+  zoomToNode: "Zoom to Node",
+
+  // Node placeholders
+  noImage: "No Image",
+  clickToChooseImage: "Choose an image",
+  doubleClickToAddText: "Double-click to add text",
 };
 
 const de: Translations = {
@@ -504,6 +540,8 @@ const de: Translations = {
     cut: "Ausschneiden",
     copy: "Kopieren",
     paste: "Einfügen",
+    cycleStackedNodes: "Überlappende Knoten durchschalten",
+    editTextInline: "Textknoten direkt bearbeiten",
   },
 
   // Drawer titles
@@ -676,6 +714,22 @@ const de: Translations = {
   // Image caption
   caption: "Bildunterschrift",
   placeholderImageCaption: "Bildunterschrift hinzufügen (unterstützt [Markdown-Links](url))",
+
+  // Layers
+  layers: "Ebenen",
+  layersEmpty: "Noch keine Knoten",
+  bringToFront: "In den Vordergrund",
+  bringForward: "Eine Ebene nach vorne",
+  sendBackward: "Eine Ebene nach hinten",
+  sendToBack: "In den Hintergrund",
+  lockNode: "Sperren",
+  unlockNode: "Entsperren",
+  zoomToNode: "Zum Knoten zoomen",
+
+  // Node placeholders
+  noImage: "Kein Bild",
+  clickToChooseImage: "Bild auswählen",
+  doubleClickToAddText: "Doppelklicken, um Text hinzuzufügen",
 };
 
 export const translations: Record<string, Translations> = {
