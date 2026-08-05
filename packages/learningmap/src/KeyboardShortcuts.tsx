@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useReactFlow } from "@xyflow/react";
 import { useEditorStore, useTemporalStore } from "./editorStore";
-import { Node } from "@xyflow/react";
-import { NodeData, KeyBindings, KeyBinding } from "./types";
+import { KeyBindings, KeyBinding } from "./types";
+import { createNode, CreatableNodeType } from "./nodeFactory";
 
 interface KeyboardShortcutsProps {
   jsonStore?: string;
@@ -33,6 +33,20 @@ const defaultKeyBindings: KeyBindings = {
   fitView: { key: '!', shift: true },
   zoomToSelection: { key: '@', shift: true },
   deleteSelected: { key: 'Delete' },
+};
+
+/**
+ * True while the user is typing, so shortcuts do not hijack the keystroke.
+ *
+ * This replaces an earlier check on the open drawers: because selecting a node
+ * opens the editor panel, that check disabled undo, copy/paste and delete for
+ * as long as a node was selected.
+ */
+const isTypingTarget = (target: EventTarget | null): boolean => {
+  const element = target as HTMLElement | null;
+  if (!element || !element.tagName) return false;
+  if (element.isContentEditable) return true;
+  return ["INPUT", "TEXTAREA", "SELECT"].includes(element.tagName);
 };
 
 const matchesKeyBinding = (e: KeyboardEvent, binding: KeyBinding | undefined): boolean => {
@@ -79,9 +93,6 @@ export const KeyboardShortcuts = ({
   const deleteEdge = useEditorStore(state => state.deleteEdge);
   const setSelectedEdge = useEditorStore(state => state.setSelectedEdge);
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
-  const drawerOpen = useEditorStore(state => state.drawerOpen);
-  const edgeDrawerOpen = useEditorStore(state => state.edgeDrawerOpen);
-  const settingsDrawerOpen = useEditorStore(state => state.settingsDrawerOpen);
   const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
   const pickerMode = useEditorStore(state => state.pickerMode);
   const setPickerMode = useEditorStore(state => state.setPickerMode);
@@ -94,19 +105,20 @@ export const KeyboardShortcuts = ({
     redo: state.redo,
   }));
 
-  const onAddNode = (type: "task" | "topic" | "image" | "text") => {
-    const position = lastMousePosition || screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-    const newNode: Node<NodeData> = {
-      id: `node-${Date.now()}`,
-      type,
-      position,
-      data: {
-        label: type === "task" ? t.newTask : type === "topic" ? t.newTopic : type,
-        state: "unlocked",
-      },
-    };
-    addNode(newNode);
+  const onAddNode = (type: CreatableNodeType) => {
+    addNode(
+      createNode({
+        type,
+        nodes: useEditorStore.getState().nodes,
+        t,
+        position: lastMousePosition,
+        screenToFlowPosition,
+      }),
+    );
   };
+
+  const isLocked = (nodeId: string) =>
+    Boolean(nodes.find(n => n.id === nodeId)?.data?.locked);
 
   const onDeleteSelected = () => {
     // Delete selected edge if any
@@ -116,11 +128,11 @@ export const KeyboardShortcuts = ({
       setEdgeDrawerOpen(false);
       return;
     }
-    
-    // Otherwise delete selected nodes
-    if (selectedNodeIds.length > 0) {
-      // Delete all selected nodes
-      selectedNodeIds.forEach(nodeId => {
+
+    // Otherwise delete selected nodes, leaving locked ones alone
+    const deletable = selectedNodeIds.filter(nodeId => !isLocked(nodeId));
+    if (deletable.length > 0) {
+      deletable.forEach(nodeId => {
         deleteNode(nodeId);
       });
       setSelectedNodeIds([]);
@@ -156,12 +168,11 @@ export const KeyboardShortcuts = ({
   };
 
   const onCut = () => {
-    const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
+    const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id) && !n.data?.locked);
     if (selectedNodes.length > 0) {
       setClipboard({ nodes: selectedNodes, edges: [] });
-      // Delete all selected nodes
-      selectedNodeIds.forEach(nodeId => {
-        deleteNode(nodeId);
+      selectedNodes.forEach(node => {
+        deleteNode(node.id);
       });
       setSelectedNodeIds([]);
     }
@@ -187,7 +198,7 @@ export const KeyboardShortcuts = ({
   };
 
   const onSelectAll = () => {
-    setSelectedNodeIds(nodes.map(n => n.id));
+    setSelectedNodeIds(nodes.filter(n => !n.data?.locked).map(n => n.id));
   };
 
   const onZoomIn = () => zoomIn();
@@ -215,10 +226,12 @@ export const KeyboardShortcuts = ({
         return;
       }
       
-      if (drawerOpen || edgeDrawerOpen || settingsDrawerOpen) {
-        return; // Ignore shortcuts when any drawer is open
+      // Only step aside while the user is actually typing, so shortcuts keep
+      // working with a node selected and its editor panel open.
+      if (isTypingTarget(e.target)) {
+        return;
       }
-      
+
       // Check each keybinding
       if (matchesKeyBinding(e, keyBindings.addTaskNode)) {
         e.preventDefault();
@@ -295,7 +308,7 @@ export const KeyboardShortcuts = ({
     };
   }, [onAddNode, onDeleteSelected, onSave, undo, redo, helpOpen, setHelpOpen, onTogglePreview, onToggleDebug,
     onZoomIn, onZoomOut, onResetZoom, onFitView, onZoomToSelection, onToggleGrid,
-    onResetMap, onCut, onCopy, onPaste, onSelectAll, drawerOpen, edgeDrawerOpen, settingsDrawerOpen, keyBindings, pickerMode, setPickerMode]);
+    onResetMap, onCut, onCopy, onPaste, onSelectAll, keyBindings, pickerMode, setPickerMode]);
 
   return null;
 };

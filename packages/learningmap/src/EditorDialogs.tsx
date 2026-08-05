@@ -50,6 +50,8 @@ export const EditorDialogs = memo(({ jsonStore = "https://json.openpatch.org" }:
     { action: t.shortcuts.togglePreviewMode, shortcut: "Ctrl+P" },
     { action: t.shortcuts.toggleDebugMode, shortcut: "Ctrl+D" },
     { action: t.shortcuts.selectMultipleNodes, shortcut: "Ctrl+Click or Shift+Drag" },
+    { action: t.shortcuts.cycleStackedNodes, shortcut: "Alt+Click" },
+    { action: t.shortcuts.editTextInline, shortcut: "Double-click" },
     { action: t.shortcuts.selectAllNodes, shortcut: "Ctrl+A" },
     { action: t.shortcuts.showHelp, shortcut: "Ctrl+? or Help Button" },
     { action: t.shortcuts.save, shortcut: "Ctrl+S" },

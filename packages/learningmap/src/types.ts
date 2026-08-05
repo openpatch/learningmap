@@ -26,6 +26,8 @@ export interface Resource {
 export interface NodeData {
   state: "locked" | "unlocked" | "started" | "completed" | "mastered";
   label: string;
+  /** Prevents dragging and selecting the node on the canvas. */
+  locked?: boolean;
   description?: string;
   duration?: string;
   unlock?: UnlockCondition;
@@ -40,6 +42,7 @@ export interface NodeData {
 export interface ImageNodeData {
   data?: string; // base64 encoded image
   caption?: string; // Caption with markdown support for links
+  locked?: boolean; // Prevents dragging and selecting on the canvas
 }
 
 export interface TextNodeData {
@@ -47,6 +50,7 @@ export interface TextNodeData {
   fontSize?: number;
   color?: string;
   rotation?: number;
+  locked?: boolean; // Prevents dragging and selecting on the canvas
 }
 
 export type BackgroundNodeData = ImageNodeData | TextNodeData;

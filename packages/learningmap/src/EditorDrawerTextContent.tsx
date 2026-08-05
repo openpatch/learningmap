@@ -3,6 +3,7 @@ import { TextNodeData } from "./types";
 import { ColorSelector } from "./ColorSelector";
 import { RotationInput } from "./RotationInput";
 import { useEditorStore } from "./editorStore";
+import { getReadableTextColor } from "./colorHelper";
 
 interface Props {
   localNode: Node<TextNodeData>;
@@ -11,8 +12,12 @@ interface Props {
 
 export function EditorDrawerTextContent({ localNode, handleFieldChange }: Props) {
   const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
+  const backgroundColor = useEditorStore(state => state.settings?.background?.color);
   const t = getTranslationsFromStore();
-  
+
+  // Matches the default the text node renders with when no colour is set.
+  const defaultColor = getReadableTextColor(backgroundColor);
+
   return (
     <div className="panel-content">
       <div className="form-group">
@@ -35,7 +40,7 @@ export function EditorDrawerTextContent({ localNode, handleFieldChange }: Props)
       <div className="form-group">
         <ColorSelector
           label={t.color}
-          value={localNode.data.color || "#e5e7eb"}
+          value={localNode.data.color || defaultColor}
           onChange={color => handleFieldChange("color", color)}
         />
       </div>

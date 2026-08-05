@@ -1,12 +1,11 @@
 import React from "react";
 import { Menu, MenuButton, MenuDivider, MenuItem, SubMenu } from "@szhsin/react-menu";
-import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2, RotateCcw } from "lucide-react";
+import { Plus, Bug, Settings, Eye, Menu as MenuI, FolderOpen, Download, ImageDown, ExternalLink, Share2, RotateCcw, Layers } from "lucide-react";
 import { useEditorStore } from "./editorStore";
-import { Node, useReactFlow } from "@xyflow/react";
-import { NodeData } from "./types";
+import { useReactFlow } from "@xyflow/react";
 import { useJsonStore } from "./useJsonStore";
 import { useFileOperations } from "./useFileOperations";
-import { getZIndexForNodeType } from "./zIndexHelper";
+import { createNode, CreatableNodeType } from "./nodeFactory";
 
 interface EditorToolbarProps {
   disableSharing?: boolean;
@@ -33,6 +32,8 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const setShowCompletionOptional = useEditorStore(state => state.setShowCompletionOptional);
   const setShowUnlockAfter = useEditorStore(state => state.setShowUnlockAfter);
   const addNode = useEditorStore(state => state.addNode);
+  const layersPanelOpen = useEditorStore(state => state.layersPanelOpen);
+  const setLayersPanelOpen = useEditorStore(state => state.setLayersPanelOpen);
   const setSettingsDrawerOpen = useEditorStore(state => state.setSettingsDrawerOpen);
   const setDrawerOpen = useEditorStore(state => state.setDrawerOpen);
   const setEdgeDrawerOpen = useEditorStore(state => state.setEdgeDrawerOpen);
@@ -52,20 +53,15 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const onSetShowCompletionOptional = (checked: boolean) => setShowCompletionOptional(checked);
   const onSetShowUnlockAfter = (checked: boolean) => setShowUnlockAfter(checked);
 
-  const onAddNewNode = (type: "task" | "topic" | "image" | "text") => {
-    // Position new nodes at the center of the current viewport
-    const position = screenToFlowPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-    const newNode: Node<NodeData> = {
-      id: `node-${Date.now()}`,
-      type,
-      position,
-      zIndex: getZIndexForNodeType(type),
-      data: {
-        label: type === "task" ? t.newTask : type === "topic" ? t.newTopic : type,
-        state: "unlocked",
-      },
-    };
-    addNode(newNode);
+  const onAddNewNode = (type: CreatableNodeType) => {
+    addNode(
+      createNode({
+        type,
+        nodes: useEditorStore.getState().nodes,
+        t,
+        screenToFlowPosition,
+      }),
+    );
   };
 
   const onOpenSettingsDrawer = () => {
@@ -104,6 +100,15 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
             <span style={{ marginLeft: 'auto', paddingLeft: '16px', color: '#9ca3af', fontSize: '0.875rem' }}>Ctrl+4</span>
           </MenuItem>
         </Menu>
+        <button
+          disabled={previewMode}
+          onClick={() => setLayersPanelOpen(!layersPanelOpen)}
+          className={`toolbar-button ${layersPanelOpen ? "active" : ""}`}
+          title={t.layers}
+          aria-pressed={layersPanelOpen}
+        >
+          <Layers size={16} /> <span className="toolbar-label">{t.layers}</span>
+        </button>
         <button disabled={previewMode} onClick={onOpenSettingsDrawer} className="toolbar-button">
           <Settings size={16} /> <span className="toolbar-label">{t.settings}</span>
         </button>

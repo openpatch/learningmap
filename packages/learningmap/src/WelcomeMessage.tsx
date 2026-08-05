@@ -1,10 +1,10 @@
 import React from "react";
 import { FolderOpen, Plus, Info } from "lucide-react";
 import { useEditorStore } from "./editorStore";
-import { Node } from "@xyflow/react";
-import { NodeData } from "./types";
+import { useReactFlow } from "@xyflow/react";
 import logo from "./logo.svg";
 import { useFileOperations } from "./useFileOperations";
+import { createNode } from "./nodeFactory";
 
 export const WelcomeMessage: React.FC = () => {
   // Get state and actions from store
@@ -13,21 +13,19 @@ export const WelcomeMessage: React.FC = () => {
   const getTranslationsFromStore = useEditorStore(state => state.getTranslations);
 
   const { openRoadmap } = useFileOperations();
+  const { screenToFlowPosition } = useReactFlow();
 
   const t = getTranslationsFromStore();
 
   const onAddTopic = () => {
-    const position = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    const newNode: Node<NodeData> = {
-      id: `node-${Date.now()}`,
-      type: "topic",
-      position,
-      data: {
-        label: t.newTopic,
-        state: "unlocked",
-      },
-    };
-    addNode(newNode);
+    addNode(
+      createNode({
+        type: "topic",
+        nodes: useEditorStore.getState().nodes,
+        t,
+        screenToFlowPosition,
+      }),
+    );
   };
 
   const onShowHelp = () => setHelpOpen(true);

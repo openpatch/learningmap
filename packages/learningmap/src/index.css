@@ -534,6 +534,65 @@ header.drawer-header {
   width: 100%;
 }
 
+/* Empty node placeholders -------------------------------------------------
+   An image or text node without content used to render as a bare, unstyled
+   label that was almost impossible to spot on the canvas. */
+.node-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  min-width: 160px;
+  min-height: 120px;
+  padding: 8px;
+  border: 2px dashed #94a3b8;
+  border-radius: 12px;
+  background: rgba(148, 163, 184, 0.14);
+  color: #475569;
+  font-size: 14px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.node-placeholder-text {
+  min-width: 0;
+  min-height: 0;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+/* Text nodes --------------------------------------------------------------
+   The wrapper is sized to the rotated bounding box of its content so the
+   clickable area lines up with what is drawn. */
+.text-node {
+  position: relative;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.text-node-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-weight: bold;
+  white-space: nowrap;
+  transform-origin: center center;
+}
+
+.text-node-input {
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.92);
+  border: 2px solid var(--learningmap-color-openpatch);
+  border-radius: 6px;
+  padding: 2px 6px;
+  outline: none;
+  min-width: 120px;
+}
+
 .react-flow__node-task {
   padding: 16px 24px;
   border-radius: 16px;
@@ -1030,6 +1089,185 @@ dialog.help[open] {
 
 .panel-footer-centered button {
   flex: 1;
+}
+
+/* Layer controls (editor panel + multi node panel) */
+.layer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.layer-controls button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  color: #1f2937;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.layer-controls button:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: var(--learningmap-color-openpatch);
+}
+
+.layer-controls button.active {
+  border-color: var(--learningmap-color-openpatch);
+  background: #eff6ff;
+}
+
+.layer-controls.compact {
+  padding: 0;
+  border-top: none;
+  gap: 4px;
+}
+
+.layer-controls.compact button {
+  padding: 8px;
+  border: none;
+}
+
+/* Layers panel */
+.layers-panel {
+  pointer-events: all;
+  width: 260px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-nav, white);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.layers-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.layers-panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.layers-panel-actions {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.layers-panel-actions button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.layers-panel-actions button:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: var(--learningmap-color-openpatch);
+}
+
+.layers-panel-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.layers-panel-empty {
+  padding: 16px;
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  text-align: center;
+}
+
+.layers-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+}
+
+.layers-list-item {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.layers-list-item:hover {
+  background: #f3f4f6;
+}
+
+.layers-list-item.active {
+  background: #eff6ff;
+  outline: 1px solid var(--learningmap-color-openpatch);
+}
+
+.layers-list-item.locked .layers-list-label {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.layers-list-select {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.layers-list-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layers-list-action {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.layers-list-action:hover {
+  background: #e5e7eb;
+  color: #1f2937;
 }
 
 /* Picker Mode Styles */

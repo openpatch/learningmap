@@ -10,6 +10,7 @@ import { Drawer } from "./Drawer";
 import { ProgressTracker } from "./ProgressTracker";
 import { useViewerStore } from "./viewerStore";
 import { detectBrowserLanguage } from "./translations";
+import { getReadableTextColor } from "./colorHelper";
 
 const nodeTypes = {
   topic: TopicNode,
@@ -152,6 +153,8 @@ export function LearningMap({
       className="editor-canvas"
       style={{
         backgroundColor: settings?.background?.color || "#ffffff",
+        // Default text colour for text nodes that have none of their own.
+        ["--learningmap-text-default" as any]: getReadableTextColor(settings?.background?.color),
       }}
     >
       <ReactFlow
