@@ -6,7 +6,17 @@ import logo from "./logo.svg";
 import { useFileOperations } from "./useFileOperations";
 import { createNode } from "./nodeFactory";
 
-export const WelcomeMessage: React.FC = () => {
+interface WelcomeMessageProps {
+  /** The host keeps the file, so there is nothing to open here. */
+  disableFileOperations?: boolean;
+  /** Nothing is kept in the browser, so it should not say so. */
+  disablePersist?: boolean;
+}
+
+export const WelcomeMessage: React.FC<WelcomeMessageProps> = ({
+  disableFileOperations = false,
+  disablePersist = false,
+}) => {
   // Get state and actions from store
   const addNode = useEditorStore(state => state.addNode);
   const setHelpOpen = useEditorStore(state => state.setHelpOpen);
@@ -36,12 +46,14 @@ export const WelcomeMessage: React.FC = () => {
         <h1 className="welcome-title">
           <img src={logo} alt="Logo" className="welcome-logo" />
           {t.welcomeTitle}</h1>
-        <p className="welcome-subtitle">{t.welcomeSubtitle}</p>
+        {!disablePersist && <p className="welcome-subtitle">{t.welcomeSubtitle}</p>}
         <div className="welcome-actions">
-          <button onClick={openRoadmap} className="primary-button">
-            <FolderOpen size={18} />
-            {t.welcomeOpenFile}
-          </button>
+          {!disableFileOperations && (
+            <button onClick={openRoadmap} className="primary-button">
+              <FolderOpen size={18} />
+              {t.welcomeOpenFile}
+            </button>
+          )}
           <button onClick={onAddTopic} className="primary-button">
             <Plus size={18} />
             {t.welcomeAddTopic}
