@@ -1,5 +1,14 @@
 # @hyperbook/web-component-learningmap
 
+## 0.7.1
+
+### Patch Changes
+
+- [#65](https://github.com/openpatch/learningmap/pull/65) [`684efc1`](https://github.com/openpatch/learningmap/commit/684efc16f868efb11485708178ed6bccb9ceefe4) Thanks [@mikebarkmin](https://github.com/mikebarkmin)! - Respect `disableFileOperations` and `disablePersist` everywhere in the editor
+  - The welcome screen no longer offers to open a file when file operations are disabled, and no longer says the data is stored in the browser when persistence is disabled
+  - The save shortcut (Ctrl/⌘+S) no longer downloads a copy when file operations are disabled; the keystroke is left to the host page
+  - The editor web component accepts `disable-persist`
+
 ## 0.7.0
 
 ### Minor Changes
