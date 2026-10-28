@@ -7,6 +7,11 @@ import { createNode, CreatableNodeType } from "./nodeFactory";
 interface KeyboardShortcutsProps {
   jsonStore?: string;
   keyBindings?: Partial<KeyBindings>;
+  /**
+   * The host keeps the file: the save shortcut does not download a copy and
+   * is left to the host instead.
+   */
+  disableFileOperations?: boolean;
 }
 
 // Default keybindings
@@ -62,7 +67,8 @@ const matchesKeyBinding = (e: KeyboardEvent, binding: KeyBinding | undefined): b
 
 export const KeyboardShortcuts = ({ 
   jsonStore = "https://json.openpatch.org",
-  keyBindings: customKeyBindings = {}
+  keyBindings: customKeyBindings = {},
+  disableFileOperations = false,
 }: KeyboardShortcutsProps) => {
   // Merge custom keybindings with defaults
   const keyBindings = { ...defaultKeyBindings, ...customKeyBindings };
@@ -246,6 +252,7 @@ export const KeyboardShortcuts = ({
         e.preventDefault();
         onAddNode("text");
       } else if (matchesKeyBinding(e, keyBindings.save)) {
+        if (disableFileOperations) return;
         e.preventDefault();
         onSave();
       } else if (matchesKeyBinding(e, keyBindings.undo)) {

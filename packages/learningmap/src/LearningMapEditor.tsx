@@ -82,7 +82,11 @@ export function LearningMapEditor({
   return (
     <>
       {/* Keyboard shortcuts handler */}
-      <KeyboardShortcuts jsonStore={jsonStore} keyBindings={keyBindings} />
+      <KeyboardShortcuts
+        jsonStore={jsonStore}
+        keyBindings={keyBindings}
+        disableFileOperations={disableFileOperations}
+      />
 
       {/* Toolbar */}
       <EditorToolbar disableSharing={disableSharing} disableFileOperations={disableFileOperations} />
@@ -94,7 +98,9 @@ export function LearningMapEditor({
       {previewMode && <LearningMap roadmapData={getRoadmapData()} />}
       {!previewMode && <>
         {/* Welcome message when empty */}
-        {nodes.length === 0 && edges.length === 0 && <WelcomeMessage />}
+        {nodes.length === 0 && edges.length === 0 && (
+          <WelcomeMessage disableFileOperations={disableFileOperations} disablePersist={disablePersist} />
+        )}
 
         {/* Main canvas */}
         <EditorCanvas />
