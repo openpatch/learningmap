@@ -1,0 +1,141 @@
+# Writing .learningmap Files
+
+> A `.learningmap` file is a JSON document (version 1) describing a visual learning
+> path: nodes (topics, tasks, images, text) connected by edges, plus map settings.
+> It is the file format used by Learningmap (https://learningmap.app), edited in the
+> web app or the VS Code extension "Learningmap Studio", and rendered by the
+> `@openpatch/learningmap` React component and web component.
+
+## File Structure
+
+A `.learningmap` file is a single JSON object with these top-level keys:
+
+- `nodes` (array, required): all nodes on the canvas.
+- `edges` (array, required): connections between nodes.
+- `settings` (object, required): map-level configuration.
+- `version` (number, required): currently always `1`.
+- `type` (string, optional): set to `"learningmap"`.
+- `source` (string, optional): e.g. `"https://learningmap.app"`.
+
+Coordinates (`position.x`, `position.y`) are canvas pixel values; any numbers are valid.
+
+## Nodes
+
+Each node has:
+
+- `id` (string, required, must be unique): any string, e.g. `"1"` or `"node-1762086584942"`.
+- `type` (string, required): one of `"topic"`, `"task"`, `"image"`, `"text"`.
+- `position` (object, required): `{ "x": number, "y": number }`.
+- `zIndex` (number, optional): topics/tasks typically `30`, background image/text nodes `10`–`20`.
+- `width` / `height` (number, optional): used by image nodes.
+- `data` (object, required): see below.
+
+### Node types
+
+- `topic`: a section/grouping node. Completed automatically when its `completion.needs`
+  nodes are all completed; shows `mastered` when `completion.optional` nodes are also done.
+- `task`: an actionable activity the learner marks as started/completed.
+- `image`: background decoration; `data.data` holds a base64 data-URI image, `data.caption`
+  supports markdown links.
+- `text`: background text/emoji; `data.text` is the content, optional `data.fontSize`,
+  `data.color`, `data.rotation`.
+
+### Node `data` fields (topic/task)
+
+- `state` (string, required): one of `"locked"`, `"unlocked"`, `"started"`, `"completed"`, `"mastered"`.
+  This is the learner's progress state; in authored files use `"locked"` or `"unlocked"`.
+- `label` (string, required): short title shown on the node.
+- `description` (string, optional): long markdown text (headings, lists, links supported).
+- `duration` (string, optional): e.g. `"5 min"`.
+- `summary` (string, optional): short badge text, e.g. `"Optional"`.
+- `color` (string, optional): a color name such as `"yellow"`, `"red"`, `"lila"`, used for visual grouping.
+- `fontSize` (number, optional): label font size.
+- `locked` (boolean, optional): prevents dragging/selecting the node in the editor.
+- `video` (string, optional): URL of an embedded video.
+- `unlock` (object, optional): conditions to unlock the node:
+  - `after` (array of node ids): node unlocks when ALL listed nodes are completed/mastered.
+  - `date` (string): ISO date after which the node unlocks.
+  - `password` (string): password required to unlock.
+- `completion` (object, optional, mainly for topics):
+  - `needs` (array of node ids): required for the topic to be `completed`.
+  - `optional` (array of node ids): completing these too upgrades the topic to `mastered`.
+- `resources` (array, optional): `{ "label": string, "url"?: string, "type"?: "url" | "book", "bookName"?: string, "bookLocation"?: string }`.
+
+Note: edges are purely visual. Unlock/completion logic is driven ONLY by
+`unlock.after` and `completion.needs`/`optional`, not by edges.
+
+## Edges
+
+Each edge has:
+
+- `id` (string, required): convention `"e<source>-<target>"` or React Flow style
+  `"xy-edge__<source><sourceHandle>-<target><targetHandle>"`.
+- `source` (string, required): id of the source node.
+- `target` (string, required): id of the target node.
+- `sourceHandle` / `targetHandle` (string, optional): `"top"`, `"bottom"`, `"left"`, `"right"`.
+- `type` (string, optional): e.g. `"default"`.
+- `animated` (boolean, optional).
+- `style` (object, optional): `{ "stroke": "#hexcolor", "strokeWidth": number }`.
+
+## Settings
+
+`settings` may contain:
+
+- `title` (string): map title.
+- `id` (string): map identifier.
+- `language` (string): e.g. `"en"`.
+- `background` (object): `{ "color": "#hexcolor", "nodes": [...] }` for background decorations.
+- `viewport` (object): `{ "x": number, "y": number, "zoom": number }` initial camera.
+- `defaultEdgeType` (string) and `defaultEdgeColor` (string): defaults for new edges.
+
+## Minimal Example
+
+```json
+{
+  "nodes": [
+    {
+      "id": "1",
+      "type": "topic",
+      "position": { "x": 192, "y": 271 },
+      "zIndex": 30,
+      "data": {
+        "state": "unlocked",
+        "label": "Getting Started",
+        "description": "Learn the basics.",
+        "completion": { "needs": ["2"], "optional": [] }
+      }
+    },
+    {
+      "id": "2",
+      "type": "task",
+      "position": { "x": 192, "y": 80 },
+      "zIndex": 30,
+      "data": {
+        "state": "unlocked",
+        "label": "Read the intro",
+        "unlock": { "after": [] }
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e2-1", "source": "2", "target": "1" }
+  ],
+  "settings": {
+    "title": "My First Learningmap",
+    "background": { "color": "#ffffff" }
+  },
+  "version": 1,
+  "type": "learningmap",
+  "source": "https://learningmap.app"
+}
+```
+
+## Best Practices
+
+- Always include `"version": 1` and `"type": "learningmap"`.
+- Use stable, unique node ids; reference them exactly in `unlock.after` and `completion`.
+- Give at least one node `state: "unlocked"` (typically the entry topic/task) so learners can start.
+- Use `description` with markdown for rich instructions; keep `label` short and action-oriented.
+- Prefer `topic` nodes with `completion.needs` to structure progress; use `unlock.after` on
+  tasks to gate prerequisites. Remember edges do not affect logic.
+- Keep image nodes (`type: "image"`) at lower `zIndex` so they stay in the background.
